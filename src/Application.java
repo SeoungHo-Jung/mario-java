@@ -13,6 +13,9 @@ public class Application {
         game.setMinimumSize(CANVAS_DIMENSIONS);
         game.setMaximumSize(CANVAS_DIMENSIONS);
         game.setPreferredSize(CANVAS_DIMENSIONS);
+        
+        //Set the background in black to make sure transparent color is working.
+        game.setBackground(Color.black);
 
         JFrame frame = new JFrame(NAME);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
