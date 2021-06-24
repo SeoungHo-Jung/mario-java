@@ -16,6 +16,9 @@ public class Game extends Canvas implements Runnable, KeyListener {
     // Sprite Sheet
     private BufferedImage spriteSheet;
     private BufferedImage marioImg;
+    private int ticks = 0;
+    private int frames = 0;
+    private double prevTime;
 
     public void init() {
         // Load the sprite sheet image
@@ -56,13 +59,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
     public void tick() {
         // Update the game's state on a fixed-rate interval
 
-        //      1/60 is approx 0.01666....7 thus 1 tic would be approx 16 milliseconds
-        //      Here, I will set it to 166 for the sake of visibility.
-        try {
-            sleep(166);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        ticks ++;
     }
 
     public void render() {
@@ -78,6 +75,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         drawSprites(g);
         g.dispose();
         bs.show();
+        frames++;
     }
 
     private void drawBackground(Graphics g) {
@@ -90,9 +88,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
         //  x = 120 and y = 100 is completely arbitrary. Will need to replace with actual variables.
 
         //clear the previous image that was drawn.
-        g.clearRect(120, 100, 16, 32);
+        g.clearRect(0, 0, 256, 240);
         //draw new image
         g.drawImage(marioImg, 120, 100, null);
+
 
 
     }
@@ -104,12 +103,24 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
     }*/
 
+
     @Override
     public void run() {
         init();
 
         //The actual images start from the 80th pixel.
         int colNum = 80;
+        prevTime = System.currentTimeMillis();
+        int framesPerSec;
+        int number_of_ticks = 60;
+        double tickInterval = 1000 / number_of_ticks;
+
+        //This keeps track of how much time elapsed
+        double start;
+        double end;
+        double elapsed;
+
+        start = System.currentTimeMillis() / 1000;
         while (true) {
             // Main game loop
 
@@ -117,9 +128,29 @@ public class Game extends Canvas implements Runnable, KeyListener {
             //  Log to the console every second:
             //      - Ticks per second
             //      - Frames per second
-            marioImg = spriteSheet.getSubimage(colNum, 0, 16, 32);
-            tick();
-            render();
+
+            double now = System.currentTimeMillis();
+            double timeDiff = now - prevTime;
+
+            //As loop goes on, it will ignore if the time difference is less than the tick interval
+            if(timeDiff >= tickInterval){
+                now = System.currentTimeMillis();
+                marioImg = spriteSheet.getSubimage(colNum, 32, 16, 16);
+                tick();
+                render();
+                prevTime = now;
+                end = System.currentTimeMillis() / 1000;
+                elapsed = end - start;
+                //Again, pretty goofy implementation. I'm sure there is a better way
+                if(elapsed % 1 == 0 && ticks % 60 == 0){
+                    framesPerSec = (int)(frames / elapsed);
+                    System.out.println(elapsed + " seconds  |" + ticks + " ticks    |" + framesPerSec + " fps");
+                }
+               // System.out.println(timeDiff / 1000 + "seconds and " + ticks + " ticks");
+
+            }
+
+
 
             //Goofy implementation (Only for this time)
             //The width of the spritesheet is 416. If it reaches the end of the row, it will start from the beginning
