@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import java.util.Stack;
 
 public class LevelEditor implements ActionListener {
 
@@ -25,6 +26,7 @@ public class LevelEditor implements ActionListener {
     private JMenu editMenu;
     private JMenu viewMenu;
     private JMenuItem quitMenuItem;
+    private JMenuItem undoMenuItem;
 
     private final int gridSize = 16;
     private final int levelWidth = 150;
@@ -32,11 +34,14 @@ public class LevelEditor implements ActionListener {
     private final int levelPanelWidth = levelWidth * gridSize;
     private final int levelPanelHeight = levelHeight * gridSize;
     private final int paletteColumns = 8;
+
     private final ForegroundLayer foregroundLayer = new ForegroundLayer(levelWidth, levelHeight);
     private final IconLoader iconLoader = new IconLoader(gridSize);
 
     private ForegroundTile selectedTile = ForegroundTile.EMPTY_TILE;
     private boolean isGridEnabled = true;
+
+    private Stack<EditorCommand> undoStack = new Stack<>();
 
     public LevelEditor() {
         levelPanel.addMouseListener(new MouseAdapter() {
@@ -53,6 +58,14 @@ public class LevelEditor implements ActionListener {
                 handleTilePalettePanelMouseEvent(e);
             }
         });
+    }
+
+    public JPanel getLevelPanel() {
+        return levelPanel;
+    }
+
+    public ForegroundLayer getForegroundLayer() {
+        return foregroundLayer;
     }
 
     private void createUIComponents() {
@@ -93,6 +106,14 @@ public class LevelEditor implements ActionListener {
         quitMenuItem.setActionCommand("quit");
         quitMenuItem.addActionListener(this);
         fileMenu.add(quitMenuItem);
+
+        editMenu = new JMenu("Edit");
+        menuBar.add(editMenu);
+
+        undoMenuItem = new JMenuItem("Undo");
+        undoMenuItem.setActionCommand("undo");
+        undoMenuItem.addActionListener(this);
+        editMenu.add(undoMenuItem);
 
         FRAME.setJMenuBar(menuBar);
     }
@@ -159,9 +180,11 @@ public class LevelEditor implements ActionListener {
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
         if (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight) {
-            foregroundLayer.setTile(x, y, selectedTile);
+            ForegroundTile oldTile = foregroundLayer.getTile(x, y);
+            EditorCommand command = new ChangeForegroundTileCommand(x, y, selectedTile, oldTile, this);
+            command.execute();
+            undoStack.push(command);
         }
-        levelPanel.repaint();
     }
 
     private void handleTilePalettePanelMouseEvent(MouseEvent e) {
@@ -176,6 +199,13 @@ public class LevelEditor implements ActionListener {
         selectedTilePreviewPanel.repaint();
     }
 
+    private void handleUndoRequested() {
+        if (!undoStack.isEmpty()) {
+            EditorCommand command = undoStack.pop();
+            command.undo();
+        }
+    }
+
     private void handleQuitRequested() {
         System.exit(0);
     }
@@ -185,6 +215,8 @@ public class LevelEditor implements ActionListener {
         switch (e.getActionCommand()) {
             case "quit":
                 handleQuitRequested();
+            case "undo":
+                handleUndoRequested();
         }
     }
 
