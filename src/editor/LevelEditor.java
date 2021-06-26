@@ -2,6 +2,8 @@ package editor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 public class LevelEditor {
     private JPanel mainPanel;
@@ -18,6 +20,15 @@ public class LevelEditor {
 
     private IconLoader iconLoader = new IconLoader(gridSize);
 
+    public LevelEditor() {
+        levelPanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                handleLevelPanelMouseEvent(e);
+            }
+        });
+    }
 
     private void createUIComponents() {
         levelPanel = new JPanel() {
@@ -75,6 +86,15 @@ public class LevelEditor {
         for (int i = gridSize; i < height; i+= gridSize) {
             g.drawLine(0, i, width, i);
         }
+    }
+
+    private void handleLevelPanelMouseEvent(MouseEvent e) {
+        int x = e.getX() / gridSize;
+        int y = e.getY() / gridSize;
+        if (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight) {
+            foregroundLayer.setTile(x, y, ForegroundTile.TEST_TILE);
+        }
+        levelPanel.repaint();
     }
 
     public static void main(String[] args) {
