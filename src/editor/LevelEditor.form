@@ -36,7 +36,7 @@
                 <constraints/>
                 <properties>
                   <autoscrolls value="false"/>
-                  <preferredSize width="2400" height="1280"/>
+                  <preferredSize width="-1" height="-1"/>
                 </properties>
                 <border type="none"/>
                 <children/>

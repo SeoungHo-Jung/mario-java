@@ -22,19 +22,20 @@ public class LevelEditor implements ActionListener {
     private JMenu fileMenu;
     private JMenu editMenu;
     private JMenu viewMenu;
+    private JMenuItem newMenuItem;
     private JMenuItem quitMenuItem;
     private JMenuItem undoMenuItem;
 
     private final int gridSize = 16;
-    private final int levelWidth = 150;
-    private final int levelHeight = 80;
-    private final int levelPanelWidth = levelWidth * gridSize;
-    private final int levelPanelHeight = levelHeight * gridSize;
     private final int paletteColumns = 8;
 
-    private final ForegroundLayer foregroundLayer = new ForegroundLayer(levelWidth, levelHeight);
     private final IconLoader iconLoader = new IconLoader(gridSize);
 
+    private int levelWidth;
+    private int levelHeight;
+    private int levelPanelWidth;
+    private int levelPanelHeight;
+    private ForegroundLayer foregroundLayer;
     private ForegroundTile selectedTile = ForegroundTile.EMPTY_TILE;
     private boolean isGridEnabled = true;
 
@@ -63,6 +64,25 @@ public class LevelEditor implements ActionListener {
 
     public ForegroundLayer getForegroundLayer() {
         return foregroundLayer;
+    }
+
+    public void setLevelDimensions(int width, int height) {
+        System.out.println("Set Level Dimensions " + width + " " + height);
+        levelWidth = width;
+        levelHeight = height;
+        levelPanelWidth = levelWidth * gridSize;
+        levelPanelHeight = levelHeight * gridSize;
+
+        // Resize components & repaint
+        levelPanel.setPreferredSize(new Dimension(levelPanelWidth, levelPanelHeight));
+        JViewport viewport = levelScrollPane.getViewport();
+        viewport.setViewSize(new Dimension(levelPanelWidth, levelPanelHeight));
+        levelScrollPane.revalidate();
+        levelScrollPane.repaint();
+    }
+
+    public void setForegroundLayer(ForegroundLayer foregroundLayer) {
+        this.foregroundLayer = foregroundLayer;
     }
 
     private void createUIComponents() {
@@ -99,6 +119,11 @@ public class LevelEditor implements ActionListener {
         fileMenu = new JMenu("File");
         menuBar.add(fileMenu);
 
+        newMenuItem = new JMenuItem("New");
+        newMenuItem.setActionCommand("new");
+        newMenuItem.addActionListener(this);
+        fileMenu.add(newMenuItem);
+
         quitMenuItem = new JMenuItem("Quit");
         quitMenuItem.setActionCommand("quit");
         quitMenuItem.addActionListener(this);
@@ -119,7 +144,9 @@ public class LevelEditor implements ActionListener {
     private void drawLevel(Graphics g) {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, levelPanelWidth, levelPanelHeight);
-        drawTiles(g);
+        if (foregroundLayer != null) {
+            drawTiles(g);
+        }
         if (isGridEnabled) {
             drawGrid(g);
         }
@@ -174,6 +201,14 @@ public class LevelEditor implements ActionListener {
         g.drawImage(iconImage, 0, 0, gridSize * 2, gridSize * 2, null);
     }
 
+    private void createNewLevel() {
+        // TODO: Make this into an EditorCommand?
+        final int defaultWidth = 50;
+        final int defaultHeight = 50;
+        foregroundLayer = new ForegroundLayer(defaultWidth, defaultHeight);
+        setLevelDimensions(defaultWidth, defaultHeight);
+    }
+
     private void handleLevelPanelMouseEvent(MouseEvent e) {
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
@@ -197,6 +232,10 @@ public class LevelEditor implements ActionListener {
         selectedTilePreviewPanel.repaint();
     }
 
+    private void handleNewRequested() {
+        createNewLevel();
+    }
+
     private void handleUndoRequested() {
         if (!undoStack.isEmpty()) {
             EditorCommand command = undoStack.pop();
@@ -211,10 +250,9 @@ public class LevelEditor implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
-            case "quit":
-                handleQuitRequested();
-            case "undo":
-                handleUndoRequested();
+            case "new" -> handleNewRequested();
+            case "undo" -> handleUndoRequested();
+            case "quit" -> handleQuitRequested();
         }
     }
 
