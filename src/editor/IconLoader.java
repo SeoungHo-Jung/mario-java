@@ -36,6 +36,11 @@ public class IconLoader {
     }
 
     public Image getImageForIcon(TileIcon tileIcon) {
+        if (tileIcon == null) {
+            // return a default "null" image
+            return new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
+        }
+
         int x = tileIcon.getxLocation() * iconSize;
         int y = tileIcon.getyLocation() * iconSize;
         switch (tileIcon.getSpriteSheet()) {

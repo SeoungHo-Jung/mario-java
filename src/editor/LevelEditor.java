@@ -4,21 +4,27 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 
 public class LevelEditor {
     private JPanel mainPanel;
     private JScrollPane levelScrollPane;
     private JScrollPane toolScrollPane;
     private JPanel levelPanel;
+    private JPanel tilePalettePanel;
+    private JPanel toolControlPanel;
+    private JPanel selectedTilePreviewPanel;
 
-    private int gridSize = 16;
-    private int levelWidth = 32;
-    private int levelHeight = 24;
-    private int levelPanelWidth = levelWidth * gridSize;
-    private int levelPanelHeight = levelHeight * gridSize;
-    private ForegroundLayer foregroundLayer = new ForegroundLayer(levelWidth, levelHeight);
+    private final int gridSize = 16;
+    private final int levelWidth = 32;
+    private final int levelHeight = 24;
+    private final int levelPanelWidth = levelWidth * gridSize;
+    private final int levelPanelHeight = levelHeight * gridSize;
+    private final int paletteColumns = 8;
+    private final ForegroundLayer foregroundLayer = new ForegroundLayer(levelWidth, levelHeight);
+    private final IconLoader iconLoader = new IconLoader(gridSize);
 
-    private IconLoader iconLoader = new IconLoader(gridSize);
+    private ForegroundTile selectedTile = ForegroundTile.EMPTY_TILE;
 
     public LevelEditor() {
         levelPanel.addMouseListener(new MouseAdapter() {
@@ -26,6 +32,13 @@ public class LevelEditor {
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
                 handleLevelPanelMouseEvent(e);
+            }
+        });
+        tilePalettePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                handleTilePalettePanelMouseEvent(e);
             }
         });
     }
@@ -38,6 +51,22 @@ public class LevelEditor {
                 drawLevel(g);
             }
         };
+
+        tilePalettePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                drawPalette(g);
+            }
+        };
+
+        selectedTilePreviewPanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                drawPreview(g);
+            }
+        };
     }
 
     private void drawLevel(Graphics g) {
@@ -48,15 +77,6 @@ public class LevelEditor {
     }
 
     private void drawTiles(Graphics g) {
-
-        // test data
-        foregroundLayer.setTile(4, 4, ForegroundTile.TEST_TILE);
-        foregroundLayer.setTile(5, 4, ForegroundTile.TEST_TILE);
-        foregroundLayer.setTile(6, 4, ForegroundTile.TEST_TILE);
-        foregroundLayer.setTile(7, 4, ForegroundTile.TEST_TILE);
-        foregroundLayer.setTile(6, 3, ForegroundTile.TEST_TILE);
-        foregroundLayer.setTile(5, 3, ForegroundTile.TEST_TILE);
-
         // draw foreground layer
         for (int x = 0; x < levelWidth; x++) {
             for (int y = 0; y < levelHeight; y++) {
@@ -88,13 +108,42 @@ public class LevelEditor {
         }
     }
 
+    private void drawPalette(Graphics g) {
+        final List<ForegroundTile> fgTiles = TileData.FOREGROUND_TILES;
+
+        for (int i = 0; i < fgTiles.size(); i++) {
+            ForegroundTile tile = fgTiles.get(i);
+            Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayTileIcon());
+            int x = (i % paletteColumns) * gridSize;
+            int y = (i / paletteColumns) * gridSize;
+            g.drawImage(iconImage, x, y, null);
+        }
+    }
+
+    private void drawPreview(Graphics g) {
+        Image iconImage = iconLoader.getImageForIcon(selectedTile.getPrimaryDisplayTileIcon());
+        g.drawImage(iconImage, 0, 0, gridSize * 2, gridSize * 2, null);
+    }
+
     private void handleLevelPanelMouseEvent(MouseEvent e) {
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
         if (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight) {
-            foregroundLayer.setTile(x, y, ForegroundTile.TEST_TILE);
+            foregroundLayer.setTile(x, y, selectedTile);
         }
         levelPanel.repaint();
+    }
+
+    private void handleTilePalettePanelMouseEvent(MouseEvent e) {
+        List<ForegroundTile> fgTiles = TileData.FOREGROUND_TILES;
+        int x = e.getX() / gridSize;
+        int y = e.getY() / gridSize;
+        int index = (y * paletteColumns) + x;
+        if (index >= 0 && index < fgTiles.size()) {
+            selectedTile = fgTiles.get(index);
+            System.out.println("Selected tile " + selectedTile.getName());
+        }
+        selectedTilePreviewPanel.repaint();
     }
 
     public static void main(String[] args) {

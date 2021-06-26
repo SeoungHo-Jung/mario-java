@@ -1,7 +1,8 @@
 package editor;
 
 public enum ForegroundTileCategory {
-    PLATFORM("Platforms");
+    PLATFORM("Platforms"),
+    INTERACTIVE("Interactive");
 
     private final String displayName;
 
