@@ -2,10 +2,7 @@ package editor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.List;
 import java.util.Stack;
 
@@ -112,6 +109,7 @@ public class LevelEditor implements ActionListener {
 
         undoMenuItem = new JMenuItem("Undo");
         undoMenuItem.setActionCommand("undo");
+        undoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.META_DOWN_MASK));
         undoMenuItem.addActionListener(this);
         editMenu.add(undoMenuItem);
 
