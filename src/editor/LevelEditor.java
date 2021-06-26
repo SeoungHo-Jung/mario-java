@@ -16,8 +16,8 @@ public class LevelEditor {
     private JPanel selectedTilePreviewPanel;
 
     private final int gridSize = 16;
-    private final int levelWidth = 32;
-    private final int levelHeight = 24;
+    private final int levelWidth = 150;
+    private final int levelHeight = 80;
     private final int levelPanelWidth = levelWidth * gridSize;
     private final int levelPanelHeight = levelHeight * gridSize;
     private final int paletteColumns = 8;
@@ -25,6 +25,7 @@ public class LevelEditor {
     private final IconLoader iconLoader = new IconLoader(gridSize);
 
     private ForegroundTile selectedTile = ForegroundTile.EMPTY_TILE;
+    private boolean isGridEnabled = true;
 
     public LevelEditor() {
         levelPanel.addMouseListener(new MouseAdapter() {
@@ -73,7 +74,9 @@ public class LevelEditor {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, levelPanelWidth, levelPanelHeight);
         drawTiles(g);
-        drawGrid(g);
+        if (isGridEnabled) {
+            drawGrid(g);
+        }
     }
 
     private void drawTiles(Graphics g) {
