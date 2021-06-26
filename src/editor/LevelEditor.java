@@ -2,11 +2,16 @@ package editor;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 
-public class LevelEditor {
+public class LevelEditor implements ActionListener {
+
+    private static JFrame FRAME;
+
     private JPanel mainPanel;
     private JScrollPane levelScrollPane;
     private JScrollPane toolScrollPane;
@@ -14,6 +19,12 @@ public class LevelEditor {
     private JPanel tilePalettePanel;
     private JPanel toolControlPanel;
     private JPanel selectedTilePreviewPanel;
+
+    private JMenuBar menuBar;
+    private JMenu fileMenu;
+    private JMenu editMenu;
+    private JMenu viewMenu;
+    private JMenuItem quitMenuItem;
 
     private final int gridSize = 16;
     private final int levelWidth = 150;
@@ -68,6 +79,22 @@ public class LevelEditor {
                 drawPreview(g);
             }
         };
+
+        createMenuBar();
+    }
+
+    private void createMenuBar() {
+        menuBar = new JMenuBar();
+
+        fileMenu = new JMenu("File");
+        menuBar.add(fileMenu);
+
+        quitMenuItem = new JMenuItem("Quit");
+        quitMenuItem.setActionCommand("quit");
+        quitMenuItem.addActionListener(this);
+        fileMenu.add(quitMenuItem);
+
+        FRAME.setJMenuBar(menuBar);
     }
 
     private void drawLevel(Graphics g) {
@@ -149,8 +176,21 @@ public class LevelEditor {
         selectedTilePreviewPanel.repaint();
     }
 
+    private void handleQuitRequested() {
+        System.exit(0);
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        switch (e.getActionCommand()) {
+            case "quit":
+                handleQuitRequested();
+        }
+    }
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("Level Editor");
+        FRAME = frame;
         frame.setContentPane(new LevelEditor().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(400, 300));
