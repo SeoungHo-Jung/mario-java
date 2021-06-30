@@ -15,8 +15,8 @@ public class PropertiesDialog extends JDialog {
     public PropertiesDialog(LevelEditor levelEditor) {
         this.levelEditor = levelEditor;
 
-        widthSpinner.setValue(levelEditor.getLevelWidth());
-        heightSpinner.setValue(levelEditor.getLevelHeight());
+        widthSpinner.setValue(levelEditor.getLevel().getWidth());
+        heightSpinner.setValue(levelEditor.getLevel().getHeight());
 
         setContentPane(contentPane);
         setModal(true);
@@ -51,8 +51,8 @@ public class PropertiesDialog extends JDialog {
     }
 
     private void onOK() {
-        int oldWidth = levelEditor.getLevelWidth();
-        int oldHeight = levelEditor.getLevelHeight();
+        int oldWidth = levelEditor.getLevel().getWidth();
+        int oldHeight = levelEditor.getLevel().getHeight();
         int newWidth = (int) widthSpinner.getValue();
         int newHeight = (int) heightSpinner.getValue();
         ResizeLevelCommand resizeLevelCommand = new ResizeLevelCommand(oldWidth, oldHeight, newWidth, newHeight, levelEditor);

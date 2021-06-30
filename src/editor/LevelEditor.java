@@ -32,11 +32,9 @@ public class LevelEditor implements ActionListener {
 
     private final IconLoader iconLoader = new IconLoader(gridSize);
 
-    private int levelWidth;
-    private int levelHeight;
     private int levelPanelWidth;
     private int levelPanelHeight;
-    private ForegroundLayer foregroundLayer;
+    private Level level;
     private ForegroundTile selectedTile = ForegroundTile.EMPTY_TILE;
     private boolean isGridEnabled = true;
 
@@ -66,28 +64,19 @@ public class LevelEditor implements ActionListener {
         return levelPanel;
     }
 
-    public ForegroundLayer getForegroundLayer() {
-        return foregroundLayer;
-    }
-
-    public int getLevelHeight() {
-        return levelHeight;
-    }
-
-    public int getLevelWidth() {
-        return levelWidth;
+    public Level getLevel() {
+        return level;
     }
 
     public void setLevelDimensions(int width, int height) {
         System.out.println("Set Level Dimensions " + width + " " + height);
-        levelWidth = width;
-        levelHeight = height;
-        levelPanelWidth = levelWidth * gridSize;
-        levelPanelHeight = levelHeight * gridSize;
+        level.setDimensions(width, height);
+        levelPanelWidth = width * gridSize;
+        levelPanelHeight = height * gridSize;
 
         // TODO: Validate that no tiles are being deleted
 
-        foregroundLayer = new ForegroundLayer(width, height, foregroundLayer);
+        level.setForegroundLayer(new ForegroundLayer(width, height, level.getForegroundLayer()));
 
         // Resize components & repaint
         levelPanel.setPreferredSize(new Dimension(levelPanelWidth, levelPanelHeight));
@@ -95,10 +84,6 @@ public class LevelEditor implements ActionListener {
         viewport.setViewSize(new Dimension(levelPanelWidth, levelPanelHeight));
         levelScrollPane.revalidate();
         levelScrollPane.repaint();
-    }
-
-    public void setForegroundLayer(ForegroundLayer foregroundLayer) {
-        this.foregroundLayer = foregroundLayer;
     }
 
     private void createUIComponents() {
@@ -170,7 +155,7 @@ public class LevelEditor implements ActionListener {
     private void drawLevel(Graphics g) {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, levelPanelWidth, levelPanelHeight);
-        if (foregroundLayer != null) {
+        if (level != null) {
             drawTiles(g);
         }
         if (isGridEnabled) {
@@ -180,9 +165,9 @@ public class LevelEditor implements ActionListener {
 
     private void drawTiles(Graphics g) {
         // draw foreground layer
-        for (int x = 0; x < levelWidth; x++) {
-            for (int y = 0; y < levelHeight; y++) {
-                ForegroundTile tile = foregroundLayer.getTile(x, y);
+        for (int x = 0; x < level.getWidth(); x++) {
+            for (int y = 0; y < level.getHeight(); y++) {
+                ForegroundTile tile = level.getForegroundLayer().getTile(x, y);
                 if (tile.getPrimaryDisplayTileIcon() != null) {
                     int panelX = x * gridSize;
                     int panelY = y * gridSize;
@@ -234,16 +219,18 @@ public class LevelEditor implements ActionListener {
 
     private void createNewLevel() {
         // TODO: Display save confirmation
+        // TODO: Make this an EditorCommand
         final int defaultWidth = 16;
         final int defaultHeight = 16;
+        level = new Level();
         setLevelDimensions(defaultWidth, defaultHeight);
     }
 
     private void handleLevelPanelMouseEvent(MouseEvent e) {
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
-        if (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight) {
-            ForegroundTile oldTile = foregroundLayer.getTile(x, y);
+        if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
+            ForegroundTile oldTile = level.getForegroundLayer().getTile(x, y);
             EditorCommand command = new ChangeForegroundTileCommand(x, y, selectedTile, oldTile, this);
             doCommand(command);
         }

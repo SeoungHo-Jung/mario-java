@@ -18,13 +18,13 @@ public class ChangeForegroundTileCommand implements EditorCommand {
 
     @Override
     public void execute() {
-        levelEditor.getForegroundLayer().setTile(x, y, newTile);
+        levelEditor.getLevel().getForegroundLayer().setTile(x, y, newTile);
         levelEditor.getLevelPanel().repaint();
     }
 
     @Override
     public void undo() {
-        levelEditor.getForegroundLayer().setTile(x, y, oldTile);
+        levelEditor.getLevel().getForegroundLayer().setTile(x, y, oldTile);
         levelEditor.getLevelPanel().repaint();
     }
 }
