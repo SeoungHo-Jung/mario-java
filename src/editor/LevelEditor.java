@@ -3,6 +3,7 @@ package editor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Stack;
 
@@ -23,6 +24,8 @@ public class LevelEditor implements ActionListener {
     private JMenu editMenu;
     private JMenu viewMenu;
     private JMenuItem newMenuItem;
+    private JMenuItem saveMenuItem;
+    private JMenuItem loadMenuItem;
     private JMenuItem quitMenuItem;
     private JMenuItem undoMenuItem;
     private JMenuItem propertiesMenuItem;
@@ -124,6 +127,14 @@ public class LevelEditor implements ActionListener {
         newMenuItem.setActionCommand("new");
         newMenuItem.addActionListener(this);
         fileMenu.add(newMenuItem);
+
+        fileMenu.addSeparator();
+
+        saveMenuItem = new JMenuItem("Save");
+        saveMenuItem.setActionCommand("save");
+        saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.META_DOWN_MASK));
+        saveMenuItem.addActionListener(this);
+        fileMenu.add(saveMenuItem);
 
         fileMenu.addSeparator();
 
@@ -252,6 +263,13 @@ public class LevelEditor implements ActionListener {
         createNewLevel();
     }
 
+    private void handleSaveRequested() {
+        LevelEncoderV1 encoder = new LevelEncoderV1();
+        byte[] encodedLevel = encoder.encode(level);
+        System.out.println(new String(encodedLevel, StandardCharsets.US_ASCII));
+
+    }
+
     private void handleUndoRequested() {
         if (!undoStack.isEmpty()) {
             EditorCommand command = undoStack.pop();
@@ -275,6 +293,7 @@ public class LevelEditor implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         switch (e.getActionCommand()) {
             case "new" -> handleNewRequested();
+            case "save" -> handleSaveRequested();
             case "undo" -> handleUndoRequested();
             case "properties" -> handleOpenPropertiesDialog();
             case "quit" -> handleQuitRequested();
