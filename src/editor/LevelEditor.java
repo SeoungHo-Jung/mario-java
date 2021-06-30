@@ -57,6 +57,9 @@ public class LevelEditor implements ActionListener {
                 handleTilePalettePanelMouseEvent(e);
             }
         });
+
+        // By default, create an empty level on startup
+        createNewLevel();
     }
 
     public JPanel getLevelPanel() {
@@ -230,9 +233,9 @@ public class LevelEditor implements ActionListener {
     }
 
     private void createNewLevel() {
-        // TODO: Make this into an EditorCommand? Display save confirmation?
-        final int defaultWidth = 10;
-        final int defaultHeight = 10;
+        // TODO: Display save confirmation
+        final int defaultWidth = 16;
+        final int defaultHeight = 16;
         setLevelDimensions(defaultWidth, defaultHeight);
     }
 
