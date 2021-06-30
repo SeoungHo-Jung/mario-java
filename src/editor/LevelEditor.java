@@ -25,6 +25,7 @@ public class LevelEditor implements ActionListener {
     private JMenuItem newMenuItem;
     private JMenuItem quitMenuItem;
     private JMenuItem undoMenuItem;
+    private JMenuItem propertiesMenuItem;
 
     private final int gridSize = 16;
     private final int paletteColumns = 8;
@@ -66,12 +67,24 @@ public class LevelEditor implements ActionListener {
         return foregroundLayer;
     }
 
+    public int getLevelHeight() {
+        return levelHeight;
+    }
+
+    public int getLevelWidth() {
+        return levelWidth;
+    }
+
     public void setLevelDimensions(int width, int height) {
         System.out.println("Set Level Dimensions " + width + " " + height);
         levelWidth = width;
         levelHeight = height;
         levelPanelWidth = levelWidth * gridSize;
         levelPanelHeight = levelHeight * gridSize;
+
+        // TODO: Validate that no tiles are being deleted
+
+        foregroundLayer = new ForegroundLayer(width, height, foregroundLayer);
 
         // Resize components & repaint
         levelPanel.setPreferredSize(new Dimension(levelPanelWidth, levelPanelHeight));
@@ -124,8 +137,11 @@ public class LevelEditor implements ActionListener {
         newMenuItem.addActionListener(this);
         fileMenu.add(newMenuItem);
 
+        fileMenu.addSeparator();
+
         quitMenuItem = new JMenuItem("Quit");
         quitMenuItem.setActionCommand("quit");
+        quitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.META_DOWN_MASK));
         quitMenuItem.addActionListener(this);
         fileMenu.add(quitMenuItem);
 
@@ -137,6 +153,13 @@ public class LevelEditor implements ActionListener {
         undoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.META_DOWN_MASK));
         undoMenuItem.addActionListener(this);
         editMenu.add(undoMenuItem);
+
+        editMenu.addSeparator();
+
+        propertiesMenuItem = new JMenuItem("Properties");
+        propertiesMenuItem.setActionCommand("properties");
+        propertiesMenuItem.addActionListener(this);
+        editMenu.add(propertiesMenuItem);
 
         FRAME.setJMenuBar(menuBar);
     }
@@ -201,11 +224,15 @@ public class LevelEditor implements ActionListener {
         g.drawImage(iconImage, 0, 0, gridSize * 2, gridSize * 2, null);
     }
 
+    public void doCommand(EditorCommand command) {
+        command.execute();
+        undoStack.push(command);
+    }
+
     private void createNewLevel() {
-        // TODO: Make this into an EditorCommand?
-        final int defaultWidth = 50;
-        final int defaultHeight = 50;
-        foregroundLayer = new ForegroundLayer(defaultWidth, defaultHeight);
+        // TODO: Make this into an EditorCommand? Display save confirmation?
+        final int defaultWidth = 10;
+        final int defaultHeight = 10;
         setLevelDimensions(defaultWidth, defaultHeight);
     }
 
@@ -215,8 +242,7 @@ public class LevelEditor implements ActionListener {
         if (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight) {
             ForegroundTile oldTile = foregroundLayer.getTile(x, y);
             EditorCommand command = new ChangeForegroundTileCommand(x, y, selectedTile, oldTile, this);
-            command.execute();
-            undoStack.push(command);
+            doCommand(command);
         }
     }
 
@@ -243,6 +269,14 @@ public class LevelEditor implements ActionListener {
         }
     }
 
+    private void handleOpenPropertiesDialog() {
+        PropertiesDialog dialog = new PropertiesDialog(this);
+        dialog.setAlwaysOnTop(true);
+        dialog.setLocationRelativeTo(mainPanel);
+        dialog.pack();
+        dialog.setVisible(true);
+    }
+
     private void handleQuitRequested() {
         System.exit(0);
     }
@@ -252,6 +286,7 @@ public class LevelEditor implements ActionListener {
         switch (e.getActionCommand()) {
             case "new" -> handleNewRequested();
             case "undo" -> handleUndoRequested();
+            case "properties" -> handleOpenPropertiesDialog();
             case "quit" -> handleQuitRequested();
         }
     }

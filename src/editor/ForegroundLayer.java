@@ -4,19 +4,39 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ForegroundLayer {
-    private int width;
-    private int height;
-    private List<ForegroundTile> tiles;
+    private final int width;
+    private final int height;
+    private final List<ForegroundTile> tiles;
 
-    public ForegroundLayer(int width, int height) {
+    public ForegroundLayer(int width, int height, ForegroundLayer sourceLayer) {
         this.width = width;
         this.height = height;
 
-        // Initialize the tiles array with empty tiles
+        if (sourceLayer == null) {
+            // Initialize the tiles array with empty tiles
+            int size = width * height;
+            tiles = new ArrayList<>(size);
+            for (int i = 0; i < size; i++) {
+                tiles.add(ForegroundTile.EMPTY_TILE);
+            }
+            return;
+        }
+
+        // Initialize the tiles array with the tiles from the source layer
         int size = width * height;
         tiles = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            tiles.add(ForegroundTile.EMPTY_TILE);
+        int sourceWidth = Math.min(sourceLayer.width, this.width);
+        int sourceHeight = Math.min(sourceLayer.height, this.height);
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                if (x < sourceWidth && y < sourceHeight) {
+                    tiles.add(sourceLayer.getTile(x, y));
+                } else {
+                    // Pad any empty space with EMPTY_TILE
+                    tiles.add(ForegroundTile.EMPTY_TILE);
+                }
+            }
         }
     }
 
