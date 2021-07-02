@@ -277,7 +277,7 @@ public class LevelEditor implements ActionListener {
         }
     }
 
-    private void handleOpenPropertiesDialog() {
+    private void handlePropertiesRequested() {
         PropertiesDialog dialog = new PropertiesDialog(this);
         dialog.setAlwaysOnTop(true);
         dialog.setLocationRelativeTo(mainPanel);
@@ -295,7 +295,7 @@ public class LevelEditor implements ActionListener {
             case "new" -> handleNewRequested();
             case "save" -> handleSaveRequested();
             case "undo" -> handleUndoRequested();
-            case "properties" -> handleOpenPropertiesDialog();
+            case "properties" -> handlePropertiesRequested();
             case "quit" -> handleQuitRequested();
         }
     }
