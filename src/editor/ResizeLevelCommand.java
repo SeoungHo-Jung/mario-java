@@ -18,11 +18,11 @@ public class ResizeLevelCommand implements EditorCommand {
 
     @Override
     public void execute() {
-        levelEditor.setLevelDimensions(newWidth, newHeight);
+        levelEditor.changeLevelDimensions(newWidth, newHeight);
     }
 
     @Override
     public void undo() {
-        levelEditor.setLevelDimensions(oldWidth, oldHeight);
+        levelEditor.changeLevelDimensions(oldWidth, oldHeight);
     }
 }

@@ -3,7 +3,7 @@ package editor;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.nio.charset.StandardCharsets;
+import java.io.*;
 import java.util.List;
 import java.util.Stack;
 
@@ -24,8 +24,8 @@ public class LevelEditor implements ActionListener {
     private JMenu editMenu;
     private JMenu viewMenu;
     private JMenuItem newMenuItem;
+    private JMenuItem openMenuItem;
     private JMenuItem saveMenuItem;
-    private JMenuItem loadMenuItem;
     private JMenuItem quitMenuItem;
     private JMenuItem undoMenuItem;
     private JMenuItem propertiesMenuItem;
@@ -33,6 +33,9 @@ public class LevelEditor implements ActionListener {
     private final int gridSize = 16;
     private final int paletteColumns = 8;
 
+    private final LevelEncoder levelEncoder = new LevelEncoderV1();
+    private final LevelDecoder levelDecoder = new LevelDecoderV1();
+    private final FileIO fileIO = new FileIO(levelEncoder, levelDecoder);
     private final IconLoader iconLoader = new IconLoader(gridSize);
 
     private int levelPanelWidth;
@@ -69,24 +72,6 @@ public class LevelEditor implements ActionListener {
 
     public Level getLevel() {
         return level;
-    }
-
-    public void setLevelDimensions(int width, int height) {
-        System.out.println("Set Level Dimensions " + width + " " + height);
-        level.setDimensions(width, height);
-        levelPanelWidth = width * gridSize;
-        levelPanelHeight = height * gridSize;
-
-        // TODO: Validate that no tiles are being deleted
-
-        level.setForegroundLayer(new ForegroundLayer(width, height, level.getForegroundLayer()));
-
-        // Resize components & repaint
-        levelPanel.setPreferredSize(new Dimension(levelPanelWidth, levelPanelHeight));
-        JViewport viewport = levelScrollPane.getViewport();
-        viewport.setViewSize(new Dimension(levelPanelWidth, levelPanelHeight));
-        levelScrollPane.revalidate();
-        levelScrollPane.repaint();
     }
 
     private void createUIComponents() {
@@ -129,6 +114,11 @@ public class LevelEditor implements ActionListener {
         fileMenu.add(newMenuItem);
 
         fileMenu.addSeparator();
+
+        openMenuItem = new JMenuItem("Open");
+        openMenuItem.setActionCommand("open");
+        openMenuItem.addActionListener(this);
+        fileMenu.add(openMenuItem);
 
         saveMenuItem = new JMenuItem("Save");
         saveMenuItem.setActionCommand("save");
@@ -229,12 +219,47 @@ public class LevelEditor implements ActionListener {
     }
 
     private void createNewLevel() {
-        // TODO: Display save confirmation
-        // TODO: Make this an EditorCommand
-        final int defaultWidth = 16;
-        final int defaultHeight = 16;
+        final int width = 16;
+        final int height = 16;
+
         level = new Level();
-        setLevelDimensions(defaultWidth, defaultHeight);
+        level.setDimensions(width, height);
+        level.setForegroundLayer(new ForegroundLayer(width, height));
+        levelPanelWidth = width * gridSize;
+        levelPanelHeight = height * gridSize;
+
+        undoStack.clear();
+        repaintLevel();
+    }
+
+    private void loadExistingLevel(Level level) {
+        this.level = level;
+        levelPanelWidth = level.getWidth() * gridSize;
+        levelPanelHeight = level.getHeight() * gridSize;
+
+        undoStack.clear();
+        repaintLevel();
+    }
+
+    public void changeLevelDimensions(int width, int height) {
+        level.setDimensions(width, height);
+        levelPanelWidth = width * gridSize;
+        levelPanelHeight = height * gridSize;
+
+        // TODO: Validate that no tiles are being deleted
+
+        level.setForegroundLayer(new ForegroundLayer(width, height, level.getForegroundLayer()));
+
+        repaintLevel();
+    }
+
+    private void repaintLevel() {
+        // Resize components & repaint
+        levelPanel.setPreferredSize(new Dimension(levelPanelWidth, levelPanelHeight));
+        JViewport viewport = levelScrollPane.getViewport();
+        viewport.setViewSize(new Dimension(levelPanelWidth, levelPanelHeight));
+        levelScrollPane.revalidate();
+        levelScrollPane.repaint();
     }
 
     private void handleLevelPanelMouseEvent(MouseEvent e) {
@@ -254,20 +279,35 @@ public class LevelEditor implements ActionListener {
         int index = (y * paletteColumns) + x;
         if (index >= 0 && index < fgTiles.size()) {
             selectedTile = fgTiles.get(index);
-            System.out.println("Selected tile " + selectedTile.getName());
         }
         selectedTilePreviewPanel.repaint();
     }
 
     private void handleNewRequested() {
+        // TODO: Display save confirmation
         createNewLevel();
     }
 
-    private void handleSaveRequested() {
-        LevelEncoderV1 encoder = new LevelEncoderV1();
-        byte[] encodedLevel = encoder.encode(level);
-        System.out.println(new String(encodedLevel, StandardCharsets.US_ASCII));
+    private void handleOpenRequested() {
+        // TODO: Display save confirmation
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showOpenDialog(mainPanel);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            Level level = fileIO.readLevelFile(selectedFile);
+            if (level != null) {
+                loadExistingLevel(level);
+            }
+        }
+    }
 
+    private void handleSaveRequested() {
+        JFileChooser fileChooser = new JFileChooser();
+        int result = fileChooser.showSaveDialog(mainPanel);
+        if (result == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            fileIO.writeLevelFile(selectedFile, level);
+        }
     }
 
     private void handleUndoRequested() {
@@ -291,8 +331,10 @@ public class LevelEditor implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         switch (e.getActionCommand()) {
             case "new" -> handleNewRequested();
+            case "open" -> handleOpenRequested();
             case "save" -> handleSaveRequested();
             case "undo" -> handleUndoRequested();
             case "properties" -> handlePropertiesRequested();
