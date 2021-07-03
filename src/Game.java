@@ -9,16 +9,54 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 
+import static java.awt.event.KeyEvent.*;
 import static java.lang.Thread.sleep;
 
 public class Game extends Canvas implements Runnable, KeyListener {
 
+
     // Sprite Sheet
     private BufferedImage spriteSheet;
     private BufferedImage marioImg;
+
     private int ticks = 0;
     private int frames = 0;
     private double prevTime;
+
+    //Mario's positions : initialized as
+    int marioX = 160;
+    int marioY = 160;
+
+    //Mario's size : initialized as 16 X 16
+    int marioWidth = 16;
+    int marioHeight = 32;
+
+    // Keys
+    int pressedKeyCode;
+    int releasedKeyCode;
+    int rightKeyCounter = 0;
+    int leftKeyCounter = 0;
+
+    //Grid : Each tile is sized 16 X 16
+    private char[][] reachableOrNot = new char[16][14];
+
+    //Test cases
+    private String demoLevel =
+            "######    ######" +
+            "          ####  " +
+            "                " +
+            "        ######  " +
+            "        ######  " +
+            "                " +
+            "                " +
+            "                " +
+            "  ##            " +
+            "  ##            " +
+            "        ###     " +
+            "               #" +
+            "################" +
+            "################";
+
 
     public void init() {
         // Load the sprite sheet image
@@ -90,7 +128,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
         //clear the previous image that was drawn.
         g.clearRect(0, 0, 256, 240);
         //draw new image
-        g.drawImage(marioImg, 120, 100, null);
+        if(reachableOrNot[marioX/16][marioY/16] != '#'){
+            g.drawImage(marioImg, marioX, marioY, null);
+        }
+
 
 
 
@@ -107,6 +148,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
     @Override
     public void run() {
         init();
+        
 
         //The actual images start from the 80th pixel.
         int colNum = 80;
@@ -119,6 +161,11 @@ public class Game extends Canvas implements Runnable, KeyListener {
         double start;
         double end;
         double elapsed;
+
+        //All images starts from 80px
+        int colStart = 80;
+        int colEnd = 416;
+        int colCurr = 80;
 
         start = System.currentTimeMillis() / 1000;
         while (true) {
@@ -135,33 +182,63 @@ public class Game extends Canvas implements Runnable, KeyListener {
             //As loop goes on, it will ignore if the time difference is less than the tick interval
             if(timeDiff >= tickInterval){
                 now = System.currentTimeMillis();
-                marioImg = spriteSheet.getSubimage(colNum, 32, 16, 16);
+                marioImg = spriteSheet.getSubimage(colCurr, 0, marioWidth, marioHeight);
                 tick();
                 render();
+
+                ///////////////////////CHECK TIME//////////////////////////////////////////////
                 prevTime = now;
                 end = System.currentTimeMillis() / 1000;
                 elapsed = end - start;
                 //Again, pretty goofy implementation. I'm sure there is a better way
                 if(elapsed % 1 == 0 && ticks % 60 == 0){
                     framesPerSec = (int)(frames / elapsed);
-                    System.out.println(elapsed + " seconds  |" + ticks + " ticks    |" + framesPerSec + " fps");
+                    System.out.println(elapsed + " seconds elapsed  |" + ticks + " ticks    |" + framesPerSec + " fps");
                 }
-               // System.out.println(timeDiff / 1000 + "seconds and " + ticks + " ticks");
+                ///////////////////////CHECK TIME//////////////////////////////////////////////
 
             }
 
 
+            if(pressedKeyCode == VK_RIGHT){
+                colStart = 96;
+                colEnd = 128;
+            }
 
-            //Goofy implementation (Only for this time)
-            //The width of the spritesheet is 416. If it reaches the end of the row, it will start from the beginning
-            if(colNum < 400){
-                colNum += 16;
+            else if(pressedKeyCode == VK_LEFT){
+                colStart = 96;
+                colEnd = 128;
+            }
+            else if(pressedKeyCode == VK_UP){
+                colStart = 160;
+                colEnd = 160;
+            }
+            else if(pressedKeyCode == VK_DOWN){
+                colStart = 176;
+                colEnd = 176;
+            }
+             /*
+            if(releasedKeyCode == VK_UP || releasedKeyCode == VK_DOWN || releasedKeyCode == VK_LEFT || releasedKeyCode == VK_RIGHT){
+                colStart = 80;
+                colEnd = 80;
+
+            }
+            */
+
+
+            colCurr = colEnd;
+            if(colCurr < colEnd){
+
+                colCurr += 16;
             }
             else{
-                colNum = 80;
+                colCurr = colStart;
             }
+
+
         }
     }
+
 
     @Override
     public void keyTyped(KeyEvent e) {
@@ -171,10 +248,70 @@ public class Game extends Canvas implements Runnable, KeyListener {
     @Override
     public void keyPressed(KeyEvent e) {
         // Handle key down event
+        pressedKeyCode = e.getKeyCode();
+
+        //Have to deal with diagonal movements as well
+        if(pressedKeyCode == VK_RIGHT){
+            //System.out.println("right was pressed");
+            if(marioX < 240){
+                marioX += 16;
+            }
+            //rightKeyCounter++;
+        }
+        else if(pressedKeyCode == VK_LEFT){
+            //System.out.println("left was pressed");
+            if(marioX > 0){
+                marioX -= 16;
+            }
+            //leftKeyCounter++;
+        }
+        else if(pressedKeyCode == VK_UP){
+            //System.out.println("up was pressed");
+            if(marioY > 0){
+                marioY -= 16;
+            }
+        }
+        else if(pressedKeyCode == VK_DOWN){
+            //System.out.println("down was pressed");
+            if(marioY < 208){
+                marioY += 16;
+            }
+        }
     }
 
     @Override
     public void keyReleased(KeyEvent e) {
         // Handle key up event
+        releasedKeyCode = e.getKeyCode();
+
+        if(releasedKeyCode == VK_RIGHT){
+            //System.out.println("right was released");
+        }
+        else if(releasedKeyCode == VK_LEFT){
+            //System.out.println("left was released");
+        }
+        else if(releasedKeyCode == VK_UP){
+            //System.out.println("up was released");
+        }
+        else if(releasedKeyCode == VK_DOWN){
+            //System.out.println("down was released");
+        }
+    }
+    
+    public class Tiles{
+
+        public Tiles(String imgName){
+            int tileX = 0;
+            int tileY = 0;
+            int tileWidth = 16;
+            int tileHeight = 16;
+
+            URL imageURL = getClass().getClassLoader().getResource(imgName);
+            URL url;
+            BufferedImage tile;
+        }
     }
 }
+
+
+
