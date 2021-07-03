@@ -262,6 +262,20 @@ public class LevelEditor implements ActionListener {
         levelScrollPane.repaint();
     }
 
+    private boolean getDialogConfirmation() {
+        if (undoStack.isEmpty()) {
+            // this means the user hasn't done anything yet.
+            return true;
+        }
+
+        ConfirmationDialog dialog = new ConfirmationDialog();
+        dialog.setAlwaysOnTop(true);
+        dialog.setLocationRelativeTo(mainPanel);
+        dialog.pack();
+        dialog.setVisible(true);
+        return dialog.isConfirmed();
+    }
+
     private void handleLevelPanelMouseEvent(MouseEvent e) {
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
@@ -284,12 +298,15 @@ public class LevelEditor implements ActionListener {
     }
 
     private void handleNewRequested() {
-        // TODO: Display save confirmation
-        createNewLevel();
+        if (getDialogConfirmation()) {
+            createNewLevel();
+        }
     }
 
     private void handleOpenRequested() {
-        // TODO: Display save confirmation
+        if (!getDialogConfirmation()) {
+            return;
+        }
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showOpenDialog(mainPanel);
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -326,7 +343,9 @@ public class LevelEditor implements ActionListener {
     }
 
     private void handleQuitRequested() {
-        System.exit(0);
+        if (getDialogConfirmation()) {
+            System.exit(0);
+        }
     }
 
     @Override
