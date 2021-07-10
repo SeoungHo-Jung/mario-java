@@ -1,3 +1,5 @@
+package game;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -106,7 +108,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
     public void init() {
         // Load the sprite sheet image
-        String spriteFile = "mario.png";
+        String spriteFile = "player.png";
         URL imageURL = getClass().getClassLoader().getResource(spriteFile);
         if (imageURL == null) {
             System.err.println("Couldn't find sprite file: " + spriteFile);
