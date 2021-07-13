@@ -22,35 +22,29 @@ public class TileData {
         fgTiles.add(ForegroundTile.EMPTY_TILE);
 
         // Rock
-        fgTiles.add(new ForegroundTile(
-                        new TileIcon(TILES, 0, 0),
-                        null,
-                        '#',
-                        true,
-                        "Rock ?",
-                        PLATFORM
-                )
-        );
+        fgTiles.add(ForegroundTile.builder()
+                .setPrimaryDisplayTileIcon(new TileIcon(TILES, 0, 0))
+                .setTileIndex('#')
+                .setName("Rock ?")
+                .setCategory(PLATFORM)
+                .build());
 
         // Question Box
-        fgTiles.add(new ForegroundTile(
-                new TileIcon(TILES, 24, 0),
-                null,
-                '?',
-                true,
-                "Question Mark Box",
-                INTERACTIVE
-        ));
+        fgTiles.add(ForegroundTile.builder()
+                .setPrimaryDisplayTileIcon(new TileIcon(TILES, 24, 0))
+                .setTileIndex('?')
+                .setName("Question Mark Box")
+                .setCategory(INTERACTIVE)
+                .build());
 
         // Coin
-        fgTiles.add(new ForegroundTile(
-                new TileIcon(TILES, 24, 1),
-                null,
-                'o',
-                true,
-                "Coin",
-                INTERACTIVE
-        ));
+        fgTiles.add(ForegroundTile.builder()
+                .setPrimaryDisplayTileIcon(new TileIcon(TILES, 24, 1))
+                .setTileIndex('o')
+                .setName("Coin")
+                .setCategory(INTERACTIVE)
+                .build());
+
 
         FOREGROUND_TILES = Collections.unmodifiableList(fgTiles);
 
