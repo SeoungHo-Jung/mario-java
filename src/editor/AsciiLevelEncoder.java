@@ -2,7 +2,7 @@ package editor;
 
 import java.nio.charset.StandardCharsets;
 
-public class LevelEncoderV1 implements LevelEncoder {
+public class AsciiLevelEncoder implements LevelEncoder {
     @Override
     public byte[] encode(Level level) {
         // Write the foreground layer as text

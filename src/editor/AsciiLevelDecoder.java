@@ -4,7 +4,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class LevelDecoderV1 implements LevelDecoder {
+public class AsciiLevelDecoder implements LevelDecoder {
 
     @Override
     public Level decode(byte[] bytes) {
