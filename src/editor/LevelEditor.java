@@ -33,9 +33,8 @@ public class LevelEditor implements ActionListener {
     private final int gridSize = 16;
     private final int paletteColumns = 8;
 
-    private final LevelEncoder levelEncoder = new BinaryLevelEncoder();
-    private final LevelDecoder levelDecoder = new AsciiLevelDecoder();
-    private final FileIO fileIO = new FileIO(levelEncoder, levelDecoder);
+    private final LevelFormat levelFormat = new BinaryLevelFormat();
+    private final FileIO fileIO = new FileIO(levelFormat);
     private final IconLoader iconLoader = new IconLoader(gridSize);
 
     private int levelPanelWidth;

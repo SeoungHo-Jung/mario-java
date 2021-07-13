@@ -4,7 +4,22 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AsciiLevelDecoder implements LevelDecoder {
+public class AsciiLevelFormat implements LevelFormat {
+    @Override
+    public byte[] encode(Level level) {
+        // Write the foreground layer as text
+        ForegroundLayer fgLayer = level.getForegroundLayer();
+        StringBuilder sb = new StringBuilder();
+        for (int y = 0; y < level.getHeight(); y++) {
+            for (int x = 0; x < level.getWidth(); x++) {
+                ForegroundTile tile = fgLayer.getTile(x, y);
+                sb.append(tile.getTileChar());
+            }
+            sb.append('\n');
+        }
+        String output = sb.toString();
+        return output.getBytes(StandardCharsets.US_ASCII);
+    }
 
     @Override
     public Level decode(byte[] bytes) {
@@ -19,7 +34,7 @@ public class AsciiLevelDecoder implements LevelDecoder {
                 foregroundTiles.add(currentRow);
                 currentRow = new ArrayList<>();
             } else {
-                ForegroundTile tile = TileData.FOREGROUND_TILES_BY_INDEX.get(c);
+                ForegroundTile tile = TileData.FOREGROUND_TILES_BY_CHAR.get(c);
                 assert(tile != null);
                 currentRow.add(tile);
             }

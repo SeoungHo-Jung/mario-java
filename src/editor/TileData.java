@@ -14,7 +14,8 @@ import static editor.SpriteSheet.TILES;
 public class TileData {
 
     public static List<ForegroundTile> FOREGROUND_TILES;
-    public static Map<Character, ForegroundTile> FOREGROUND_TILES_BY_INDEX;
+    public static Map<Short, ForegroundTile> FOREGROUND_TILES_BY_INDEX;
+    public static Map<Character, ForegroundTile> FOREGROUND_TILES_BY_CHAR;
 
     static {
         List<ForegroundTile> fgTiles = new ArrayList<>();
@@ -51,8 +52,12 @@ public class TileData {
 
         FOREGROUND_TILES = Collections.unmodifiableList(fgTiles);
 
-        // Create a hashmap of tiles for quick lookup by char index
-        FOREGROUND_TILES_BY_INDEX = FOREGROUND_TILES.stream()
+        // Create a hashmap of tiles for quick lookup by char
+        FOREGROUND_TILES_BY_CHAR = FOREGROUND_TILES.stream()
                 .collect(Collectors.toUnmodifiableMap(ForegroundTile::getTileChar, Function.identity()));
+
+        // Create a hashmap of tiles for quick lookup by index
+        FOREGROUND_TILES_BY_INDEX = FOREGROUND_TILES.stream()
+                .collect(Collectors.toUnmodifiableMap(ForegroundTile::getTileIndex, Function.identity()));
     }
 }
