@@ -1,9 +1,12 @@
 package editor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.function.Consumer;
 
-public class ForegroundLayer {
+public class ForegroundLayer implements Iterable<ForegroundTile> {
     private final int width;
     private final int height;
     private final List<ForegroundTile> tiles;
@@ -61,5 +64,20 @@ public class ForegroundLayer {
     public void resetTile(int x, int y) {
         int index = (width * y) + x;
         tiles.set(index, ForegroundTile.EMPTY_TILE);
+    }
+
+    @Override
+    public Iterator<ForegroundTile> iterator() {
+        return tiles.iterator();
+    }
+
+    @Override
+    public void forEach(Consumer<? super ForegroundTile> action) {
+        tiles.forEach(action);
+    }
+
+    @Override
+    public Spliterator<ForegroundTile> spliterator() {
+        return tiles.spliterator();
     }
 }

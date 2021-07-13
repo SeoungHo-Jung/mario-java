@@ -24,6 +24,7 @@ public class TileData {
         // Rock
         fgTiles.add(ForegroundTile.builder()
                 .setPrimaryDisplayTileIcon(new TileIcon(TILES, 0, 0))
+                .setTileIndex((short) 0x0010)
                 .setTileChar('#')
                 .setName("Rock ?")
                 .setCategory(PLATFORM)
@@ -32,6 +33,7 @@ public class TileData {
         // Question Box
         fgTiles.add(ForegroundTile.builder()
                 .setPrimaryDisplayTileIcon(new TileIcon(TILES, 24, 0))
+                .setTileIndex((short) 0x0020)
                 .setTileChar('?')
                 .setName("Question Mark Box")
                 .setCategory(INTERACTIVE)
@@ -40,6 +42,7 @@ public class TileData {
         // Coin
         fgTiles.add(ForegroundTile.builder()
                 .setPrimaryDisplayTileIcon(new TileIcon(TILES, 24, 1))
+                .setTileIndex((short) 0x0030)
                 .setTileChar('o')
                 .setName("Coin")
                 .setCategory(INTERACTIVE)

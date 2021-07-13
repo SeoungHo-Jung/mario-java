@@ -6,6 +6,7 @@ import static editor.ForegroundTileCategory.UNKNOWN;
 public class ForegroundTile {
 
     public static ForegroundTile EMPTY_TILE = ForegroundTile.builder()
+            .setTileIndex((short) 0x0000)
             .setTileChar(' ')
             .setName("Empty Space")
             .setCategory(PLATFORM)
@@ -14,7 +15,7 @@ public class ForegroundTile {
     private final TileIcon primaryDisplayTileIcon;
     private final TileIcon secondaryDisplayTileIcon;
     private final char tileChar;
-    private final int tileIndex;
+    private final short tileIndex;
     private final boolean isEnabled;
     private final String name;
     private final ForegroundTileCategory category;
@@ -33,7 +34,7 @@ public class ForegroundTile {
         private TileIcon primaryDisplayTileIcon = null;
         private TileIcon secondaryDisplayTileIcon = null;
         private char tileChar = '\0';
-        private int tileIndex = 0;
+        private short tileIndex = 0;
         private boolean isEnabled = true;
         private String name = "";
         private ForegroundTileCategory category = UNKNOWN;
@@ -55,7 +56,7 @@ public class ForegroundTile {
             return this;
         }
 
-        public Builder setTileIndex(int tileIndex) {
+        public Builder setTileIndex(short tileIndex) {
             this.tileIndex = tileIndex;
             return this;
         }
@@ -96,7 +97,7 @@ public class ForegroundTile {
         return tileChar;
     }
 
-    public int getTileIndex() {
+    public short getTileIndex() {
         return tileIndex;
     }
 
