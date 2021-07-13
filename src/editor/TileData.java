@@ -24,7 +24,7 @@ public class TileData {
         // Rock
         fgTiles.add(ForegroundTile.builder()
                 .setPrimaryDisplayTileIcon(new TileIcon(TILES, 0, 0))
-                .setTileIndex('#')
+                .setTileChar('#')
                 .setName("Rock ?")
                 .setCategory(PLATFORM)
                 .build());
@@ -32,7 +32,7 @@ public class TileData {
         // Question Box
         fgTiles.add(ForegroundTile.builder()
                 .setPrimaryDisplayTileIcon(new TileIcon(TILES, 24, 0))
-                .setTileIndex('?')
+                .setTileChar('?')
                 .setName("Question Mark Box")
                 .setCategory(INTERACTIVE)
                 .build());
@@ -40,7 +40,7 @@ public class TileData {
         // Coin
         fgTiles.add(ForegroundTile.builder()
                 .setPrimaryDisplayTileIcon(new TileIcon(TILES, 24, 1))
-                .setTileIndex('o')
+                .setTileChar('o')
                 .setName("Coin")
                 .setCategory(INTERACTIVE)
                 .build());
@@ -50,6 +50,6 @@ public class TileData {
 
         // Create a hashmap of tiles for quick lookup by char index
         FOREGROUND_TILES_BY_INDEX = FOREGROUND_TILES.stream()
-                .collect(Collectors.toUnmodifiableMap(ForegroundTile::getTileIndex, Function.identity()));
+                .collect(Collectors.toUnmodifiableMap(ForegroundTile::getTileChar, Function.identity()));
     }
 }

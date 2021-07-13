@@ -11,7 +11,7 @@ public class AsciiLevelEncoder implements LevelEncoder {
         for (int y = 0; y < level.getHeight(); y++) {
             for (int x = 0; x < level.getWidth(); x++) {
                 ForegroundTile tile = fgLayer.getTile(x, y);
-                sb.append(tile.getTileIndex());
+                sb.append(tile.getTileChar());
             }
             sb.append('\n');
         }

@@ -6,14 +6,15 @@ import static editor.ForegroundTileCategory.UNKNOWN;
 public class ForegroundTile {
 
     public static ForegroundTile EMPTY_TILE = ForegroundTile.builder()
-            .setTileIndex(' ')
+            .setTileChar(' ')
             .setName("Empty Space")
             .setCategory(PLATFORM)
             .build();
 
     private final TileIcon primaryDisplayTileIcon;
     private final TileIcon secondaryDisplayTileIcon;
-    private final char tileIndex;
+    private final char tileChar;
+    private final int tileIndex;
     private final boolean isEnabled;
     private final String name;
     private final ForegroundTileCategory category;
@@ -21,6 +22,7 @@ public class ForegroundTile {
     private ForegroundTile(Builder builder) {
         this.primaryDisplayTileIcon = builder.primaryDisplayTileIcon;
         this.secondaryDisplayTileIcon = builder.secondaryDisplayTileIcon;
+        this.tileChar = builder.tileChar;
         this.tileIndex = builder.tileIndex;
         this.isEnabled = builder.isEnabled;
         this.name = builder.name;
@@ -30,7 +32,8 @@ public class ForegroundTile {
     public static class Builder {
         private TileIcon primaryDisplayTileIcon = null;
         private TileIcon secondaryDisplayTileIcon = null;
-        private char tileIndex = '\0';
+        private char tileChar = '\0';
+        private int tileIndex = 0;
         private boolean isEnabled = true;
         private String name = "";
         private ForegroundTileCategory category = UNKNOWN;
@@ -47,7 +50,12 @@ public class ForegroundTile {
             return this;
         }
 
-        public Builder setTileIndex(char tileIndex) {
+        public Builder setTileChar(char tileChar) {
+            this.tileChar = tileChar;
+            return this;
+        }
+
+        public Builder setTileIndex(int tileIndex) {
             this.tileIndex = tileIndex;
             return this;
         }
@@ -84,7 +92,11 @@ public class ForegroundTile {
         return secondaryDisplayTileIcon;
     }
 
-    public char getTileIndex() {
+    public char getTileChar() {
+        return tileChar;
+    }
+
+    public int getTileIndex() {
         return tileIndex;
     }
 
