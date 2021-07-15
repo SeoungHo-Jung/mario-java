@@ -1,4 +1,4 @@
-package editor;
+package com.samj.mario.editor;
 
 public enum SpriteSheet {
     ITEMS,

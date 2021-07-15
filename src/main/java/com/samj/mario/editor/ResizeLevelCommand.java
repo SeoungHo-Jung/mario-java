@@ -1,4 +1,4 @@
-package editor;
+package com.samj.mario.editor;
 
 public class ResizeLevelCommand implements EditorCommand {
 

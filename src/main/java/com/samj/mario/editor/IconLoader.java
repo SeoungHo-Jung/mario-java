@@ -1,4 +1,4 @@
-package editor;
+package com.samj.mario.editor;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -20,7 +20,7 @@ public class IconLoader {
     private BufferedImage tileIcons;
 
     public void loadIcons() {
-        String tilesFile = "tiles.png";
+        String tilesFile = "image/tiles.png";
         URL imageURL = getClass().getClassLoader().getResource(tilesFile);
         if (imageURL == null) {
             System.err.println("Couldn't find icon file: " + tilesFile);

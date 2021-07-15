@@ -1,4 +1,4 @@
-package editor;
+package com.samj.mario.editor;
 
 import javax.swing.*;
 import java.awt.*;

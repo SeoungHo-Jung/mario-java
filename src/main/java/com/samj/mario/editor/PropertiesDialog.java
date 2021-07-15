@@ -1,20 +1,23 @@
-package editor;
+package com.samj.mario.editor;
 
 import javax.swing.*;
 import java.awt.event.*;
 
-public class ConfirmationDialog extends JDialog {
+public class PropertiesDialog extends JDialog {
     private JPanel contentPane;
     private JButton buttonOK;
     private JButton buttonCancel;
+    private JSpinner heightSpinner;
+    private JSpinner widthSpinner;
 
-    private boolean isConfirmed = false;
+    private final LevelEditor levelEditor;
 
-    public boolean isConfirmed() {
-        return isConfirmed;
-    }
+    public PropertiesDialog(LevelEditor levelEditor) {
+        this.levelEditor = levelEditor;
 
-    public ConfirmationDialog() {
+        widthSpinner.setValue(levelEditor.getLevel().getWidth());
+        heightSpinner.setValue(levelEditor.getLevel().getHeight());
+
         setContentPane(contentPane);
         setModal(true);
         getRootPane().setDefaultButton(buttonOK);
@@ -48,7 +51,12 @@ public class ConfirmationDialog extends JDialog {
     }
 
     private void onOK() {
-        isConfirmed = true;
+        int oldWidth = levelEditor.getLevel().getWidth();
+        int oldHeight = levelEditor.getLevel().getHeight();
+        int newWidth = (int) widthSpinner.getValue();
+        int newHeight = (int) heightSpinner.getValue();
+        ResizeLevelCommand resizeLevelCommand = new ResizeLevelCommand(oldWidth, oldHeight, newWidth, newHeight, levelEditor);
+        levelEditor.doCommand(resizeLevelCommand);
         dispose();
     }
 

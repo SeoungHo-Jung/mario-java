@@ -1,6 +1,6 @@
-package editor;
+package com.samj.mario.editor;
 
-import static editor.ForegroundTileCategory.PLATFORM;
+import static com.samj.mario.editor.ForegroundTileCategory.PLATFORM;
 import static editor.SpriteSheet.TILES;
 
 public class ForegroundTile {
