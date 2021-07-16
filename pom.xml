@@ -6,6 +6,7 @@
     <packaging>jar</packaging>
     <version>1.0</version>
     <name>mario-java</name>
+    <description>A Super Mario Bros clone in Java</description>
     <url>https://github.com/SeoungHo-Jung/mario-java</url>
 
     <properties>
