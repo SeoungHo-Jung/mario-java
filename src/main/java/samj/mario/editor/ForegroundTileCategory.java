@@ -1,4 +1,4 @@
-package com.samj.mario.editor;
+package samj.mario.editor;
 
 public enum ForegroundTileCategory {
     PLATFORM("Platforms"),

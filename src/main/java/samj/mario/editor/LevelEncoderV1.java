@@ -1,4 +1,4 @@
-package com.samj.mario.editor;
+package samj.mario.editor;
 
 import java.nio.charset.StandardCharsets;
 

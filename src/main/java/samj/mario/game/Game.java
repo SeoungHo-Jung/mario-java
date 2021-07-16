@@ -1,4 +1,4 @@
-package com.samj.mario.game;
+package samj.mario.game;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -10,10 +10,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 
-import static com.samj.mario.game.Application.CANVAS_HEIGHT;
-import static com.samj.mario.game.Application.CANVAS_WIDTH;
+import static samj.mario.game.Application.CANVAS_HEIGHT;
+import static samj.mario.game.Application.CANVAS_WIDTH;
 import static java.awt.event.KeyEvent.*;
-import static java.lang.Thread.sleep;
 
 public class Game extends Canvas implements Runnable, KeyListener {
 

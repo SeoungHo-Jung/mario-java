@@ -1,4 +1,4 @@
-package com.samj.mario.editor;
+package samj.mario.editor;
 
 import java.io.File;
 import java.io.FileInputStream;

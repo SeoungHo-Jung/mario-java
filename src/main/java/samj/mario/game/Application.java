@@ -1,4 +1,4 @@
-package com.samj.mario.game;
+package samj.mario.game;
 
 import javax.swing.*;
 import java.awt.*;

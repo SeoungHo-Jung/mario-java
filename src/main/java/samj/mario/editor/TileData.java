@@ -1,4 +1,4 @@
-package com.samj.mario.editor;
+package samj.mario.editor;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static com.samj.mario.editor.ForegroundTileCategory.INTERACTIVE;
-import static com.samj.mario.editor.ForegroundTileCategory.PLATFORM;
-import static com.samj.mario.editor.SpriteSheet.TILES;
+import static samj.mario.editor.ForegroundTileCategory.INTERACTIVE;
+import static samj.mario.editor.ForegroundTileCategory.PLATFORM;
+import static samj.mario.editor.SpriteSheet.TILES;
 
 public class TileData {
 
