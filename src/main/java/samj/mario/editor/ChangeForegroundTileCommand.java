@@ -1,4 +1,4 @@
-package editor;
+package samj.mario.editor;
 
 public class ChangeForegroundTileCommand implements EditorCommand {
 

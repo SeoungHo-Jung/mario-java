@@ -1,7 +1,6 @@
-package game;
+package samj.mario.game;
 
 import javax.imageio.ImageIO;
-import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -11,10 +10,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 
-import static game.Application.CANVAS_HEIGHT;
-import static game.Application.CANVAS_WIDTH;
+import static samj.mario.game.Application.CANVAS_HEIGHT;
+import static samj.mario.game.Application.CANVAS_WIDTH;
 import static java.awt.event.KeyEvent.*;
-import static java.lang.Thread.sleep;
 
 public class Game extends Canvas implements Runnable, KeyListener {
 
@@ -131,7 +129,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
     public void init() {
         // Load the sprite sheet image
-        String spriteFile = "player.png";
+        String spriteFile = "image/player.png";
         URL imageURL = getClass().getClassLoader().getResource(spriteFile);
 
         //String tileSpriteFile = "tiles.png";
