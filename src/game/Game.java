@@ -24,6 +24,8 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private BufferedImage marioImg;
     private BufferedImage blockImg;
 
+    private BufferedImage tileSpriteSheet;
+
     private int ticks = 0;
     private int frames = 0;
     private double prevTime;
@@ -52,8 +54,16 @@ public class Game extends Canvas implements Runnable, KeyListener {
     boolean up_key_pressed = false;
     boolean down_key_pressed = false;
 
+    boolean right_key_released = false;
+    boolean left_key_released = false;
+    boolean up_key_released = false;
+    boolean down_key_released = false;
+
     //Mario's speed : default is 4px/tic
-    float marioSpeed = 2;
+    float marioSpeed = 0;
+    double acceleration = 0.1;
+    double marioMaxSpeed = 2.5;
+    double marioMinSpeed = 0;
 
 
     //Column numbers for run()
@@ -123,13 +133,19 @@ public class Game extends Canvas implements Runnable, KeyListener {
         // Load the sprite sheet image
         String spriteFile = "player.png";
         URL imageURL = getClass().getClassLoader().getResource(spriteFile);
-        if (imageURL == null) {
+
+        //String tileSpriteFile = "tiles.png";
+        //URL tileImageURL = getClass().getClassLoader().getResource(tileSpriteFile);
+        if (imageURL == null) { //tileImageURL == null
             System.err.println("Couldn't find sprite file: " + spriteFile);
         } else {
             try {
                 BufferedImage in = ImageIO.read(imageURL);
                 spriteSheet = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
                 spriteSheet.getGraphics().drawImage(in, 0, 0, null);
+
+                //BufferedImage in2 = ImageIO.read(tileImageURL);
+                //tileSpriteSheet = new BufferedImage(in2.getWidth(), in2.getHeight(), BufferedImage.TYPE_INT_ARGB);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -146,6 +162,20 @@ public class Game extends Canvas implements Runnable, KeyListener {
                     spriteSheet.getRaster().setPixel(x, y, pixelCopy);
                 }
             }
+
+            /*
+           int  tileTransparentColor = 0;
+            for (int x = 0; x < tileSpriteSheet.getWidth(); x++) {
+                for (int y = 0; y < tileSpriteSheet.getHeight(); y++) {
+                    int[] tilePixel = tileSpriteSheet.getRaster().getPixel(x, y, (int[]) null);
+                    int tileRgbColor = (tilePixel[0] << 16) | tilePixel[1] << 8 | tilePixel[2];
+                    int[] tilePixelCopy = Arrays.copyOf(tilePixel, tilePixel.length);
+                    tilePixelCopy[3] = tileRgbColor == transparentColor ? 0x00 : 0xFF;
+                    spriteSheet.getRaster().setPixel(x, y, tilePixelCopy);
+                }
+            }
+
+             */
         }
 
         // Register the KeyListener for this Canvas
@@ -218,7 +248,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         //Just fpr this implementation. Will need to move it to tick()
         for(int i = 0; i < reachableOrNot.length; i++){
             for (int j = 0; j < reachableOrNot[i].length; j++){
-                reachableOrNot[i][j] = demoLevelTwo.charAt((i*reachableOrNot[i].length) + j);
+                reachableOrNot[i][j] = demoLevel.charAt((i*reachableOrNot[i].length) + j);
             }
         }
 
@@ -283,34 +313,85 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         //Checks if there is collision
-        boolean noCollision;
+        boolean noCollision = false;
 
 
         //Performs different task depending on keyboard input
         if(right_key_pressed){
             noCollision = safeToMove(gridXscale, gridYscale, "right", XinBetween, YinBetween);
             if(noCollision){
+                if (marioSpeed <= marioMaxSpeed) {
+                    marioSpeed += acceleration;
+                }
                 marioX += marioSpeed;
             }
         }
         if(left_key_pressed){
+            //lastKeyPressed = "left";
             noCollision = safeToMove(gridXscale, gridYscale, "left", XinBetween, YinBetween);
             if(noCollision){
+                marioSpeed += acceleration;
                 marioX -= marioSpeed;
             }
         }
         if(up_key_pressed){
             noCollision = safeToMove(gridXscale, gridYscale, "up", XinBetween, YinBetween);
             if(noCollision){
+                marioSpeed += acceleration;
                 marioY -= marioSpeed;
             }
         }
+        /*
         if(down_key_pressed){
             noCollision = safeToMove(gridXscale, gridYscale, "down", XinBetween, YinBetween);
             if(noCollision){
                 marioY += marioSpeed;
             }
         }
+
+         */
+
+        //When released
+        if(!right_key_pressed && !left_key_pressed && !up_key_pressed && !down_key_pressed){
+            noCollision = safeToMove(gridXscale, gridYscale, "right", XinBetween, YinBetween);
+            if(noCollision && marioSpeed > marioMinSpeed){
+                marioSpeed -= acceleration;
+                marioX += marioSpeed;
+            }
+        }
+
+        /*
+        else if(!left_key_pressed){
+
+            noCollision = safeToMove(gridXscale, gridYscale, "left", XinBetween, YinBetween);
+            if(noCollision && marioSpeed >= 0){
+                marioSpeed -= 0.5;
+                marioX -= marioSpeed;
+            }
+
+        }
+
+        else if(up_key_released){
+            while(marioSpeed != 0){
+                noCollision = safeToMove(gridXscale, gridYscale, "up", XinBetween, YinBetween);
+                if(noCollision){
+                    marioSpeed -= acceleration;
+                    marioY -= marioSpeed;
+                }
+            }
+        }
+
+        else if(down_key_released){
+            while(!noCollision){
+                noCollision = safeToMove(gridXscale, gridYscale, "down", XinBetween, YinBetween);
+                if(noCollision){
+                    marioSpeed = (float)Math.sqrt(marioSpeed);
+                    marioY += marioSpeed;
+                }
+            }
+        }
+
+         */
     }
 
     public boolean safeToMove(int gridX, int gridY, String direction, boolean XinBetween, boolean YinBetween){
@@ -496,18 +577,16 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
         if(pressedKeyCode == VK_RIGHT){
             right_key_pressed = true;
+            right_key_released = false;
         }
-
 
         if(pressedKeyCode == VK_LEFT){
             left_key_pressed = true;
         }
 
-
         if(pressedKeyCode == VK_UP){
             up_key_pressed = true;
         }
-
 
         if(pressedKeyCode == VK_DOWN){
             down_key_pressed = true;
