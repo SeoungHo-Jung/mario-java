@@ -1,4 +1,4 @@
-package editor;
+package samj.mario.editor;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

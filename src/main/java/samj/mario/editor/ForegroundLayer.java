@@ -1,4 +1,4 @@
-package editor;
+package samj.mario.editor;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -1,4 +1,4 @@
-package editor;
+package samj.mario.editor;
 
 public interface LevelFormat {
     byte[] encode(Level level);
