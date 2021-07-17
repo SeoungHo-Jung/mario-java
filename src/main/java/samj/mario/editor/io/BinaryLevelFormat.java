@@ -1,4 +1,9 @@
-package samj.mario.editor;
+package samj.mario.editor.io;
+
+import samj.mario.editor.data.ForegroundLayer;
+import samj.mario.editor.data.ForegroundTile;
+import samj.mario.editor.data.Level;
+import samj.mario.editor.data.TileData;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;

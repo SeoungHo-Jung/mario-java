@@ -3,6 +3,14 @@ package samj.mario.editor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import samj.mario.editor.data.ForegroundLayer;
+import samj.mario.editor.data.ForegroundTile;
+import samj.mario.editor.data.Level;
+import samj.mario.editor.data.TileData;
+import samj.mario.editor.io.BinaryLevelFormat;
+import samj.mario.editor.io.FileIO;
+import samj.mario.editor.io.IconLoader;
+import samj.mario.editor.io.LevelFormat;
 
 import javax.swing.*;
 import java.awt.*;

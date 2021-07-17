@@ -1,4 +1,6 @@
-package samj.mario.editor;
+package samj.mario.editor.io;
+
+import samj.mario.editor.data.TileIcon;
 
 import javax.imageio.ImageIO;
 import java.awt.*;

@@ -1,4 +1,4 @@
-package samj.mario.editor;
+package samj.mario.editor.data;
 
 public class TileIcon {
     private final SpriteSheet spriteSheet;

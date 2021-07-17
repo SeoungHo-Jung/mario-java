@@ -1,5 +1,7 @@
 package samj.mario.editor;
 
+import samj.mario.editor.data.ForegroundTile;
+
 public class ChangeForegroundTileCommand implements EditorCommand {
 
     private final int x;

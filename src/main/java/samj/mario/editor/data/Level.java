@@ -1,4 +1,6 @@
-package samj.mario.editor;
+package samj.mario.editor.data;
+
+import samj.mario.editor.data.ForegroundLayer;
 
 public class Level {
 

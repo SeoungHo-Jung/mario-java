@@ -1,4 +1,7 @@
-package samj.mario.editor;
+package samj.mario.editor.io;
+
+import samj.mario.editor.data.Level;
+import samj.mario.editor.io.LevelFormat;
 
 import java.io.File;
 import java.io.FileInputStream;
