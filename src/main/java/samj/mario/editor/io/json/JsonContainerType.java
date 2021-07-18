@@ -1,6 +1,6 @@
 package samj.mario.editor.io.json;
 
-public enum JsonDispenseType {
+public enum JsonContainerType {
     COIN,
     POWER_UP,
     STAR,

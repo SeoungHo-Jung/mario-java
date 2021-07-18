@@ -1,6 +1,6 @@
 package samj.mario.editor.io;
 
-import samj.mario.editor.data.TileIcon;
+import samj.mario.editor.data.Icon;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -37,15 +37,15 @@ public class IconLoader {
         }
     }
 
-    public Image getImageForIcon(TileIcon tileIcon) {
-        if (tileIcon == null) {
+    public Image getImageForIcon(Icon icon) {
+        if (icon == null) {
             // return a default "null" image
             return new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
         }
 
-        int x = tileIcon.getxLocation() * iconSize;
-        int y = tileIcon.getyLocation() * iconSize;
-        switch (tileIcon.getSpriteSheet()) {
+        int x = icon.getxLocation() * iconSize;
+        int y = icon.getyLocation() * iconSize;
+        switch (icon.getSpriteSheet()) {
             case TILES -> {
                 return tileIcons.getSubimage(x, y, iconSize, iconSize);
             }
@@ -54,7 +54,7 @@ public class IconLoader {
 //            case ENEMY -> {
 //            }
             default -> {
-                throw new UnsupportedOperationException(tileIcon.getSpriteSheet() + " icons are not supported");
+                throw new UnsupportedOperationException(icon.getSpriteSheet() + " icons are not supported");
             }
         }
     }

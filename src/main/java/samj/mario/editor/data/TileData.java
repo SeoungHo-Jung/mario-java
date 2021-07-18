@@ -12,19 +12,20 @@ import static samj.mario.editor.data.SpriteSheet.TILES;
 
 public class TileData {
 
-    public static List<ForegroundTile> FOREGROUND_TILES;
-    public static Map<Short, ForegroundTile> FOREGROUND_TILES_BY_INDEX;
-    public static Map<Character, ForegroundTile> FOREGROUND_TILES_BY_CHAR;
+    public static List<TileDefinition> FOREGROUND_TILES;
+    public static Map<Short, TileDefinition> FOREGROUND_TILES_BY_INDEX;
+    public static Map<Character, TileDefinition> FOREGROUND_TILES_BY_CHAR;
 
     static {
-        List<ForegroundTile> fgTiles = new ArrayList<>();
+        List<TileDefinition> fgTiles = new ArrayList<>();
 
-        fgTiles.add(ForegroundTile.EMPTY_TILE);
+        fgTiles.add(TileDefinition.EMPTY_TILE);
 
         // Rock
-        fgTiles.add(ForegroundTile.builder()
-                .setPrimaryDisplayTileIcon(new TileIcon(TILES, 0, 0))
+        fgTiles.add(TileDefinition.builder()
+                .setPrimaryDisplayTileIcon(new Icon(TILES, 0, 0))
                 .setTileIndex((short) 0x0010)
+                .setPaletteCount(4)
                 .setTileChar('#')
                 .setName("Rock ?")
                 .setAllowedTileTypes(Set.of(JsonTileType.SOLID))
@@ -32,19 +33,21 @@ public class TileData {
                 .build());
 
         // Question Box
-        fgTiles.add(ForegroundTile.builder()
-                .setPrimaryDisplayTileIcon(new TileIcon(TILES, 24, 0))
+        fgTiles.add(TileDefinition.builder()
+                .setPrimaryDisplayTileIcon(new Icon(TILES, 24, 0))
                 .setTileIndex((short) 0x0020)
+                .setPaletteCount(4)
                 .setTileChar('?')
                 .setName("Question Mark Box")
-                .setAllowedTileTypes(Set.of(JsonTileType.DISPENSE))
+                .setAllowedTileTypes(Set.of(JsonTileType.CONTAINER))
                 .setCategory(INTERACTIVE)
                 .build());
 
         // Coin
-        fgTiles.add(ForegroundTile.builder()
-                .setPrimaryDisplayTileIcon(new TileIcon(TILES, 24, 1))
+        fgTiles.add(TileDefinition.builder()
+                .setPrimaryDisplayTileIcon(new Icon(TILES, 24, 1))
                 .setTileIndex((short) 0x0030)
+                .setPaletteCount(4)
                 .setTileChar('o')
                 .setName("Coin")
                 .setAllowedTileTypes(Set.of(JsonTileType.COIN))
@@ -56,10 +59,10 @@ public class TileData {
 
         // Create a hashmap of tiles for quick lookup by char
         FOREGROUND_TILES_BY_CHAR = FOREGROUND_TILES.stream()
-                .collect(Collectors.toUnmodifiableMap(ForegroundTile::getTileChar, Function.identity()));
+                .collect(Collectors.toUnmodifiableMap(TileDefinition::getTileChar, Function.identity()));
 
         // Create a hashmap of tiles for quick lookup by index
         FOREGROUND_TILES_BY_INDEX = FOREGROUND_TILES.stream()
-                .collect(Collectors.toUnmodifiableMap(ForegroundTile::getTileIndex, Function.identity()));
+                .collect(Collectors.toUnmodifiableMap(TileDefinition::getTileIndex, Function.identity()));
     }
 }

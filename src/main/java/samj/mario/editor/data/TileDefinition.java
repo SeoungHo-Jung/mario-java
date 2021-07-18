@@ -8,9 +8,9 @@ import java.util.Set;
 import static samj.mario.editor.data.ForegroundTileCategory.PLATFORM;
 import static samj.mario.editor.data.ForegroundTileCategory.UNKNOWN;
 
-public class ForegroundTile {
+public class TileDefinition {
 
-    public static ForegroundTile EMPTY_TILE = ForegroundTile.builder()
+    public static TileDefinition EMPTY_TILE = TileDefinition.builder()
             .setTileIndex((short) 0x0000)
             .setTileChar(' ')
             .setName("Empty Space")
@@ -18,20 +18,22 @@ public class ForegroundTile {
             .setCategory(PLATFORM)
             .build();
 
-    private final TileIcon primaryDisplayTileIcon;
-    private final TileIcon secondaryDisplayTileIcon;
+    private final Icon primaryDisplayIcon;
+    private final Icon secondaryDisplayIcon;
     private final char tileChar;
     private final short tileIndex;
+    private final int paletteCount;
     private final boolean isEnabled;
     private final String name;
     private final Set<JsonTileType> allowedTileTypes;
     private final ForegroundTileCategory category;
 
-    private ForegroundTile(Builder builder) {
-        this.primaryDisplayTileIcon = builder.primaryDisplayTileIcon;
-        this.secondaryDisplayTileIcon = builder.secondaryDisplayTileIcon;
+    private TileDefinition(Builder builder) {
+        this.primaryDisplayIcon = builder.primaryDisplayIcon;
+        this.secondaryDisplayIcon = builder.secondaryDisplayIcon;
         this.tileChar = builder.tileChar;
         this.tileIndex = builder.tileIndex;
+        this.paletteCount = builder.paletteCount;
         this.isEnabled = builder.isEnabled;
         this.name = builder.name;
         this.allowedTileTypes = builder.allowedTileTypes;
@@ -39,10 +41,11 @@ public class ForegroundTile {
     }
 
     public static class Builder {
-        private TileIcon primaryDisplayTileIcon = null;
-        private TileIcon secondaryDisplayTileIcon = null;
+        private Icon primaryDisplayIcon = null;
+        private Icon secondaryDisplayIcon = null;
         private char tileChar = '\0';
         private short tileIndex = 0;
+        private int paletteCount = 1;
         private boolean isEnabled = true;
         private String name = "";
         private Set<JsonTileType> allowedTileTypes = Collections.emptySet();
@@ -50,13 +53,13 @@ public class ForegroundTile {
 
         private Builder() {}
 
-        public Builder setPrimaryDisplayTileIcon(TileIcon primaryDisplayTileIcon) {
-            this.primaryDisplayTileIcon = primaryDisplayTileIcon;
+        public Builder setPrimaryDisplayTileIcon(Icon primaryDisplayIcon) {
+            this.primaryDisplayIcon = primaryDisplayIcon;
             return this;
         }
 
-        public Builder setSecondaryDisplayTileIcon(TileIcon secondaryDisplayTileIcon) {
-            this.secondaryDisplayTileIcon = secondaryDisplayTileIcon;
+        public Builder setSecondaryDisplayTileIcon(Icon secondaryDisplayIcon) {
+            this.secondaryDisplayIcon = secondaryDisplayIcon;
             return this;
         }
 
@@ -67,6 +70,11 @@ public class ForegroundTile {
 
         public Builder setTileIndex(short tileIndex) {
             this.tileIndex = tileIndex;
+            return this;
+        }
+
+        public Builder setPaletteCount(int paletteCount) {
+            this.paletteCount = paletteCount;
             return this;
         }
 
@@ -90,8 +98,8 @@ public class ForegroundTile {
             return this;
         }
 
-        public ForegroundTile build() {
-            return new ForegroundTile(this);
+        public TileDefinition build() {
+            return new TileDefinition(this);
         }
     }
 
@@ -99,12 +107,12 @@ public class ForegroundTile {
         return new Builder();
     }
 
-    public TileIcon getPrimaryDisplayTileIcon() {
-        return primaryDisplayTileIcon;
+    public Icon getPrimaryDisplayTileIcon() {
+        return primaryDisplayIcon;
     }
 
-    public TileIcon getSecondaryDisplayTileIcon() {
-        return secondaryDisplayTileIcon;
+    public Icon getSecondaryDisplayTileIcon() {
+        return secondaryDisplayIcon;
     }
 
     public char getTileChar() {
@@ -113,6 +121,10 @@ public class ForegroundTile {
 
     public short getTileIndex() {
         return tileIndex;
+    }
+
+    public int getPaletteCount() {
+        return paletteCount;
     }
 
     public boolean isEnabled() {

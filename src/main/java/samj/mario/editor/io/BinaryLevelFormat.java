@@ -1,7 +1,7 @@
 package samj.mario.editor.io;
 
-import samj.mario.editor.data.ForegroundLayer;
-import samj.mario.editor.data.ForegroundTile;
+import samj.mario.editor.data.TileMap;
+import samj.mario.editor.data.TileDefinition;
 import samj.mario.editor.data.Level;
 import samj.mario.editor.data.TileData;
 
@@ -70,7 +70,7 @@ public class BinaryLevelFormat implements LevelFormat {
         bb.putInt(0);                   // Size of Background Tiles portion TODO
 
         // write the tiles
-        for (ForegroundTile tile : level.getForegroundLayer()) {
+        for (TileDefinition tile : level.getForegroundLayer()) {
             bb.putShort(tile.getTileIndex());
         }
 
@@ -108,13 +108,13 @@ public class BinaryLevelFormat implements LevelFormat {
         int bgTileOffset = bb.getInt();
         int bgTileLength = bb.getInt();
 
-        List<ForegroundTile> fgTiles = new ArrayList<>();
+        List<TileDefinition> fgTiles = new ArrayList<>();
         for (int i = 0; i < fgTileLength; i += 2) {
             short tileIndex = bb.getShort();
             fgTiles.add(TileData.FOREGROUND_TILES_BY_INDEX.get(tileIndex));
         }
 
-        ForegroundLayer fgLayer = new ForegroundLayer(levelWidth, levelHeight, fgTiles);
+        TileMap fgLayer = new TileMap(levelWidth, levelHeight, fgTiles);
 
         Level level = new Level();
         level.setDimensions(levelWidth, levelHeight);

@@ -1,12 +1,10 @@
 package samj.mario.editor.data;
 
-import samj.mario.editor.data.ForegroundLayer;
-
 public class Level {
 
     private int width;
     private int height;
-    private ForegroundLayer foregroundLayer;
+    private TileMap tileMap;
 
     public int getWidth() {
         return width;
@@ -21,11 +19,11 @@ public class Level {
         this.height = height;
     }
 
-    public ForegroundLayer getForegroundLayer() {
-        return foregroundLayer;
+    public TileMap getForegroundLayer() {
+        return tileMap;
     }
 
-    public void setForegroundLayer(ForegroundLayer foregroundLayer) {
-        this.foregroundLayer = foregroundLayer;
+    public void setForegroundLayer(TileMap tileMap) {
+        this.tileMap = tileMap;
     }
 }

@@ -3,8 +3,8 @@ package samj.mario.editor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import samj.mario.editor.data.ForegroundLayer;
-import samj.mario.editor.data.ForegroundTile;
+import samj.mario.editor.data.TileMap;
+import samj.mario.editor.data.TileDefinition;
 import samj.mario.editor.data.Level;
 import samj.mario.editor.data.TileData;
 import samj.mario.editor.io.BinaryLevelFormat;
@@ -52,7 +52,7 @@ public class LevelEditor implements ActionListener {
     private int levelPanelWidth;
     private int levelPanelHeight;
     private Level level;
-    private ForegroundTile selectedTile = ForegroundTile.EMPTY_TILE;
+    private TileDefinition selectedTile = TileDefinition.EMPTY_TILE;
     private boolean isGridEnabled = true;
 
     private Stack<EditorCommand> undoStack = new Stack<>();
@@ -180,7 +180,7 @@ public class LevelEditor implements ActionListener {
         // draw foreground layer
         for (int x = 0; x < level.getWidth(); x++) {
             for (int y = 0; y < level.getHeight(); y++) {
-                ForegroundTile tile = level.getForegroundLayer().getTile(x, y);
+                TileDefinition tile = level.getForegroundLayer().getTile(x, y);
                 if (tile.getPrimaryDisplayTileIcon() != null) {
                     int panelX = x * gridSize;
                     int panelY = y * gridSize;
@@ -209,10 +209,10 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawPalette(Graphics g) {
-        final List<ForegroundTile> fgTiles = TileData.FOREGROUND_TILES;
+        final List<TileDefinition> fgTiles = TileData.FOREGROUND_TILES;
 
         for (int i = 0; i < fgTiles.size(); i++) {
-            ForegroundTile tile = fgTiles.get(i);
+            TileDefinition tile = fgTiles.get(i);
             Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayTileIcon());
             int x = (i % paletteColumns) * gridSize;
             int y = (i / paletteColumns) * gridSize;
@@ -236,7 +236,7 @@ public class LevelEditor implements ActionListener {
 
         level = new Level();
         level.setDimensions(width, height);
-        level.setForegroundLayer(new ForegroundLayer(width, height));
+        level.setForegroundLayer(new TileMap(width, height));
         levelPanelWidth = width * gridSize;
         levelPanelHeight = height * gridSize;
 
@@ -260,7 +260,7 @@ public class LevelEditor implements ActionListener {
 
         // TODO: Validate that no tiles are being deleted
 
-        level.setForegroundLayer(new ForegroundLayer(width, height, level.getForegroundLayer()));
+        level.setForegroundLayer(new TileMap(width, height, level.getForegroundLayer()));
 
         repaintLevel();
     }
@@ -292,14 +292,14 @@ public class LevelEditor implements ActionListener {
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
         if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
-            ForegroundTile oldTile = level.getForegroundLayer().getTile(x, y);
+            TileDefinition oldTile = level.getForegroundLayer().getTile(x, y);
             EditorCommand command = new ChangeForegroundTileCommand(x, y, selectedTile, oldTile, this);
             doCommand(command);
         }
     }
 
     private void handleTilePalettePanelMouseEvent(MouseEvent e) {
-        List<ForegroundTile> fgTiles = TileData.FOREGROUND_TILES;
+        List<TileDefinition> fgTiles = TileData.FOREGROUND_TILES;
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
         int index = (y * paletteColumns) + x;

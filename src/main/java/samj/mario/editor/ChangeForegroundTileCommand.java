@@ -1,16 +1,16 @@
 package samj.mario.editor;
 
-import samj.mario.editor.data.ForegroundTile;
+import samj.mario.editor.data.TileDefinition;
 
 public class ChangeForegroundTileCommand implements EditorCommand {
 
     private final int x;
     private final int y;
-    private final ForegroundTile newTile;
-    private final ForegroundTile oldTile;
+    private final TileDefinition newTile;
+    private final TileDefinition oldTile;
     private final LevelEditor levelEditor;
 
-    public ChangeForegroundTileCommand(int x, int y, ForegroundTile newTile, ForegroundTile oldTile, LevelEditor levelEditor) {
+    public ChangeForegroundTileCommand(int x, int y, TileDefinition newTile, TileDefinition oldTile, LevelEditor levelEditor) {
         this.x = x;
         this.y = y;
         this.newTile = newTile;

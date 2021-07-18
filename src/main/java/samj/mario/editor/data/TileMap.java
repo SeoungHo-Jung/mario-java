@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-public class ForegroundLayer implements Iterable<ForegroundTile> {
+public class TileMap implements Iterable<TileDefinition> {
     private final int width;
     private final int height;
-    private final List<ForegroundTile> tiles;
+    private final List<TileDefinition> tiles;
 
-    public ForegroundLayer(int width, int height) {
+    public TileMap(int width, int height) {
         this.width = width;
         this.height = height;
 
@@ -19,17 +19,17 @@ public class ForegroundLayer implements Iterable<ForegroundTile> {
         int size = width * height;
         tiles = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            tiles.add(ForegroundTile.EMPTY_TILE);
+            tiles.add(TileDefinition.EMPTY_TILE);
         }
     }
 
-    public ForegroundLayer(int width, int height, List<ForegroundTile> tiles) {
+    public TileMap(int width, int height, List<TileDefinition> tiles) {
         this.width = width;
         this.height = height;
         this.tiles = tiles;
     }
 
-    public ForegroundLayer(int width, int height, ForegroundLayer sourceLayer) {
+    public TileMap(int width, int height, TileMap sourceLayer) {
         this.width = width;
         this.height = height;
 
@@ -45,39 +45,39 @@ public class ForegroundLayer implements Iterable<ForegroundTile> {
                     tiles.add(sourceLayer.getTile(x, y));
                 } else {
                     // Pad any empty space with EMPTY_TILE
-                    tiles.add(ForegroundTile.EMPTY_TILE);
+                    tiles.add(TileDefinition.EMPTY_TILE);
                 }
             }
         }
     }
 
-    public void setTile(int x, int y, ForegroundTile tile) {
+    public void setTile(int x, int y, TileDefinition tile) {
         int index = (width * y) + x;
         tiles.set(index, tile);
     }
 
-    public ForegroundTile getTile(int x, int y) {
+    public TileDefinition getTile(int x, int y) {
         int index = (width * y) + x;
         return tiles.get(index);
     }
 
     public void resetTile(int x, int y) {
         int index = (width * y) + x;
-        tiles.set(index, ForegroundTile.EMPTY_TILE);
+        tiles.set(index, TileDefinition.EMPTY_TILE);
     }
 
     @Override
-    public Iterator<ForegroundTile> iterator() {
+    public Iterator<TileDefinition> iterator() {
         return tiles.iterator();
     }
 
     @Override
-    public void forEach(Consumer<? super ForegroundTile> action) {
+    public void forEach(Consumer<? super TileDefinition> action) {
         tiles.forEach(action);
     }
 
     @Override
-    public Spliterator<ForegroundTile> spliterator() {
+    public Spliterator<TileDefinition> spliterator() {
         return tiles.spliterator();
     }
 }
