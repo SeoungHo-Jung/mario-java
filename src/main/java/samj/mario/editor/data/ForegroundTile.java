@@ -1,5 +1,10 @@
 package samj.mario.editor.data;
 
+import samj.mario.editor.io.json.JsonTileType;
+
+import java.util.Collections;
+import java.util.Set;
+
 import static samj.mario.editor.data.ForegroundTileCategory.PLATFORM;
 import static samj.mario.editor.data.ForegroundTileCategory.UNKNOWN;
 
@@ -9,6 +14,7 @@ public class ForegroundTile {
             .setTileIndex((short) 0x0000)
             .setTileChar(' ')
             .setName("Empty Space")
+            .setAllowedTileTypes(Set.of(JsonTileType.BACKGROUND))
             .setCategory(PLATFORM)
             .build();
 
@@ -18,6 +24,7 @@ public class ForegroundTile {
     private final short tileIndex;
     private final boolean isEnabled;
     private final String name;
+    private final Set<JsonTileType> allowedTileTypes;
     private final ForegroundTileCategory category;
 
     private ForegroundTile(Builder builder) {
@@ -27,6 +34,7 @@ public class ForegroundTile {
         this.tileIndex = builder.tileIndex;
         this.isEnabled = builder.isEnabled;
         this.name = builder.name;
+        this.allowedTileTypes = builder.allowedTileTypes;
         this.category = builder.category;
     }
 
@@ -37,6 +45,7 @@ public class ForegroundTile {
         private short tileIndex = 0;
         private boolean isEnabled = true;
         private String name = "";
+        private Set<JsonTileType> allowedTileTypes = Collections.emptySet();
         private ForegroundTileCategory category = UNKNOWN;
 
         private Builder() {}
@@ -68,6 +77,11 @@ public class ForegroundTile {
 
         public Builder setName(String name) {
             this.name = name;
+            return this;
+        }
+
+        public Builder setAllowedTileTypes(Set<JsonTileType> allowedTileTypes) {
+            this.allowedTileTypes = allowedTileTypes;
             return this;
         }
 
@@ -107,6 +121,10 @@ public class ForegroundTile {
 
     public String getName() {
         return name;
+    }
+
+    public Set<JsonTileType> getAllowedTileTypes() {
+        return allowedTileTypes;
     }
 
     public ForegroundTileCategory getCategory() {
