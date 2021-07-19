@@ -1,6 +1,7 @@
 package samj.mario.editor.io.json;
 
 public enum JsonTileType {
+    EMPTY,
     BACKGROUND,
     SOLID,
     BREAKABLE,

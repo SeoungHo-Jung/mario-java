@@ -6,10 +6,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 public class JsonTile {
     public JsonTileType type;
     public JsonContainerType dispenseType;
-    public int count; // for DISPENSE type
+    public Integer count; // for DISPENSE type
     public JsonDirection direction; // for ENTRANCE/EXIT types
     public JsonEnemyType enemyType;
-    public int x;
-    public int y;
-    public boolean isAnimated;
+    public Integer x;
+    public Integer y;
+    public Boolean isAnimated;
 }

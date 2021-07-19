@@ -1,18 +1,18 @@
 package samj.mario.editor.data;
 
 public class Icon {
-    private final SpriteSheet spriteSheet;
+    private final IconSheet iconSheet;
     private final int xLocation;
     private final int yLocation;
 
-    public Icon(SpriteSheet spriteSheet, int xLocation, int yLocation) {
-        this.spriteSheet = spriteSheet;
+    public Icon(IconSheet iconSheet, int xLocation, int yLocation) {
+        this.iconSheet = iconSheet;
         this.xLocation = xLocation;
         this.yLocation = yLocation;
     }
 
-    public SpriteSheet getSpriteSheet() {
-        return spriteSheet;
+    public IconSheet getSpriteSheet() {
+        return iconSheet;
     }
 
     public int getxLocation() {

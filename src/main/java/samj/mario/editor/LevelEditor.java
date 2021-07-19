@@ -181,10 +181,10 @@ public class LevelEditor implements ActionListener {
         for (int x = 0; x < level.getWidth(); x++) {
             for (int y = 0; y < level.getHeight(); y++) {
                 TileDefinition tile = level.getForegroundLayer().getTile(x, y);
-                if (tile.getPrimaryDisplayTileIcon() != null) {
+                if (tile.getPrimaryDisplayIcon() != null) {
                     int panelX = x * gridSize;
                     int panelY = y * gridSize;
-                    Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayTileIcon());
+                    Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
                     g.drawImage(iconImage, panelX, panelY, null);
                 }
             }
@@ -213,7 +213,7 @@ public class LevelEditor implements ActionListener {
 
         for (int i = 0; i < fgTiles.size(); i++) {
             TileDefinition tile = fgTiles.get(i);
-            Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayTileIcon());
+            Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
             int x = (i % paletteColumns) * gridSize;
             int y = (i / paletteColumns) * gridSize;
             g.drawImage(iconImage, x, y, null);
@@ -221,7 +221,7 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawPreview(Graphics g) {
-        Image iconImage = iconLoader.getImageForIcon(selectedTile.getPrimaryDisplayTileIcon());
+        Image iconImage = iconLoader.getImageForIcon(selectedTile.getPrimaryDisplayIcon());
         g.drawImage(iconImage, 0, 0, gridSize * 2, gridSize * 2, null);
     }
 

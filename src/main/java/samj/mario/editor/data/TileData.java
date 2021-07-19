@@ -1,14 +1,13 @@
 package samj.mario.editor.data;
 
-import samj.mario.editor.io.json.JsonTileType;
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static samj.mario.editor.data.ForegroundTileCategory.INTERACTIVE;
-import static samj.mario.editor.data.ForegroundTileCategory.PLATFORM;
-import static samj.mario.editor.data.SpriteSheet.TILES;
+import static samj.mario.editor.data.IconSheet.TILES;
 
 public class TileData {
 
@@ -28,8 +27,6 @@ public class TileData {
                 .setPaletteCount(4)
                 .setTileChar('#')
                 .setName("Rock ?")
-                .setAllowedTileTypes(Set.of(JsonTileType.SOLID))
-                .setCategory(PLATFORM)
                 .build());
 
         // Question Box
@@ -39,8 +36,6 @@ public class TileData {
                 .setPaletteCount(4)
                 .setTileChar('?')
                 .setName("Question Mark Box")
-                .setAllowedTileTypes(Set.of(JsonTileType.CONTAINER))
-                .setCategory(INTERACTIVE)
                 .build());
 
         // Coin
@@ -50,8 +45,6 @@ public class TileData {
                 .setPaletteCount(4)
                 .setTileChar('o')
                 .setName("Coin")
-                .setAllowedTileTypes(Set.of(JsonTileType.COIN))
-                .setCategory(INTERACTIVE)
                 .build());
 
 
