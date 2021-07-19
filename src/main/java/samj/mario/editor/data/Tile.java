@@ -7,46 +7,135 @@ import samj.mario.editor.io.json.JsonTileType;
 
 public class Tile {
 
+    public static Tile EMPTY_TILE = Tile.builder()
+            .setTileIndex((short) 0x0000)
+            .setTileChar(' ')
+            .setName("Empty Space")
+            .build();
+
     private final Icon primaryDisplayIcon;
     private final Icon secondaryDisplayIcon;
     private final char tileChar;
     private final short tileIndex;
-    private final int tileX;
-    private final int tileY;
-    private final int palette;
-    private final boolean isAnimated;
+    private final Integer tileX;
+    private final Integer tileY;
     private final String name;
     private final JsonTileType type;
     private final JsonContainerType containerType;
     private final JsonEnemyType enemyType;
+    private final JsonDirection direction;
+    private final Integer count;
 
-    // Modifiable properties
-    private JsonDirection direction = JsonDirection.DOWNWARD;
-    private int count = 0;
-
-    public Tile(Icon primaryDisplayIcon, Icon secondaryDisplayIcon, char tileChar, short tileIndex, int tileX, int tileY, int palette, boolean isAnimated, String name, JsonTileType type, JsonContainerType containerType, JsonEnemyType enemyType) {
-        this.primaryDisplayIcon = primaryDisplayIcon;
-        this.secondaryDisplayIcon = secondaryDisplayIcon;
-        this.tileChar = tileChar;
-        this.tileIndex = tileIndex;
-        this.tileX = tileX;
-        this.tileY = tileY;
-        this.palette = palette;
-        this.isAnimated = isAnimated;
-        this.name = name;
-        this.type = type;
-        this.containerType = containerType;
-        this.enemyType = enemyType;
+    private Tile(Builder builder) {
+        this.primaryDisplayIcon = builder.primaryDisplayIcon;
+        this.secondaryDisplayIcon = builder.secondaryDisplayIcon;
+        this.tileChar = builder.tileChar;
+        this.tileIndex = builder.tileIndex;
+        this.tileX = builder.tileX;
+        this.tileY = builder.tileY;
+        this.name = builder.name;
+        this.type = builder.type;
+        this.containerType = builder.containerType;
+        this.enemyType = builder.enemyType;
+        this.direction = builder.direction;
+        this.count = builder.count;
     }
 
-    public Tile setDirection(JsonDirection direction) {
-        this.direction = direction;
-        return this;
+    public static class Builder {
+        private Icon primaryDisplayIcon = null;
+        private Icon secondaryDisplayIcon = null;
+        private char tileChar = '\0';
+        private short tileIndex = 0;
+        private Integer tileX = null;
+        private Integer tileY = null;
+        private int paletteCount = 1;
+        private boolean isEnabled = true;
+        private String name = "";
+        private JsonTileType type = JsonTileType.EMPTY;
+        private JsonContainerType containerType = null;
+        private JsonEnemyType enemyType = null;
+        private JsonDirection direction = null;
+        private Integer count = null;
+
+        private Builder() {}
+
+        public Builder setPrimaryDisplayTileIcon(Icon primaryDisplayIcon) {
+            this.primaryDisplayIcon = primaryDisplayIcon;
+            return this;
+        }
+
+        public Builder setSecondaryDisplayTileIcon(Icon secondaryDisplayIcon) {
+            this.secondaryDisplayIcon = secondaryDisplayIcon;
+            return this;
+        }
+
+        public Builder setTileChar(char tileChar) {
+            this.tileChar = tileChar;
+            return this;
+        }
+
+        public Builder setTileIndex(short tileIndex) {
+            this.tileIndex = tileIndex;
+            return this;
+        }
+
+        public Builder setPaletteCount(int paletteCount) {
+            this.paletteCount = paletteCount;
+            return this;
+        }
+
+        public Builder setEnabled(boolean enabled) {
+            isEnabled = enabled;
+            return this;
+        }
+
+        public Builder setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public Builder setTileX(Integer tileX) {
+            this.tileX = tileX;
+            return this;
+        }
+
+        public Builder setTileY(Integer tileY) {
+            this.tileY = tileY;
+            return this;
+        }
+
+        public Builder setType(JsonTileType type) {
+            this.type = type;
+            return this;
+        }
+
+        public Builder setContainerType(JsonContainerType containerType) {
+            this.containerType = containerType;
+            return this;
+        }
+
+        public Builder setEnemyType(JsonEnemyType enemyType) {
+            this.enemyType = enemyType;
+            return this;
+        }
+
+        public Builder setDirection(JsonDirection direction) {
+            this.direction = direction;
+            return this;
+        }
+
+        public Builder setCount(Integer count) {
+            this.count = count;
+            return this;
+        }
+
+        public Tile build() {
+            return new Tile(this);
+        }
     }
 
-    public Tile setCount(int count) {
-        this.count = count;
-        return this;
+    public static Builder builder() {
+        return new Builder();
     }
 
     public Icon getPrimaryDisplayIcon() {
@@ -65,20 +154,12 @@ public class Tile {
         return tileIndex;
     }
 
-    public int getTileX() {
+    public Integer getTileX() {
         return tileX;
     }
 
-    public int getTileY() {
+    public Integer getTileY() {
         return tileY;
-    }
-
-    public int getPalette() {
-        return palette;
-    }
-
-    public boolean isAnimated() {
-        return isAnimated;
     }
 
     public String getName() {
@@ -101,7 +182,7 @@ public class Tile {
         return direction;
     }
 
-    public int getCount() {
+    public Integer getCount() {
         return count;
     }
 }

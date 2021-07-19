@@ -6,12 +6,12 @@ import java.util.List;
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-public class TileMap implements Iterable<TileDefinition> {
+public class TileMatrix implements Iterable<Tile> {
     private final int width;
     private final int height;
-    private final List<TileDefinition> tiles;
+    private final List<Tile> tiles;
 
-    public TileMap(int width, int height) {
+    public TileMatrix(int width, int height) {
         this.width = width;
         this.height = height;
 
@@ -19,17 +19,17 @@ public class TileMap implements Iterable<TileDefinition> {
         int size = width * height;
         tiles = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            tiles.add(TileDefinition.EMPTY_TILE);
+            tiles.add(Tile.EMPTY_TILE);
         }
     }
 
-    public TileMap(int width, int height, List<TileDefinition> tiles) {
+    public TileMatrix(int width, int height, List<Tile> tiles) {
         this.width = width;
         this.height = height;
         this.tiles = tiles;
     }
 
-    public TileMap(int width, int height, TileMap sourceLayer) {
+    public TileMatrix(int width, int height, TileMatrix sourceLayer) {
         this.width = width;
         this.height = height;
 
@@ -45,39 +45,39 @@ public class TileMap implements Iterable<TileDefinition> {
                     tiles.add(sourceLayer.getTile(x, y));
                 } else {
                     // Pad any empty space with EMPTY_TILE
-                    tiles.add(TileDefinition.EMPTY_TILE);
+                    tiles.add(Tile.EMPTY_TILE);
                 }
             }
         }
     }
 
-    public void setTile(int x, int y, TileDefinition tile) {
+    public void setTile(int x, int y, Tile tile) {
         int index = (width * y) + x;
         tiles.set(index, tile);
     }
 
-    public TileDefinition getTile(int x, int y) {
+    public Tile getTile(int x, int y) {
         int index = (width * y) + x;
         return tiles.get(index);
     }
 
     public void resetTile(int x, int y) {
         int index = (width * y) + x;
-        tiles.set(index, TileDefinition.EMPTY_TILE);
+        tiles.set(index, Tile.EMPTY_TILE);
     }
 
     @Override
-    public Iterator<TileDefinition> iterator() {
+    public Iterator<Tile> iterator() {
         return tiles.iterator();
     }
 
     @Override
-    public void forEach(Consumer<? super TileDefinition> action) {
+    public void forEach(Consumer<? super Tile> action) {
         tiles.forEach(action);
     }
 
     @Override
-    public Spliterator<TileDefinition> spliterator() {
+    public Spliterator<Tile> spliterator() {
         return tiles.spliterator();
     }
 }

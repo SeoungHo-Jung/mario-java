@@ -4,7 +4,7 @@ public class Level {
 
     private int width;
     private int height;
-    private TileMap tileMap;
+    private TileMatrix tileMatrix;
 
     public int getWidth() {
         return width;
@@ -19,11 +19,11 @@ public class Level {
         this.height = height;
     }
 
-    public TileMap getForegroundLayer() {
-        return tileMap;
+    public TileMatrix getForegroundLayer() {
+        return tileMatrix;
     }
 
-    public void setForegroundLayer(TileMap tileMap) {
-        this.tileMap = tileMap;
+    public void setForegroundLayer(TileMatrix tileMatrix) {
+        this.tileMatrix = tileMatrix;
     }
 }

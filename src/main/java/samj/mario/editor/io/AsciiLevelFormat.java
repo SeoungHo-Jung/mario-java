@@ -1,7 +1,7 @@
 package samj.mario.editor.io;
 
-import samj.mario.editor.data.TileMap;
-import samj.mario.editor.data.TileDefinition;
+import samj.mario.editor.data.TileMatrix;
+import samj.mario.editor.data.Tile;
 import samj.mario.editor.data.Level;
 import samj.mario.editor.data.TileData;
 
@@ -13,11 +13,11 @@ public class AsciiLevelFormat implements LevelFormat {
     @Override
     public byte[] encode(Level level) {
         // Write the foreground layer as text
-        TileMap fgLayer = level.getForegroundLayer();
+        TileMatrix fgLayer = level.getForegroundLayer();
         StringBuilder sb = new StringBuilder();
         for (int y = 0; y < level.getHeight(); y++) {
             for (int x = 0; x < level.getWidth(); x++) {
-                TileDefinition tile = fgLayer.getTile(x, y);
+                Tile tile = fgLayer.getTile(x, y);
                 sb.append(tile.getTileChar());
             }
             sb.append('\n');
@@ -28,18 +28,18 @@ public class AsciiLevelFormat implements LevelFormat {
 
     @Override
     public Level decode(byte[] bytes) {
-        List<List<TileDefinition>> foregroundTiles = new ArrayList<>();
+        List<List<Tile>> foregroundTiles = new ArrayList<>();
 
         String chars = new String(bytes, StandardCharsets.US_ASCII);
 
-        List<TileDefinition> currentRow = new ArrayList<>();
+        List<Tile> currentRow = new ArrayList<>();
         for (int i = 0; i < chars.length(); i++){
             char c = chars.charAt(i);
             if (c == '\n') {
                 foregroundTiles.add(currentRow);
                 currentRow = new ArrayList<>();
             } else {
-                TileDefinition tile = TileData.FOREGROUND_TILES_BY_CHAR.get(c);
+                Tile tile = TileData.FOREGROUND_TILES_BY_CHAR.get(c);
                 assert(tile != null);
                 currentRow.add(tile);
             }
@@ -51,18 +51,18 @@ public class AsciiLevelFormat implements LevelFormat {
         int height = foregroundTiles.size();
 
         // Validate that all rows are of equal length
-        for (List<TileDefinition> row : foregroundTiles) {
+        for (List<Tile> row : foregroundTiles) {
             assert(row.size() == width);
         }
 
-        List<TileDefinition> tiles = new ArrayList<>();
-        for (List<TileDefinition> row : foregroundTiles) {
+        List<Tile> tiles = new ArrayList<>();
+        for (List<Tile> row : foregroundTiles) {
             tiles.addAll(row);
         }
 
         Level level = new Level();
         level.setDimensions(width, height);
-        level.setForegroundLayer(new TileMap(width, height, tiles));
+        level.setForegroundLayer(new TileMatrix(width, height, tiles));
 
         return level;
     }

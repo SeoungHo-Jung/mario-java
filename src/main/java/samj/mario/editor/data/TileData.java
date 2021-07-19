@@ -11,17 +11,17 @@ import static samj.mario.editor.data.IconSheet.TILES;
 
 public class TileData {
 
-    public static List<TileDefinition> FOREGROUND_TILES;
-    public static Map<Short, TileDefinition> FOREGROUND_TILES_BY_INDEX;
-    public static Map<Character, TileDefinition> FOREGROUND_TILES_BY_CHAR;
+    public static List<Tile> FOREGROUND_TILES;
+    public static Map<Short, Tile> FOREGROUND_TILES_BY_INDEX;
+    public static Map<Character, Tile> FOREGROUND_TILES_BY_CHAR;
 
     static {
-        List<TileDefinition> fgTiles = new ArrayList<>();
+        List<Tile> fgTiles = new ArrayList<>();
 
-        fgTiles.add(TileDefinition.EMPTY_TILE);
+        fgTiles.add(Tile.EMPTY_TILE);
 
         // Rock
-        fgTiles.add(TileDefinition.builder()
+        fgTiles.add(Tile.builder()
                 .setPrimaryDisplayTileIcon(new Icon(TILES, 0, 0))
                 .setTileIndex((short) 0x0010)
                 .setPaletteCount(4)
@@ -30,7 +30,7 @@ public class TileData {
                 .build());
 
         // Question Box
-        fgTiles.add(TileDefinition.builder()
+        fgTiles.add(Tile.builder()
                 .setPrimaryDisplayTileIcon(new Icon(TILES, 24, 0))
                 .setTileIndex((short) 0x0020)
                 .setPaletteCount(4)
@@ -39,7 +39,7 @@ public class TileData {
                 .build());
 
         // Coin
-        fgTiles.add(TileDefinition.builder()
+        fgTiles.add(Tile.builder()
                 .setPrimaryDisplayTileIcon(new Icon(TILES, 24, 1))
                 .setTileIndex((short) 0x0030)
                 .setPaletteCount(4)
@@ -52,10 +52,10 @@ public class TileData {
 
         // Create a hashmap of tiles for quick lookup by char
         FOREGROUND_TILES_BY_CHAR = FOREGROUND_TILES.stream()
-                .collect(Collectors.toUnmodifiableMap(TileDefinition::getTileChar, Function.identity()));
+                .collect(Collectors.toUnmodifiableMap(Tile::getTileChar, Function.identity()));
 
         // Create a hashmap of tiles for quick lookup by index
         FOREGROUND_TILES_BY_INDEX = FOREGROUND_TILES.stream()
-                .collect(Collectors.toUnmodifiableMap(TileDefinition::getTileIndex, Function.identity()));
+                .collect(Collectors.toUnmodifiableMap(Tile::getTileIndex, Function.identity()));
     }
 }
