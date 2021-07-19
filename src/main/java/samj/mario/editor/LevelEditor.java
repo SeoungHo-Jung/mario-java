@@ -177,10 +177,9 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawTiles(Graphics g) {
-        // draw foreground layer
         for (int x = 0; x < level.getWidth(); x++) {
             for (int y = 0; y < level.getHeight(); y++) {
-                Tile tile = level.getForegroundLayer().getTile(x, y);
+                Tile tile = level.getTileMatrix().getTile(x, y);
                 if (tile.getPrimaryDisplayIcon() != null) {
                     int panelX = x * gridSize;
                     int panelY = y * gridSize;
@@ -209,7 +208,7 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawPalette(Graphics g) {
-        final List<Tile> fgTiles = TileData.FOREGROUND_TILES;
+        final List<Tile> fgTiles = TileData.TILES;
 
         for (int i = 0; i < fgTiles.size(); i++) {
             Tile tile = fgTiles.get(i);
@@ -236,7 +235,7 @@ public class LevelEditor implements ActionListener {
 
         level = new Level();
         level.setDimensions(width, height);
-        level.setForegroundLayer(new TileMatrix(width, height));
+        level.setTileMatrix(new TileMatrix(width, height));
         levelPanelWidth = width * gridSize;
         levelPanelHeight = height * gridSize;
 
@@ -260,7 +259,7 @@ public class LevelEditor implements ActionListener {
 
         // TODO: Validate that no tiles are being deleted
 
-        level.setForegroundLayer(new TileMatrix(width, height, level.getForegroundLayer()));
+        level.setTileMatrix(new TileMatrix(width, height, level.getTileMatrix()));
 
         repaintLevel();
     }
@@ -292,14 +291,14 @@ public class LevelEditor implements ActionListener {
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
         if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
-            Tile oldTile = level.getForegroundLayer().getTile(x, y);
-            EditorCommand command = new ChangeForegroundTileCommand(x, y, selectedTile, oldTile, this);
+            Tile oldTile = level.getTileMatrix().getTile(x, y);
+            EditorCommand command = new ChangeTileCommand(x, y, selectedTile, oldTile, this);
             doCommand(command);
         }
     }
 
     private void handleTilePalettePanelMouseEvent(MouseEvent e) {
-        List<Tile> fgTiles = TileData.FOREGROUND_TILES;
+        List<Tile> fgTiles = TileData.TILES;
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
         int index = (y * paletteColumns) + x;

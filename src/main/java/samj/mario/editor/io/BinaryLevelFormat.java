@@ -70,7 +70,7 @@ public class BinaryLevelFormat implements LevelFormat {
         bb.putInt(0);                   // Size of Background Tiles portion TODO
 
         // write the tiles
-        for (Tile tile : level.getForegroundLayer()) {
+        for (Tile tile : level.getTileMatrix()) {
             bb.putShort(tile.getTileIndex());
         }
 
@@ -111,14 +111,14 @@ public class BinaryLevelFormat implements LevelFormat {
         List<Tile> fgTiles = new ArrayList<>();
         for (int i = 0; i < fgTileLength; i += 2) {
             short tileIndex = bb.getShort();
-            fgTiles.add(TileData.FOREGROUND_TILES_BY_INDEX.get(tileIndex));
+            fgTiles.add(TileData.TILES_BY_INDEX.get(tileIndex));
         }
 
         TileMatrix fgLayer = new TileMatrix(levelWidth, levelHeight, fgTiles);
 
         Level level = new Level();
         level.setDimensions(levelWidth, levelHeight);
-        level.setForegroundLayer(fgLayer);
+        level.setTileMatrix(fgLayer);
 
         return level;
     }

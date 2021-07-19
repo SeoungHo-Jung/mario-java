@@ -19,11 +19,11 @@ public class Level {
         this.height = height;
     }
 
-    public TileMatrix getForegroundLayer() {
+    public TileMatrix getTileMatrix() {
         return tileMatrix;
     }
 
-    public void setForegroundLayer(TileMatrix tileMatrix) {
+    public void setTileMatrix(TileMatrix tileMatrix) {
         this.tileMatrix = tileMatrix;
     }
 }

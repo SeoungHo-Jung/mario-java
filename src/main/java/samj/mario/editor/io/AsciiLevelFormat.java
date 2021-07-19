@@ -12,8 +12,8 @@ import java.util.List;
 public class AsciiLevelFormat implements LevelFormat {
     @Override
     public byte[] encode(Level level) {
-        // Write the foreground layer as text
-        TileMatrix fgLayer = level.getForegroundLayer();
+        // Write the tiles as text
+        TileMatrix fgLayer = level.getTileMatrix();
         StringBuilder sb = new StringBuilder();
         for (int y = 0; y < level.getHeight(); y++) {
             for (int x = 0; x < level.getWidth(); x++) {
@@ -28,7 +28,7 @@ public class AsciiLevelFormat implements LevelFormat {
 
     @Override
     public Level decode(byte[] bytes) {
-        List<List<Tile>> foregroundTiles = new ArrayList<>();
+        List<List<Tile>> tiles = new ArrayList<>();
 
         String chars = new String(bytes, StandardCharsets.US_ASCII);
 
@@ -36,33 +36,33 @@ public class AsciiLevelFormat implements LevelFormat {
         for (int i = 0; i < chars.length(); i++){
             char c = chars.charAt(i);
             if (c == '\n') {
-                foregroundTiles.add(currentRow);
+                tiles.add(currentRow);
                 currentRow = new ArrayList<>();
             } else {
-                Tile tile = TileData.FOREGROUND_TILES_BY_CHAR.get(c);
+                Tile tile = TileData.TILES_BY_CHAR.get(c);
                 assert(tile != null);
                 currentRow.add(tile);
             }
         }
 
-        assert(!foregroundTiles.isEmpty());
+        assert(!tiles.isEmpty());
 
-        int width = foregroundTiles.get(0).size();
-        int height = foregroundTiles.size();
+        int width = tiles.get(0).size();
+        int height = tiles.size();
 
         // Validate that all rows are of equal length
-        for (List<Tile> row : foregroundTiles) {
+        for (List<Tile> row : tiles) {
             assert(row.size() == width);
         }
 
-        List<Tile> tiles = new ArrayList<>();
-        for (List<Tile> row : foregroundTiles) {
-            tiles.addAll(row);
+        List<Tile> flatTiles = new ArrayList<>();
+        for (List<Tile> row : tiles) {
+            flatTiles.addAll(row);
         }
 
         Level level = new Level();
         level.setDimensions(width, height);
-        level.setForegroundLayer(new TileMatrix(width, height, tiles));
+        level.setTileMatrix(new TileMatrix(width, height, flatTiles));
 
         return level;
     }
