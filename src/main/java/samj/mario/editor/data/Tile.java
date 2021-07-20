@@ -19,6 +19,8 @@ public class Tile {
     private final short tileIndex;
     private final Integer tileX;
     private final Integer tileY;
+    private final Integer tilePalette;
+    private final boolean isAnimated;
     private final String name;
     private final JsonTileType type;
     private final JsonContainerType containerType;
@@ -33,6 +35,8 @@ public class Tile {
         this.tileIndex = builder.tileIndex;
         this.tileX = builder.tileX;
         this.tileY = builder.tileY;
+        this.tilePalette = builder.tilePalette;
+        this.isAnimated = builder.isAnimated;
         this.name = builder.name;
         this.type = builder.type;
         this.containerType = builder.containerType;
@@ -45,11 +49,11 @@ public class Tile {
         private Icon primaryDisplayIcon = null;
         private Icon secondaryDisplayIcon = null;
         private char tileChar = '\0';
-        private short tileIndex = 0;
+        private short tileIndex = -1;
         private Integer tileX = null;
         private Integer tileY = null;
-        private int paletteCount = 1;
-        private boolean isEnabled = true;
+        private Integer tilePalette = null;
+        private boolean isAnimated = false;
         private String name = "";
         private JsonTileType type = JsonTileType.EMPTY;
         private JsonContainerType containerType = null;
@@ -79,16 +83,6 @@ public class Tile {
             return this;
         }
 
-        public Builder setPaletteCount(int paletteCount) {
-            this.paletteCount = paletteCount;
-            return this;
-        }
-
-        public Builder setEnabled(boolean enabled) {
-            isEnabled = enabled;
-            return this;
-        }
-
         public Builder setName(String name) {
             this.name = name;
             return this;
@@ -101,6 +95,16 @@ public class Tile {
 
         public Builder setTileY(Integer tileY) {
             this.tileY = tileY;
+            return this;
+        }
+
+        public Builder setTilePalette(Integer tilePalette) {
+            this.tilePalette = tilePalette;
+            return this;
+        }
+
+        public Builder setAnimated(boolean animated) {
+            isAnimated = animated;
             return this;
         }
 
@@ -160,6 +164,14 @@ public class Tile {
 
     public Integer getTileY() {
         return tileY;
+    }
+
+    public Integer getTilePalette() {
+        return tilePalette;
+    }
+
+    public boolean isAnimated() {
+        return isAnimated;
     }
 
     public String getName() {

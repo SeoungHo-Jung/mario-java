@@ -7,10 +7,7 @@ import samj.mario.editor.data.TileMatrix;
 import samj.mario.editor.data.Tile;
 import samj.mario.editor.data.Level;
 import samj.mario.editor.data.TileData;
-import samj.mario.editor.io.BinaryLevelFormat;
-import samj.mario.editor.io.FileIO;
-import samj.mario.editor.io.IconLoader;
-import samj.mario.editor.io.LevelFormat;
+import samj.mario.editor.io.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,7 +42,7 @@ public class LevelEditor implements ActionListener {
     private final int gridSize = 16;
     private final int paletteColumns = 8;
 
-    private final LevelFormat levelFormat = new BinaryLevelFormat();
+    private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
     private final IconLoader iconLoader = new IconLoader(gridSize);
 

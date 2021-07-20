@@ -5,8 +5,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class JsonTile {
     public JsonTileType type;
-    public JsonContainerType dispenseType;
-    public Integer count; // for DISPENSE type
+    public JsonContainerType containerType;
+    public Integer containerCount;
     public JsonDirection direction; // for ENTRANCE/EXIT types
     public JsonEnemyType enemyType;
     public Integer x;
