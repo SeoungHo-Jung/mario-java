@@ -68,7 +68,7 @@
 | `index` | Integer | _Optional_ (unless `type` is `MARIO_SPAWN`, `TRANSPORT_ENTRANCE`, or `TRANSPORT_EXIT`) | Zero indexed int which identifies in an ordered fashion which instance of a particular tile type this is. In the case of `MARIO_SPAWN`, the tile with `index=0` is the place where Mario first spawns. All subsequent `MARIO_SPAWN` tiles indicate checkpoint respawns. In the case of `TRANSPORT_ENTRANCE`/`TRANSPORT_EXIT` each pair of entrance & exit with index `n` are linked. `index` is guaranteed to be unique per tile type, zero-indexed, and consecutive. | 
 | `x` | Integer | _Optional_ (only when `type` is `EMPTY`) | The x coordinate of this tile's graphic on the tile sheet. |
 | `y` | Integer | _Optional_ (only when `type` is `EMPTY`) | The y coordinate of this tile's graphic on the tile sheet. |
-| `isAnimated` | Boolean | _Optional_ | Whether this particular tile should be animated. |
+| `isAnimated` | Boolean | _Required_ | Whether this particular tile should be animated. |
 
 ###### Color (Object)
 | Property | Type | Nullability | Description |
