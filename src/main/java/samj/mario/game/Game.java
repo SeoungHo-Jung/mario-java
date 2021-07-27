@@ -32,6 +32,20 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private int frameWidth = CANVAS_WIDTH;
     private int frameHeight = CANVAS_HEIGHT;
 
+    //mario's status
+    enum MarioStatus{
+        STANDING, JUMPING, FALLING, DEAD;
+    }
+    MarioStatus status = MarioStatus.STANDING;
+
+    enum Last_Key_Pressed{
+        RIGHT, LEFT, UP, DOWN;
+    }
+
+    enum Warning_Collide{
+        RIGHT, LEFT, UP, DOWN, NULL;
+    }
+    Warning_Collide collisionLocation = Warning_Collide.NULL;
 
     //Mario's positions : initialized as
     float marioX = 32;
@@ -52,15 +66,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
     boolean up_key_pressed = false;
     boolean down_key_pressed = false;
 
-    boolean right_key_released = false;
-    boolean left_key_released = false;
-    boolean up_key_released = false;
-    boolean down_key_released = false;
 
     //Mario's speed : default is 4px/tic
-    float marioSpeed = 0;
+    double marioHorizontalSpeed = 0;
+    double marioVerticalSpeed = 0;
     double acceleration = 0.1;
-    double marioMaxSpeed = 2.5;
+    double jumpAcceleration = 0.07;
+    double gravity = 0.12;
+    double marioMaxSpeed = 2.50;
     double marioMinSpeed = 0;
 
 
@@ -72,29 +85,32 @@ public class Game extends Canvas implements Runnable, KeyListener {
     //Checks if Mario is out of the screen or not
     boolean outOfFrame;
 
+    //Checks which key was pressed last
+    Last_Key_Pressed lastKeyPressed;
+
     //Grid : Each tile is sized 16 X 16
     private char[][] reachableOrNot = new char[15][16];
 
     //Test cases
     private String demoLevel =
             "######    ######" +
-            "          ####  " +
-            "                " +
-            "        ######  " +
-            "        ######  " +
-            "                " +
-            "                " +
-            "                " +
-            "                " +
-            "  ##            " +
-            "  ##            " +
-            "        ###     " +
-            "               #" +
-            "################" +
-            "################";
+                    "          ####  " +
+                    "                " +
+                    "        ######  " +
+                    "        ######  " +
+                    "                " +
+                    "                " +
+                    "                " +
+                    "                " +
+                    "   ###          " +
+                    "   ###          " +
+                    "        ###     " +
+                    "#              #" +
+                    "################" +
+                    "################";
 
     private String demoLevelTwo =
-                    "################" +
+            "################" +
                     "###       ####  " +
                     "                " +
                     "     ######   ##" +
@@ -106,35 +122,35 @@ public class Game extends Canvas implements Runnable, KeyListener {
                     "# ##            " +
                     "# ####          " +
                     "# ####  ###     " +
-                    "        ###    #" +
+                    "#       ###    #" +
                     "################" +
                     "################";
 
     private String demoLevelThree =
             "################" +
-            "            ####" +
-            "#       ##      " +
-            "#    ##    #####" +
-            "##########     #" +
-            "#        ##### #" +
-            "#  ##### #   # #" +
-            "#      # # # # #" +
-            "###### #   # # #" +
-            "#    # ##### # #" +
-            "# ## # #     # #" +
-            "#  # # # ##### #" +
-            "## #   #       #" +
-            "################" +
-            "################";
+                    "            ####" +
+                    "#       ##      " +
+                    "#    ##    #####" +
+                    "##########     #" +
+                    "#        ##### #" +
+                    "#  ##### #   # #" +
+                    "#      # # # # #" +
+                    "###### #   # # #" +
+                    "#    # ##### # #" +
+                    "# ## # #     # #" +
+                    "#  # # # ##### #" +
+                    "## #   #       #" +
+                    "################" +
+                    "################";
 
     public void init() {
         // Load the sprite sheet image
         String spriteFile = "image/player.png";
         URL imageURL = getClass().getClassLoader().getResource(spriteFile);
 
-        //String tileSpriteFile = "tiles.png";
-        //URL tileImageURL = getClass().getClassLoader().getResource(tileSpriteFile);
-        if (imageURL == null) { //tileImageURL == null
+        String tileSpriteFile = "image/tiles.png";
+        URL tileImageURL = getClass().getClassLoader().getResource(tileSpriteFile);
+        if (imageURL == null || tileImageURL == null) { //tileImageURL == null
             System.err.println("Couldn't find sprite file: " + spriteFile);
         } else {
             try {
@@ -142,8 +158,9 @@ public class Game extends Canvas implements Runnable, KeyListener {
                 spriteSheet = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
                 spriteSheet.getGraphics().drawImage(in, 0, 0, null);
 
-                //BufferedImage in2 = ImageIO.read(tileImageURL);
-                //tileSpriteSheet = new BufferedImage(in2.getWidth(), in2.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                BufferedImage in2 = ImageIO.read(tileImageURL);
+                tileSpriteSheet = new BufferedImage(in2.getWidth(), in2.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                tileSpriteSheet.getGraphics().drawImage(in2, 0, 0, null);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -161,19 +178,17 @@ public class Game extends Canvas implements Runnable, KeyListener {
                 }
             }
 
-            /*
-           int  tileTransparentColor = 0;
-            for (int x = 0; x < tileSpriteSheet.getWidth(); x++) {
-                for (int y = 0; y < tileSpriteSheet.getHeight(); y++) {
-                    int[] tilePixel = tileSpriteSheet.getRaster().getPixel(x, y, (int[]) null);
+
+            int  tileTransparentColor = 0;
+            for (int i = 0; i < tileSpriteSheet.getWidth(); i++) {
+                for (int j = 0; j < tileSpriteSheet.getHeight(); j++) {
+                    int[] tilePixel = tileSpriteSheet.getRaster().getPixel(i, j, (int[]) null);
                     int tileRgbColor = (tilePixel[0] << 16) | tilePixel[1] << 8 | tilePixel[2];
                     int[] tilePixelCopy = Arrays.copyOf(tilePixel, tilePixel.length);
                     tilePixelCopy[3] = tileRgbColor == transparentColor ? 0x00 : 0xFF;
-                    spriteSheet.getRaster().setPixel(x, y, tilePixelCopy);
+                    tileSpriteSheet.getRaster().setPixel(i, j, tilePixelCopy);
                 }
             }
-
-             */
         }
 
         // Register the KeyListener for this Canvas
@@ -186,14 +201,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
     public void tick() {
         // Update the game's state on a fixed-rate interval
         moveMario();
-
         ticks ++;
     }
 
     public void render() {
         // Draw the graphics to the screen
         marioImg = spriteSheet.getSubimage(colCurr, 32, marioWidth, marioHeight);
-        blockImg = spriteSheet.getSubimage(colCurr, 80, blockWidth, blockHeight);
+        //Mystery numbers. Must fix
+        blockImg = tileSpriteSheet.getSubimage(0, 0, blockWidth, blockHeight);
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             // Use a double-buffering strategy
@@ -242,7 +257,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
     @Override
     public void run() {
         init();
-        
+
         //Just fpr this implementation. Will need to move it to tick()
         for(int i = 0; i < reachableOrNot.length; i++){
             for (int j = 0; j < reachableOrNot[i].length; j++){
@@ -297,6 +312,97 @@ public class Game extends Canvas implements Runnable, KeyListener {
     }
 
     public void moveMario(){
+
+        if(status == MarioStatus.JUMPING){
+            colCurr = 160;
+        }
+        if(status == MarioStatus.FALLING || status == MarioStatus.STANDING){
+            colCurr = 80;
+        }
+
+        //Checks if there is collision
+        boolean noCollision = false;
+
+        //Performs different task depending on keyboard input
+        if(right_key_pressed){
+            lastKeyPressed = Last_Key_Pressed.RIGHT;
+            if (marioHorizontalSpeed <= marioMaxSpeed) {
+                marioHorizontalSpeed += acceleration;
+            }
+        }
+        if(left_key_pressed){
+            lastKeyPressed = Last_Key_Pressed.LEFT;
+            if(marioHorizontalSpeed < 0){
+                if(Math.abs(marioHorizontalSpeed) <= marioMaxSpeed) {
+                    marioHorizontalSpeed -= acceleration;
+                }
+            }
+            else{
+                marioHorizontalSpeed -= acceleration;
+            }
+        }
+        if(up_key_pressed){
+            //System.out.println("mario speed is : " + marioVerticalSpeed);
+            lastKeyPressed = Last_Key_Pressed.UP;
+            if(status == MarioStatus.STANDING){
+                marioVerticalSpeed = -3.5;
+                status = MarioStatus.JUMPING;
+            }
+            if(status == MarioStatus.JUMPING) {
+                marioVerticalSpeed += jumpAcceleration;
+            }
+            if(marioVerticalSpeed >= 0){
+                status = MarioStatus.FALLING;
+            }
+
+        }
+        /*
+        if(down_key_pressed){
+            noCollision = safeToMove(gridXscale, gridYscale, "down", XinBetween, YinBetween);
+            if(noCollision){
+                marioY += marioHorizontalSpeed;
+            }
+        }
+
+         */
+
+        //When released
+
+        if(status == MarioStatus.JUMPING && !up_key_pressed){
+            status = MarioStatus.FALLING;
+        }
+
+        if(!right_key_pressed && !left_key_pressed && !up_key_pressed && !down_key_pressed){
+            status = MarioStatus.FALLING;
+            if(marioHorizontalSpeed >= marioMinSpeed){
+                marioHorizontalSpeed -= acceleration;
+                if(marioHorizontalSpeed < 0){
+                    marioHorizontalSpeed = 0;
+                }
+            }
+            if(marioHorizontalSpeed <= marioMinSpeed){
+                marioHorizontalSpeed += acceleration;
+                if(marioHorizontalSpeed > 0){
+                    marioHorizontalSpeed = 0;
+                }
+            }
+
+            if(status == MarioStatus.FALLING){
+                marioVerticalSpeed += gravity;
+            }
+        }
+
+        if(status == MarioStatus.FALLING){
+            marioVerticalSpeed += gravity;
+        }
+
+        float marioTempX = marioX;
+        float marioTempY = marioY;
+
+        marioX += marioHorizontalSpeed;
+        marioY += marioVerticalSpeed;
+
+
         int gridXscale = (int)(marioX/16);
         int gridYscale = (int)(marioY/16);
 
@@ -310,89 +416,33 @@ public class Game extends Canvas implements Runnable, KeyListener {
             YinBetween = true;
         }
 
-        //Checks if there is collision
-        boolean noCollision = false;
 
+        noCollision = safeToMove(gridXscale, gridYscale, XinBetween, YinBetween);
 
-        //Performs different task depending on keyboard input
-        if(right_key_pressed){
-            noCollision = safeToMove(gridXscale, gridYscale, "right", XinBetween, YinBetween);
-            if(noCollision){
-                if (marioSpeed <= marioMaxSpeed) {
-                    marioSpeed += acceleration;
-                }
-                marioX += marioSpeed;
+        //Not a safe place, move back to original position
+        if(!noCollision){
+            if(collisionLocation == Warning_Collide.DOWN){
+                marioVerticalSpeed = 0;
+                status = MarioStatus.STANDING;
             }
-        }
-        if(left_key_pressed){
-            //lastKeyPressed = "left";
-            noCollision = safeToMove(gridXscale, gridYscale, "left", XinBetween, YinBetween);
-            if(noCollision){
-                marioSpeed += acceleration;
-                marioX -= marioSpeed;
+            if(collisionLocation == Warning_Collide.UP){
+                marioVerticalSpeed = 0;
+                status = MarioStatus.FALLING;
             }
-        }
-        if(up_key_pressed){
-            noCollision = safeToMove(gridXscale, gridYscale, "up", XinBetween, YinBetween);
-            if(noCollision){
-                marioSpeed += acceleration;
-                marioY -= marioSpeed;
+            if(collisionLocation == Warning_Collide.LEFT || collisionLocation == Warning_Collide.RIGHT){
+                marioHorizontalSpeed = 0;
+                //status = MarioStatus.STANDING;
             }
-        }
-        /*
-        if(down_key_pressed){
-            noCollision = safeToMove(gridXscale, gridYscale, "down", XinBetween, YinBetween);
-            if(noCollision){
-                marioY += marioSpeed;
-            }
+            marioX = Math.round(marioTempX);
+            marioY = Math.round(marioTempY);
         }
 
-         */
-
-        //When released
-        if(!right_key_pressed && !left_key_pressed && !up_key_pressed && !down_key_pressed){
-            noCollision = safeToMove(gridXscale, gridYscale, "right", XinBetween, YinBetween);
-            if(noCollision && marioSpeed > marioMinSpeed){
-                marioSpeed -= acceleration;
-                marioX += marioSpeed;
-            }
-        }
-
-        /*
-        else if(!left_key_pressed){
-
-            noCollision = safeToMove(gridXscale, gridYscale, "left", XinBetween, YinBetween);
-            if(noCollision && marioSpeed >= 0){
-                marioSpeed -= 0.5;
-                marioX -= marioSpeed;
-            }
-
-        }
-
-        else if(up_key_released){
-            while(marioSpeed != 0){
-                noCollision = safeToMove(gridXscale, gridYscale, "up", XinBetween, YinBetween);
-                if(noCollision){
-                    marioSpeed -= acceleration;
-                    marioY -= marioSpeed;
-                }
-            }
-        }
-
-        else if(down_key_released){
-            while(!noCollision){
-                noCollision = safeToMove(gridXscale, gridYscale, "down", XinBetween, YinBetween);
-                if(noCollision){
-                    marioSpeed = (float)Math.sqrt(marioSpeed);
-                    marioY += marioSpeed;
-                }
-            }
-        }
-
-         */
+        //System.out.println("Mario is " + status);
+        //System.out.println("\n mario Y is : " + marioY);
     }
 
-    public boolean safeToMove(int gridX, int gridY, String direction, boolean XinBetween, boolean YinBetween){
+    public boolean safeToMove(int gridX, int gridY, boolean XinBetween, boolean YinBetween){
+        /*
         //Boundaries for mario
         float marioUpperLineStart;
         float marioUpperLineEnd;
@@ -413,154 +463,72 @@ public class Game extends Canvas implements Runnable, KeyListener {
         float blockRightLineStart;
         float blockRightLineEnd;
 
-        outOfFrame = false;
+         */
 
-        //First we need to check if mario's current position overlaps between two grids
-        //Next, solve it in a trivial way if Mario is perfectly inside one grid
-        //Otherwise check the NEXT grid's collision as well (int int casting drops the decimals)
-        if(direction.equals("right")){
-            marioRightLineStart = marioY;
-            marioRightLineEnd = marioRightLineStart + marioWidth;
+        boolean check = true;
 
-            if(outOfFrame || marioX >= frameWidth - marioWidth || marioX < 0){
-                outOfFrame = true;
-                return true;
-            }
-
-            else if(!YinBetween && marioX < frameWidth - marioWidth && reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] == '#'){
-                blockLeftLineStart = gridY * 16;
-                blockLeftLineEnd = blockLeftLineStart + blockHeight;
-                if(blockLeftLineEnd - marioRightLineStart >= 0 && marioRightLineEnd - blockLeftLineStart >= 0){
-                    return false;
-                }
-            }
-            else if(YinBetween && marioX < frameWidth - marioWidth && reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] == '#'){
-                blockLeftLineStart = gridY * 16;
-                blockLeftLineEnd = blockLeftLineStart + blockHeight;
-                if(blockLeftLineEnd - marioRightLineStart >= 0 && marioRightLineEnd - blockLeftLineStart >= 0){
-                    return false;
-                }
-            }
-            else if(YinBetween && marioX < frameWidth - marioWidth && reachableOrNot[gridY + 1][(int)((marioX + marioWidth) / 16)] == '#'){
-                blockLeftLineStart = (gridY + 1) * 16;
-                blockLeftLineEnd = blockLeftLineStart + blockHeight;
-                if(blockLeftLineEnd - marioRightLineStart >= 0 && marioRightLineEnd - blockLeftLineStart >= 0){
-                    return false;
-                }
-            }
-
-            if(reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] != '#'){
-                return true;
-            }
+        //If mario is out of frame, it returns true no matter what
+        if(marioX < 0 || marioX > frameWidth - marioWidth || marioY < 0 || marioY > frameHeight - marioHeight){
+            return true;
         }
-        else if(direction.equals("left")){
-            marioLeftLineStart = marioY;
-            marioLeftLineEnd = marioLeftLineStart + 16;
-            if(outOfFrame || marioX >= frameWidth - marioWidth || marioX < 0){
-                outOfFrame = true;
-                return true;
+
+        if(YinBetween){
+            if(right_key_pressed && reachableOrNot[gridY + 1][(int)((marioX + marioWidth) / 16)] == '#'){
+                check = false;
+                collisionLocation = Warning_Collide.RIGHT;
+            }
+            if(left_key_pressed && reachableOrNot[gridY + 1][(int)(marioX / 16)] == '#'){
+                check = false;
+                collisionLocation = Warning_Collide.LEFT;
             }
 
-            else if(!YinBetween && marioX < frameWidth - marioWidth && reachableOrNot[gridY][(int)((marioX - marioSpeed) / 16)] == '#'){
-                blockRightLineStart = gridY * 16;
-                blockRightLineEnd = blockRightLineStart + blockHeight;
-                if(blockRightLineEnd - marioLeftLineStart >= 0 && marioLeftLineEnd - blockRightLineStart >= 0){
-                    return false;
-                }
-            }
-            else if(YinBetween && marioX < frameWidth - marioWidth && reachableOrNot[gridY][(int)((marioX - marioSpeed) / 16)] == '#'){
-                blockRightLineStart = gridY * 16;
-                blockRightLineEnd = blockRightLineStart + blockHeight;
-                if(blockRightLineEnd - marioLeftLineStart >= 0 && marioLeftLineEnd - blockRightLineStart >= 0){
-                    return false;
-                }
-            }
-            else if(YinBetween && marioX < frameWidth - marioWidth && reachableOrNot[gridY + 1][(int)((marioX + marioSpeed) / 16)] == '#'){
-                blockRightLineStart = (gridY + 1) * 16;
-                blockRightLineEnd = blockRightLineStart + blockHeight;
-                if(blockRightLineEnd - marioLeftLineStart >= 0 && marioLeftLineEnd - blockRightLineStart >= 0){
-                    return false;
-                }
-            }
 
-            if(reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] != '#'){
-                return true;
-            }
-        }
-        else if(direction.equals("up")){
-            marioUpperLineStart = marioX;
-            marioUpperLineEnd = marioUpperLineStart + blockWidth;
-
-            if(outOfFrame || marioY <= 0 || marioY > frameHeight){
-                outOfFrame = true;
-                return true;
-            }
-            else if(!XinBetween && marioY >= 0 && reachableOrNot[(int)((marioY - marioSpeed)/16)][gridX] == '#'){
-                blockLowerLineStart = gridX * 16;
-                blockLowerLineEnd = blockLowerLineStart + blockWidth;
-                if(marioUpperLineEnd - blockLowerLineStart >= 0 && blockLowerLineEnd - marioUpperLineStart >= 0){
-                    return false;
+            if(status == MarioStatus.FALLING){
+                if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX] == '#'){
+                    check = false;
+                    collisionLocation = Warning_Collide.DOWN;
                 }
             }
-            else if(XinBetween && marioY >= 0 && reachableOrNot[(int)((marioY - marioSpeed)/16)][gridX] == '#'){
-                blockLowerLineStart = gridX * 16;
-                blockLowerLineEnd = blockLowerLineStart + blockWidth;
-                if(marioUpperLineEnd - blockLowerLineStart >= 0 && blockLowerLineEnd - marioUpperLineStart >= 0){
-                    return false;
-                }
-
-            }
-            else if(XinBetween && marioY >= 0 && reachableOrNot[(int)((marioY - marioSpeed)/16)][gridX + 1] == '#'){
-                blockLowerLineStart = (gridX + 1) * 16;
-                blockLowerLineEnd = blockLowerLineStart + blockWidth;
-                if(marioUpperLineEnd - blockLowerLineStart >= 0 && blockLowerLineEnd - marioUpperLineStart >= 0){
-                    return false;
-                }
-
-            }
-
-            else if(reachableOrNot[(int)(marioY - marioSpeed)/16][gridX] != '#'){
-                return true;
+            if(status == MarioStatus.JUMPING && reachableOrNot[(int)(marioY / 16)][gridX] == '#'){
+                //System.out.println("here");
+                check = false;
+                collisionLocation = Warning_Collide.UP;
             }
         }
 
-        else if(direction.equals("down")){
-            marioLowerLineStart = marioX;
-            marioLowerLineEnd = marioLowerLineStart + 16;
-
-            if(outOfFrame || marioY > frameHeight - marioHeight || marioY < 0){
-                outOfFrame = true;
-                return true;
+        if(XinBetween){
+            if(right_key_pressed && reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] == '#'){
+                check = false;
+                collisionLocation = Warning_Collide.RIGHT;
             }
-            //If Mario is perfectly in the grid
-            else if(!XinBetween && marioY >= 0 && reachableOrNot[(int)((marioY + marioHeight)/16)][gridX] == '#'){
-                blockUpperLineStart = gridX * 16;
-                blockUpperLineEnd = blockUpperLineStart + blockWidth;
-                if(marioLowerLineEnd - blockUpperLineStart >= 0 && blockUpperLineEnd - marioLowerLineStart >= 0){
-                    return false;
+            if(left_key_pressed && reachableOrNot[gridY][(int)(marioX / 16)] == '#'){
+                check = false;
+                collisionLocation = Warning_Collide.LEFT;
+            }
+            if(status == MarioStatus.FALLING){
+                if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX + 1] == '#'){
+                    check = false;
+                    collisionLocation = Warning_Collide.DOWN;
                 }
             }
-            //If Mario is off the grid by a bit
-            else if(XinBetween && marioY >= 0 && reachableOrNot[(int)((marioY + marioHeight)/16)][gridX] == '#'){
-                blockUpperLineStart = gridX * 16;
-                blockUpperLineEnd = blockUpperLineStart + blockWidth;
-                if(marioLowerLineEnd - blockUpperLineStart >= 0 && blockUpperLineEnd - marioLowerLineStart >= 0){
-                    return false;
-                }
-            }
-            else if(XinBetween && marioY >= 0 && reachableOrNot[(int)((marioY + marioHeight)/16)][gridX + 1] == '#'){
-                blockUpperLineStart = (gridX + 1) * 16;
-                blockUpperLineEnd = blockUpperLineStart + blockWidth;
-                if(marioLowerLineEnd - blockUpperLineStart >= 0 && blockUpperLineEnd - marioLowerLineStart >= 0){
-                    return false;
-                }
-            }
-
-            else if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX] != '#'){
-                return true;
+            if(status == MarioStatus.JUMPING && reachableOrNot[(int)(marioY / 16)][gridX + 1] == '#'){
+                check = false;
+                collisionLocation = Warning_Collide.UP;
             }
         }
-        return true;
+
+        if(!YinBetween){
+            if(reachableOrNot[gridY][gridX] == '#'){
+                return false;
+            }
+        }
+        if(!XinBetween){
+            if(reachableOrNot[gridY][gridX] == '#'){
+                return false;
+            }
+        }
+
+        return check;
     }
 
     @Override
@@ -575,7 +543,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
         if(pressedKeyCode == VK_RIGHT){
             right_key_pressed = true;
-            right_key_released = false;
         }
 
         if(pressedKeyCode == VK_LEFT){
@@ -614,20 +581,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
             down_key_pressed = false;
         }
     }
-    
-    public class Tiles{
 
-        public Tiles(String imgName){
-            int tileX = 0;
-            int tileY = 0;
-            int tileWidth = 16;
-            int tileHeight = 16;
-
-            URL imageURL = getClass().getClassLoader().getResource(imgName);
-            URL url;
-            BufferedImage tile;
-        }
-    }
 }
 
 
