@@ -46,6 +46,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         RIGHT, LEFT, UP, DOWN, NULL;
     }
     Warning_Collide collisionLocation = Warning_Collide.NULL;
+    boolean[] collisionList = new boolean[4];
 
     //Mario's positions : initialized as
     float marioX = 32;
@@ -372,6 +373,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
             status = MarioStatus.FALLING;
         }
 
+
         if(!right_key_pressed && !left_key_pressed && !up_key_pressed && !down_key_pressed){
             status = MarioStatus.FALLING;
             if(marioHorizontalSpeed >= marioMinSpeed){
@@ -387,9 +389,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
                 }
             }
 
-            if(status == MarioStatus.FALLING){
-                marioVerticalSpeed += gravity;
-            }
         }
 
         if(status == MarioStatus.FALLING){
@@ -421,49 +420,36 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
         //Not a safe place, move back to original position
         if(!noCollision){
+            if(collisionLocation != Warning_Collide.DOWN){
+                status = MarioStatus.FALLING;
+            }
             if(collisionLocation == Warning_Collide.DOWN){
                 marioVerticalSpeed = 0;
                 status = MarioStatus.STANDING;
+                marioY = Math.round(marioTempY);
             }
             if(collisionLocation == Warning_Collide.UP){
                 marioVerticalSpeed = 0;
                 status = MarioStatus.FALLING;
+                marioY = Math.round(marioTempY);
             }
             if(collisionLocation == Warning_Collide.LEFT || collisionLocation == Warning_Collide.RIGHT){
                 marioHorizontalSpeed = 0;
-                //status = MarioStatus.STANDING;
+                marioX = Math.round(marioTempX);
             }
-            marioX = Math.round(marioTempX);
-            marioY = Math.round(marioTempY);
+            //marioX = Math.round(marioTempX);
+        }
+        else{
+            if(status != MarioStatus.JUMPING)
+            status = MarioStatus.FALLING;
         }
 
         //System.out.println("Mario is " + status);
+        //System.out.println("collision location is : " + collisionLocation);
         //System.out.println("\n mario Y is : " + marioY);
     }
 
     public boolean safeToMove(int gridX, int gridY, boolean XinBetween, boolean YinBetween){
-        /*
-        //Boundaries for mario
-        float marioUpperLineStart;
-        float marioUpperLineEnd;
-        float marioLowerLineStart;
-        float marioLowerLineEnd;
-        float marioLeftLineStart;
-        float marioLeftLineEnd;
-        float marioRightLineStart;
-        float marioRightLineEnd;
-
-        //Boundaries for blocks
-        float blockUpperLineStart;
-        float blockUpperLineEnd;
-        float blockLowerLineStart;
-        float blockLowerLineEnd;
-        float blockLeftLineStart;
-        float blockLeftLineEnd;
-        float blockRightLineStart;
-        float blockRightLineEnd;
-
-         */
 
         boolean check = true;
 
@@ -473,59 +459,69 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         if(YinBetween){
-            if(right_key_pressed && reachableOrNot[gridY + 1][(int)((marioX + marioWidth) / 16)] == '#'){
+            if(marioHorizontalSpeed > 0 && reachableOrNot[gridY + 1][(int)((marioX + marioWidth) / 16)] == '#'){
                 check = false;
                 collisionLocation = Warning_Collide.RIGHT;
             }
-            if(left_key_pressed && reachableOrNot[gridY + 1][(int)(marioX / 16)] == '#'){
+            if(marioHorizontalSpeed < 0 && reachableOrNot[gridY + 1][(int)(marioX / 16)] == '#'){
                 check = false;
                 collisionLocation = Warning_Collide.LEFT;
             }
 
 
-            if(status == MarioStatus.FALLING){
+            if(marioVerticalSpeed > 0){
                 if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX] == '#'){
                     check = false;
                     collisionLocation = Warning_Collide.DOWN;
+
                 }
             }
-            if(status == MarioStatus.JUMPING && reachableOrNot[(int)(marioY / 16)][gridX] == '#'){
+            if(marioVerticalSpeed < 0 && reachableOrNot[(int)(marioY / 16)][gridX] == '#'){
                 //System.out.println("here");
                 check = false;
                 collisionLocation = Warning_Collide.UP;
+
             }
         }
 
         if(XinBetween){
-            if(right_key_pressed && reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] == '#'){
+            if(marioHorizontalSpeed > 0 && reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] == '#'){
                 check = false;
                 collisionLocation = Warning_Collide.RIGHT;
+
             }
-            if(left_key_pressed && reachableOrNot[gridY][(int)(marioX / 16)] == '#'){
+            if(marioHorizontalSpeed < 0 && reachableOrNot[gridY][(int)(marioX / 16)] == '#'){
                 check = false;
                 collisionLocation = Warning_Collide.LEFT;
+
             }
-            if(status == MarioStatus.FALLING){
+            if(marioVerticalSpeed > 0){
                 if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX + 1] == '#'){
                     check = false;
                     collisionLocation = Warning_Collide.DOWN;
+
                 }
             }
-            if(status == MarioStatus.JUMPING && reachableOrNot[(int)(marioY / 16)][gridX + 1] == '#'){
+            if(marioVerticalSpeed < 0 && reachableOrNot[(int)(marioY / 16)][gridX + 1] == '#'){
                 check = false;
                 collisionLocation = Warning_Collide.UP;
+
             }
         }
 
         if(!YinBetween){
             if(reachableOrNot[gridY][gridX] == '#'){
                 return false;
+
             }
         }
         if(!XinBetween){
             if(reachableOrNot[gridY][gridX] == '#'){
                 return false;
             }
+        }
+        if(check){
+            collisionLocation = Warning_Collide.NULL;
         }
 
         return check;
