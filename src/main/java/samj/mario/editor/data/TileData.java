@@ -3,9 +3,6 @@ package samj.mario.editor.data;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import samj.mario.editor.io.json.JsonContainerType;
-import samj.mario.editor.io.json.JsonDirection;
-import samj.mario.editor.io.json.JsonTileType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,14 +23,14 @@ public class TileData {
         fgTiles.add(Tile.EMPTY_TILE);
 
         for (TileDefinition tileDef : tileDefs) {
-            List<JsonTileType> types = tileDef.allowedTypes;
-            List<JsonContainerType> containerTypes = tileDef.allowedContainerTypes;
+            List<TileType> types = tileDef.allowedTypes;
+            List<ContainerType> containerTypes = tileDef.allowedContainerTypes;
             final int paletteCount = tileDef.paletteCount;
             if (containerTypes == null) {
                 containerTypes = Collections.singletonList(null); // hack to still loop once
             }
-            for (JsonTileType type : types) {
-                for (JsonContainerType containerType : containerTypes) {
+            for (TileType type : types) {
+                for (ContainerType containerType : containerTypes) {
                     for (int palette = 0; palette < paletteCount; palette++) {
                         final int x = tileDef.x;
                         final int y = tileDef.y + (2 * palette); // each palette is spaced 2 rows apart
@@ -49,7 +46,7 @@ public class TileData {
                         // set defaults
                         switch (type) {
                             case CONTAINER -> builder.setCount(1);
-                            case TRANSPORT_ENTRANCE, TRANSPORT_EXIT -> builder.setDirection(JsonDirection.DOWNWARD);
+                            case TRANSPORT_ENTRANCE, TRANSPORT_EXIT -> builder.setDirection(Direction.DOWNWARD);
                         }
 
                         Tile tile = builder.build();

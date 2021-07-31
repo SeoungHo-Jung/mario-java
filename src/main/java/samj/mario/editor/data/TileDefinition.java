@@ -1,9 +1,5 @@
 package samj.mario.editor.data;
 
-import samj.mario.editor.io.json.JsonContainerType;
-import samj.mario.editor.io.json.JsonEnemyType;
-import samj.mario.editor.io.json.JsonTileType;
-
 import java.util.List;
 
 public class TileDefinition {
@@ -11,15 +7,15 @@ public class TileDefinition {
     public int y;
     public int paletteCount;
     public boolean isAnimated;
-    public List<JsonTileType> allowedTypes;
-    public List<JsonContainerType> allowedContainerTypes;
-    public JsonEnemyType enemyType;
+    public List<TileType> allowedTypes;
+    public List<ContainerType> allowedContainerTypes;
+    public EnemyType enemyType;
 
     // Required for deserialization
     public TileDefinition() {
     }
 
-    public TileDefinition(int x, int y, int paletteCount, boolean isAnimated, List<JsonTileType> allowedTypes, List<JsonContainerType> allowedContainerTypes, JsonEnemyType enemyType) {
+    public TileDefinition(int x, int y, int paletteCount, boolean isAnimated, List<TileType> allowedTypes, List<ContainerType> allowedContainerTypes, EnemyType enemyType) {
         this.x = x;
         this.y = y;
         this.paletteCount = paletteCount;

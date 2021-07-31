@@ -1,14 +1,9 @@
 package samj.mario.editor.data;
 
-import samj.mario.editor.io.json.JsonContainerType;
-import samj.mario.editor.io.json.JsonDirection;
-import samj.mario.editor.io.json.JsonEnemyType;
-import samj.mario.editor.io.json.JsonTileType;
-
 public class Tile {
 
     public static Tile EMPTY_TILE = Tile.builder()
-            .setType(JsonTileType.EMPTY)
+            .setType(TileType.EMPTY)
             .setTileIndex((short) 0x0000)
             .setTileChar(' ')
             .setName("Empty Space")
@@ -23,10 +18,10 @@ public class Tile {
     private final Integer tilePalette;
     private final boolean isAnimated;
     private final String name;
-    private final JsonTileType type;
-    private final JsonContainerType containerType;
-    private final JsonEnemyType enemyType;
-    private final JsonDirection direction;
+    private final TileType type;
+    private final ContainerType containerType;
+    private final EnemyType enemyType;
+    private final Direction direction;
     private final Integer count;
 
     private Tile(Builder builder) {
@@ -56,10 +51,10 @@ public class Tile {
         private Integer tilePalette = null;
         private boolean isAnimated = false;
         private String name = "";
-        private JsonTileType type = JsonTileType.EMPTY;
-        private JsonContainerType containerType = null;
-        private JsonEnemyType enemyType = null;
-        private JsonDirection direction = null;
+        private TileType type = TileType.EMPTY;
+        private ContainerType containerType = null;
+        private EnemyType enemyType = null;
+        private Direction direction = null;
         private Integer count = null;
 
         private Builder() {}
@@ -109,22 +104,22 @@ public class Tile {
             return this;
         }
 
-        public Builder setType(JsonTileType type) {
+        public Builder setType(TileType type) {
             this.type = type;
             return this;
         }
 
-        public Builder setContainerType(JsonContainerType containerType) {
+        public Builder setContainerType(ContainerType containerType) {
             this.containerType = containerType;
             return this;
         }
 
-        public Builder setEnemyType(JsonEnemyType enemyType) {
+        public Builder setEnemyType(EnemyType enemyType) {
             this.enemyType = enemyType;
             return this;
         }
 
-        public Builder setDirection(JsonDirection direction) {
+        public Builder setDirection(Direction direction) {
             this.direction = direction;
             return this;
         }
@@ -179,19 +174,19 @@ public class Tile {
         return name;
     }
 
-    public JsonTileType getType() {
+    public TileType getType() {
         return type;
     }
 
-    public JsonContainerType getContainerType() {
+    public ContainerType getContainerType() {
         return containerType;
     }
 
-    public JsonEnemyType getEnemyType() {
+    public EnemyType getEnemyType() {
         return enemyType;
     }
 
-    public JsonDirection getDirection() {
+    public Direction getDirection() {
         return direction;
     }
 

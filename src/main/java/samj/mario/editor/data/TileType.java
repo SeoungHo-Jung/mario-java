@@ -1,6 +1,6 @@
-package samj.mario.editor.io.json;
+package samj.mario.editor.data;
 
-public enum JsonTileType {
+public enum TileType {
     EMPTY,
     BACKGROUND,
     SOLID,
