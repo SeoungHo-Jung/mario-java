@@ -31,6 +31,9 @@ public class Game extends Canvas implements Runnable, KeyListener {
     //Frame size
     private int frameWidth = CANVAS_WIDTH;
     private int frameHeight = CANVAS_HEIGHT;
+    private final int levelWidth = 1280;
+    private final int levelHeight = 256;
+
 
     //mario's status
     enum MarioStatus{
@@ -90,28 +93,29 @@ public class Game extends Canvas implements Runnable, KeyListener {
     Last_Key_Pressed lastKeyPressed;
 
     //Grid : Each tile is sized 16 X 16
-    private char[][] reachableOrNot = new char[15][16];
+    private char[][] reachableOrNot = new char[15][80];
 
     //Test cases
     private String demoLevel =
-            "######    ######" +
-                    "          ####  " +
-                    "                " +
-                    "        ######  " +
-                    "        ######  " +
-                    "                " +
-                    "                " +
-                    "                " +
-                    "                " +
-                    "   ###          " +
-                    "   ###          " +
-                    "        ###     " +
-                    "#              #" +
-                    "################" +
-                    "################";
+            "                 #####                                                          " +
+            "        ####                                                                    " +
+            "           ##                 #####                                             " +
+            "                   #####             #####                                      " +
+            "     ###                                                                        " +
+            "     #####              ######                                                  " +
+            "              ####                                                              " +
+            "##                  ######                                                      " +
+            "         ##                                      ##                             " +
+            "                                                ####                            " +
+            "   ###      ##                  # # # # # #    ######                           " +
+            "                               # # # # # # #  ########                          " +
+            "                                             ##########                         " +
+            "################################################################################" +
+            "################################################################################";
+
 
     private String demoLevelTwo =
-            "################" +
+                    "################" +
                     "###       ####  " +
                     "                " +
                     "     ######   ##" +
@@ -128,7 +132,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
                     "################";
 
     private String demoLevelThree =
-            "################" +
+                    "################" +
                     "            ####" +
                     "#       ##      " +
                     "#    ##    #####" +
@@ -235,15 +239,27 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
         //clear the previous image that was drawn.
         g.clearRect(0, 0, frameWidth, frameHeight);
-        for(int i = 0; i < reachableOrNot.length; i++){
-            for (int j = 0; j < reachableOrNot[i].length; j++){
-                if(reachableOrNot[i][j] == '#'){
-                    g.drawImage(blockImg, j * blockWidth, i * blockHeight, null);
+        int redrawFromHere = 0;
+        if(marioX > 128){
+            redrawFromHere = (int)marioX - (frameWidth / 2);
+            //System.out.println("Frame position is : " + redrawFromHere);
+        }
+
+        // Figure out why
+        int offset = redrawFromHere % 16;
+        for(int y = 0; y < reachableOrNot.length; y++){
+            for (int x = 0; x < reachableOrNot[y].length; x++){
+                if(x >= redrawFromHere / 16 && x < (frameWidth + redrawFromHere) / 16 + 1) {
+                    if (reachableOrNot[y][x] == '#') {
+                        g.drawImage(blockImg, (x - (redrawFromHere / 16)) * 16 - offset, y * 16, null);
+                    }
                 }
             }
         }
+
         //draw new image
-        g.drawImage(marioImg, (int)marioX, (int)marioY, null);
+
+        g.drawImage(marioImg, (int)(marioX - redrawFromHere), (int)marioY, null);
 
     }
     /*
@@ -262,7 +278,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         //Just fpr this implementation. Will need to move it to tick()
         for(int i = 0; i < reachableOrNot.length; i++){
             for (int j = 0; j < reachableOrNot[i].length; j++){
-                reachableOrNot[i][j] = demoLevel.charAt((i*reachableOrNot[i].length) + j);
+                reachableOrNot[i][j] = demoLevel.charAt((i * reachableOrNot[i].length) + j);
             }
         }
 
@@ -444,6 +460,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
             status = MarioStatus.FALLING;
         }
 
+        /*
+        float midPoint = (redrawFromHere + frameWidth)/2;
+        if(marioX > midPoint){
+            marioX = marioTempX;
+        }
+
+         */
+
         //System.out.println("Mario is " + status);
         //System.out.println("collision location is : " + collisionLocation);
         //System.out.println("\n mario Y is : " + marioY);
@@ -454,7 +478,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         boolean check = true;
 
         //If mario is out of frame, it returns true no matter what
-        if(marioX < 0 || marioX > frameWidth - marioWidth || marioY < 0 || marioY > frameHeight - marioHeight){
+        if(marioX < 0 || marioX > levelWidth - marioWidth || marioY < 0 || marioY > levelHeight - marioHeight){
             return true;
         }
 
@@ -580,5 +604,16 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
 }
 
+//Dealing with levels
+/*
+1. "empty" and "solid" blocks.
+2. Solid blocks will draw the correct tiles based on x and y coordinates.
+3. Background = "black" (file will support bg color, disregard for now).
+
+a. Work on retrieving stuff from json (parsing).
+   Look up for "jackson"
+b. Actually use the retrieved data to build the level
+c. Test.
+ */
 
 
