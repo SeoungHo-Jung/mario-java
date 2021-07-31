@@ -1,9 +1,9 @@
 package samj.mario.editor.io;
 
-import samj.mario.editor.data.TileMatrix;
-import samj.mario.editor.data.Tile;
 import samj.mario.editor.data.Level;
+import samj.mario.editor.data.Tile;
 import samj.mario.editor.data.TileData;
+import samj.mario.editor.data.TileMatrix;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
