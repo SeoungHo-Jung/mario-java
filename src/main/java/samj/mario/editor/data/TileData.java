@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import samj.mario.editor.io.json.JsonContainerType;
 import samj.mario.editor.io.json.JsonDirection;
-import samj.mario.editor.io.json.JsonEnemyType;
 import samj.mario.editor.io.json.JsonTileType;
 
 import java.util.ArrayList;
@@ -21,76 +20,10 @@ public class TileData {
     public static Map<Character, Tile> TILES_BY_CHAR;
 
     static {
+        List<TileDefinition> tileDefs = getTileDefinitions();
+
         List<Tile> fgTiles = new ArrayList<>();
-
         fgTiles.add(Tile.EMPTY_TILE);
-
-//        // Rock
-//        fgTiles.add(Tile.builder()
-//                .setType(JsonTileType.SOLID)
-//                .setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, 0, 0))
-//                .setTileX(0)
-//                .setTileY(0)
-//                .setTileIndex((short) 0x0010)
-//                .setTileChar('#')
-//                .setName("Rock ?")
-//                .build());
-//
-//        // Question Box
-//        fgTiles.add(Tile.builder()
-//                .setType(JsonTileType.CONTAINER)
-//                .setContainerType(JsonContainerType.COIN)
-//                .setCount(1)
-//                .setTileX(24)
-//                .setTileY(0)
-//                .setAnimated(true)
-//                .setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, 24, 0))
-//                .setTileIndex((short) 0x0020)
-//                .setTileChar('?')
-//                .setName("Question Mark Box")
-//                .build());
-//
-//        // Coin
-//        fgTiles.add(Tile.builder()
-//                .setType(JsonTileType.COIN)
-//                .setAnimated(true)
-//                .setTileX(24)
-//                .setTileY(1)
-//                .setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, 24, 1))
-//                .setTileIndex((short) 0x0030)
-//                .setTileChar('o')
-//                .setName("Coin")
-//                .build());
-
-        String tileDefJson =
-                """
-                [
-                    {"x": 0, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 1, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 2, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 0, "y": 1, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 0, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 1, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 0, "y": 10, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 1, "y": 10, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 24, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]}
-                ]
-                """;
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        List<TileDefinition> tileDefs = null;
-        try {
-            tileDefs = objectMapper.readValue(tileDefJson, new TypeReference<>() {});
-        } catch (JsonProcessingException e) {
-            e.printStackTrace();
-            throw new RuntimeException("Couldn't deserialize tile config string", e);
-        }
-
-//        tileDefs.add(new TileDefinition(0, 0, 4, false, List.of(JsonTileType.SOLID), null, null));
-//        tileDefs.add(new TileDefinition(1, 0, 4, false, List.of(JsonTileType.SOLID, JsonTileType.BOUNCE, JsonTileType.CONTAINER, JsonTileType.BREAKABLE), List.of(JsonContainerType.COIN), null));
-//        tileDefs.add(new TileDefinition(9, 0, 4, false, List.of(JsonTileType.ENEMY_SPAWN), null, JsonEnemyType.BULLET_BILL));
-//        tileDefs.add(new TileDefinition(24, 0, 4, true, List.of(JsonTileType.CONTAINER), List.of(JsonContainerType.COIN, JsonContainerType.ONE_UP, JsonContainerType.POWER_UP, JsonContainerType.STAR), null));
 
         for (TileDefinition tileDef : tileDefs) {
             List<JsonTileType> types = tileDef.allowedTypes;
@@ -137,5 +70,33 @@ public class TileData {
         TILES_BY_INDEX = TILES.stream()
                 .filter(tile -> tile.getTileIndex() != -1)
                 .collect(Collectors.toUnmodifiableMap(Tile::getTileIndex, Function.identity()));
+    }
+
+    private static List<TileDefinition> getTileDefinitions() {
+        String tileDefJson =
+                """
+                [
+                    {"x": 0, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 1, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 2, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 0, "y": 1, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 0, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 1, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 0, "y": 10, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 1, "y": 10, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 24, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]}
+                ]
+                """;
+
+        ObjectMapper objectMapper = new ObjectMapper();
+
+        List<TileDefinition> tileDefs;
+        try {
+            tileDefs = objectMapper.readValue(tileDefJson, new TypeReference<>() {});
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Couldn't deserialize tile config string", e);
+        }
+        return tileDefs;
     }
 }

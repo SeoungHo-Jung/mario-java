@@ -8,6 +8,7 @@ import samj.mario.editor.io.json.JsonTileType;
 public class Tile {
 
     public static Tile EMPTY_TILE = Tile.builder()
+            .setType(JsonTileType.EMPTY)
             .setTileIndex((short) 0x0000)
             .setTileChar(' ')
             .setName("Empty Space")
