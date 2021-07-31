@@ -1,9 +1,21 @@
 package samj.mario.editor;
 
+import com.intellij.uiDesigner.core.GridConstraints;
+import com.intellij.uiDesigner.core.GridLayoutManager;
+import com.intellij.uiDesigner.core.Spacer;
+import samj.mario.editor.data.Level;
+import samj.mario.editor.data.Tile;
+import samj.mario.editor.data.TileData;
+import samj.mario.editor.data.TileMatrix;
+import samj.mario.editor.io.FileIO;
+import samj.mario.editor.io.IconLoader;
+import samj.mario.editor.io.JsonLevelFormat;
+import samj.mario.editor.io.LevelFormat;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.*;
+import java.io.File;
 import java.util.List;
 import java.util.Stack;
 
@@ -31,17 +43,16 @@ public class LevelEditor implements ActionListener {
     private JMenuItem propertiesMenuItem;
 
     private final int gridSize = 16;
-    private final int paletteColumns = 8;
+    private final int paletteColumns = 12;
 
-    private final LevelEncoder levelEncoder = new LevelEncoderV1();
-    private final LevelDecoder levelDecoder = new LevelDecoderV1();
-    private final FileIO fileIO = new FileIO(levelEncoder, levelDecoder);
+    private final LevelFormat levelFormat = new JsonLevelFormat();
+    private final FileIO fileIO = new FileIO(levelFormat);
     private final IconLoader iconLoader = new IconLoader(gridSize);
 
     private int levelPanelWidth;
     private int levelPanelHeight;
     private Level level;
-    private ForegroundTile selectedTile = ForegroundTile.EMPTY_TILE;
+    private Tile selectedTile = Tile.EMPTY_TILE;
     private boolean isGridEnabled = true;
 
     private Stack<EditorCommand> undoStack = new Stack<>();
@@ -166,14 +177,13 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawTiles(Graphics g) {
-        // draw foreground layer
         for (int x = 0; x < level.getWidth(); x++) {
             for (int y = 0; y < level.getHeight(); y++) {
-                ForegroundTile tile = level.getForegroundLayer().getTile(x, y);
-                if (tile.getPrimaryDisplayTileIcon() != null) {
+                Tile tile = level.getTileMatrix().getTile(x, y);
+                if (tile.getPrimaryDisplayIcon() != null) {
                     int panelX = x * gridSize;
                     int panelY = y * gridSize;
-                    Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayTileIcon());
+                    Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
                     g.drawImage(iconImage, panelX, panelY, null);
                 }
             }
@@ -198,11 +208,11 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawPalette(Graphics g) {
-        final List<ForegroundTile> fgTiles = TileData.FOREGROUND_TILES;
+        final List<Tile> fgTiles = TileData.TILES;
 
         for (int i = 0; i < fgTiles.size(); i++) {
-            ForegroundTile tile = fgTiles.get(i);
-            Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayTileIcon());
+            Tile tile = fgTiles.get(i);
+            Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
             int x = (i % paletteColumns) * gridSize;
             int y = (i / paletteColumns) * gridSize;
             g.drawImage(iconImage, x, y, null);
@@ -210,7 +220,7 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawPreview(Graphics g) {
-        Image iconImage = iconLoader.getImageForIcon(selectedTile.getPrimaryDisplayTileIcon());
+        Image iconImage = iconLoader.getImageForIcon(selectedTile.getPrimaryDisplayIcon());
         g.drawImage(iconImage, 0, 0, gridSize * 2, gridSize * 2, null);
     }
 
@@ -225,7 +235,7 @@ public class LevelEditor implements ActionListener {
 
         level = new Level();
         level.setDimensions(width, height);
-        level.setForegroundLayer(new ForegroundLayer(width, height));
+        level.setTileMatrix(new TileMatrix(width, height));
         levelPanelWidth = width * gridSize;
         levelPanelHeight = height * gridSize;
 
@@ -249,7 +259,7 @@ public class LevelEditor implements ActionListener {
 
         // TODO: Validate that no tiles are being deleted
 
-        level.setForegroundLayer(new ForegroundLayer(width, height, level.getForegroundLayer()));
+        level.setTileMatrix(new TileMatrix(width, height, level.getTileMatrix()));
 
         repaintLevel();
     }
@@ -281,14 +291,14 @@ public class LevelEditor implements ActionListener {
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
         if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
-            ForegroundTile oldTile = level.getForegroundLayer().getTile(x, y);
-            EditorCommand command = new ChangeForegroundTileCommand(x, y, selectedTile, oldTile, this);
+            Tile oldTile = level.getTileMatrix().getTile(x, y);
+            EditorCommand command = new ChangeTileCommand(x, y, selectedTile, oldTile, this);
             doCommand(command);
         }
     }
 
     private void handleTilePalettePanelMouseEvent(MouseEvent e) {
-        List<ForegroundTile> fgTiles = TileData.FOREGROUND_TILES;
+        List<Tile> fgTiles = TileData.TILES;
         int x = e.getX() / gridSize;
         int y = e.getY() / gridSize;
         int index = (y * paletteColumns) + x;
@@ -383,36 +393,36 @@ public class LevelEditor implements ActionListener {
     private void $$$setupUI$$$() {
         createUIComponents();
         mainPanel = new JPanel();
-        mainPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 2, new Insets(10, 10, 10, 10), -1, -1));
+        mainPanel.setLayout(new GridLayoutManager(1, 2, new Insets(10, 10, 10, 10), -1, -1));
         mainPanel.setPreferredSize(new Dimension(800, 600));
         final JPanel panel1 = new JPanel();
-        panel1.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        mainPanel.add(panel1, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 2, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel1.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
+        mainPanel.add(panel1, new GridConstraints(0, 0, 1, 2, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         levelScrollPane = new JScrollPane();
         levelScrollPane.setAlignmentX(0.5f);
         levelScrollPane.setAutoscrolls(false);
         levelScrollPane.setFocusable(true);
-        panel1.add(levelScrollPane, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_WEST, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(9999999, -1), null, 0, false));
+        panel1.add(levelScrollPane, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(9999999, -1), null, 0, false));
         levelPanel.setAutoscrolls(false);
         levelPanel.setPreferredSize(new Dimension(-1, -1));
         levelScrollPane.setViewportView(levelPanel);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel2, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel2.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         toolScrollPane = new JScrollPane();
         toolScrollPane.setAlignmentX(0.5f);
         toolScrollPane.setAutoscrolls(false);
         toolScrollPane.setVisible(true);
-        panel2.add(toolScrollPane, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_EAST, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(200, -1), new Dimension(200, -1), new Dimension(200, -1), 0, false));
+        panel2.add(toolScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_EAST, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(200, -1), new Dimension(200, -1), new Dimension(200, -1), 0, false));
         toolScrollPane.setViewportView(tilePalettePanel);
         toolControlPanel = new JPanel();
-        toolControlPanel.setLayout(new com.intellij.uiDesigner.core.GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel2.add(toolControlPanel, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        toolControlPanel.add(selectedTilePreviewPanel, new com.intellij.uiDesigner.core.GridConstraints(0, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_BOTH, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_SHRINK | com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(32, 32), new Dimension(32, 32), null, 0, false));
-        final com.intellij.uiDesigner.core.Spacer spacer1 = new com.intellij.uiDesigner.core.Spacer();
-        toolControlPanel.add(spacer1, new com.intellij.uiDesigner.core.GridConstraints(0, 1, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_HORIZONTAL, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
-        final com.intellij.uiDesigner.core.Spacer spacer2 = new com.intellij.uiDesigner.core.Spacer();
-        toolControlPanel.add(spacer2, new com.intellij.uiDesigner.core.GridConstraints(1, 0, 1, 1, com.intellij.uiDesigner.core.GridConstraints.ANCHOR_CENTER, com.intellij.uiDesigner.core.GridConstraints.FILL_VERTICAL, 1, com.intellij.uiDesigner.core.GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        toolControlPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.add(toolControlPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        toolControlPanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(32, 32), new Dimension(32, 32), null, 0, false));
+        final Spacer spacer1 = new Spacer();
+        toolControlPanel.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
+        final Spacer spacer2 = new Spacer();
+        toolControlPanel.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
     }
 
     /**
@@ -421,4 +431,5 @@ public class LevelEditor implements ActionListener {
     public JComponent $$$getRootComponent$$$() {
         return mainPanel;
     }
+
 }
