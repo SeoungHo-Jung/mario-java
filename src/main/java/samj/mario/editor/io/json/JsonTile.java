@@ -19,4 +19,8 @@ public class JsonTile {
     public Integer y;
     @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public Boolean isAnimated;
+
+    // Required for Object Deserialization
+    public JsonTile() {
+    }
 }

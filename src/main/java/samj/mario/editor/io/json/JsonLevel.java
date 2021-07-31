@@ -1,8 +1,6 @@
 package samj.mario.editor.io.json;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonIncludeProperties;
 
 import java.util.List;
 
@@ -12,4 +10,8 @@ public class JsonLevel {
     public int seconds;
     public JsonColor backgroundColor;
     public List<List<JsonTile>> tiles;
+
+    // Required for Object Deserialization
+    public JsonLevel() {
+    }
 }

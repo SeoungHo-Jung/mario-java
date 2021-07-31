@@ -1,8 +1,7 @@
 package samj.mario.editor.io;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import samj.mario.editor.data.Level;
-import samj.mario.editor.data.Tile;
+import samj.mario.editor.data.*;
 import samj.mario.editor.io.json.JsonColor;
 import samj.mario.editor.io.json.JsonLevel;
 import samj.mario.editor.io.json.JsonTile;
@@ -54,13 +53,73 @@ public class JsonLevelFormat implements LevelFormat {
     @Override
     public Level decode(byte[] bytes) {
 
+        JsonLevel jsonLevel;
+
         try {
-            OBJECT_MAPPER.readValue(bytes, JsonLevel.class);
+            jsonLevel = OBJECT_MAPPER.readValue(bytes, JsonLevel.class);
         } catch (IOException e) {
             e.printStackTrace();
             throw new RuntimeException("Failed to deserialize level", e);
         }
 
-        return null;
+        if (jsonLevel.tiles == null) {
+            throw new RuntimeException("Failed to deserialize level: `tiles` is null");
+        }
+
+        List<Tile> tiles = new ArrayList<>();
+        int width = 0;
+        int height = jsonLevel.tiles.size();
+
+        for (int y = 0; y < height; y++) {
+            if (jsonLevel.tiles.get(y) == null) {
+                throw new RuntimeException("Failed to deserialize level: `tiles[" + y +"]` is null");
+            }
+            if (y == 0) {
+                // Get the level width from the first row
+                width = jsonLevel.tiles.get(0).size();
+            } else {
+                // ensure all rows are the same length
+                if (width != jsonLevel.tiles.get(y).size()) {
+                    throw new RuntimeException("Failed to deserialize level: rows of `tiles` have uneven lengths");
+                }
+            }
+            for (int x = 0; x < width; x++) {
+                JsonTile jsonTile = jsonLevel.tiles.get(y).get(x);
+                if (jsonTile == null) {
+                    throw new RuntimeException("Failed to deserialize level: `tiles[" + y + "][" + x + "]` is null");
+                }
+
+                Tile.Builder builder = Tile.builder()
+                        .setTileX(jsonTile.x)
+                        .setTileY(jsonTile.y)
+                        .setAnimated(jsonTile.isAnimated != null ? jsonTile.isAnimated : false)
+                        .setType(jsonTile.type)
+                        .setContainerType(jsonTile.containerType)
+                        .setEnemyType(jsonTile.enemyType)
+                        .setDirection(jsonTile.direction)
+                        .setCount(jsonTile.containerCount);
+
+                if (jsonTile.x != null && jsonTile.y != null) {
+                    builder.setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, jsonTile.x, jsonTile.y));
+                }
+
+                tiles.add(builder.build());
+            }
+        }
+
+        if (height == 0) {
+            throw new RuntimeException("Failed to deserialize level: `tiles` has zero height");
+        }
+        if (width == 0) {
+            throw new RuntimeException("Failed to deserialize level: `tiles` has zero width");
+        }
+
+        TileMatrix tileMatrix = new TileMatrix(width, height, tiles);
+
+        Level level = new Level();
+        level.setDimensions(width, height);
+        level.setTileMatrix(tileMatrix);
+
+        return level;
     }
 }
