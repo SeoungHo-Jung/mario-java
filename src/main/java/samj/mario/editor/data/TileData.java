@@ -65,10 +65,13 @@ public class TileData {
         String tileDefJson =
                 """
                 [
-                    {"x": 0, "y": 0, "paletteCount": 4, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 1, "y": 0, "paletteCount": 4, "isAnimated": false, "allowedTypes": ["SOLID", "BOUNCE", "CONTAINER", "BREAKABLE"], "allowedContainerTypes": ["COIN"]},
-                    {"x": 9, "y": 0, "paletteCount": 4, "isAnimated": false, "allowedTypes": ["ENEMY_SPAWN"], "enemyType": "BULLET_BILL"},
-                    {"x": 24, "y": 0, "paletteCount": 4, "isAnimated": false, "allowedTypes": ["CONTAINER"], "allowedContainerTypes": ["COIN", "ONE_UP", "POWER_UP", "STAR"]}
+                    {"x": 0, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 1, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 0, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 1, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 0, "y": 10, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 1, "y": 10, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 24, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]}
                 ]
                 """;
 
