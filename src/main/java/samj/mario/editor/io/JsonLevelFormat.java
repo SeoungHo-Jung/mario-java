@@ -1,19 +1,19 @@
 package samj.mario.editor.io;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import samj.mario.editor.data.Level;
 import samj.mario.editor.data.Tile;
 import samj.mario.editor.io.json.JsonColor;
 import samj.mario.editor.io.json.JsonLevel;
 import samj.mario.editor.io.json.JsonTile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JsonLevelFormat implements LevelFormat {
+import static samj.mario.editor.util.Json.OBJECT_MAPPER;
 
-    private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
+public class JsonLevelFormat implements LevelFormat {
 
     @Override
     public byte[] encode(Level level) {
@@ -53,6 +53,14 @@ public class JsonLevelFormat implements LevelFormat {
 
     @Override
     public Level decode(byte[] bytes) {
+
+        try {
+            OBJECT_MAPPER.readValue(bytes, JsonLevel.class);
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to deserialize level", e);
+        }
+
         return null;
     }
 }

@@ -1,5 +1,7 @@
 package samj.mario.editor.data;
 
+import com.fasterxml.jackson.annotation.JsonEnumDefaultValue;
+
 public enum TileType {
     EMPTY,
     BACKGROUND,
@@ -12,4 +14,5 @@ public enum TileType {
     TRANSPORT_EXIT,
     MARIO_SPAWN,
     ENEMY_SPAWN, // GOOMBA, KOOPA, ETC.
+    @JsonEnumDefaultValue UNKNOWN
 }

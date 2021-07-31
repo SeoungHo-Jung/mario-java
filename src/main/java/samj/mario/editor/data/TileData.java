@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static samj.mario.editor.util.Json.OBJECT_MAPPER;
+
 public class TileData {
     public static List<Tile> TILES;
     public static Map<Short, Tile> TILES_BY_INDEX;
@@ -85,11 +87,9 @@ public class TileData {
                 ]
                 """;
 
-        ObjectMapper objectMapper = new ObjectMapper();
-
         List<TileDefinition> tileDefs;
         try {
-            tileDefs = objectMapper.readValue(tileDefJson, new TypeReference<>() {});
+            tileDefs = OBJECT_MAPPER.readValue(tileDefJson, new TypeReference<>() {});
         } catch (JsonProcessingException e) {
             e.printStackTrace();
             throw new RuntimeException("Couldn't deserialize tile config string", e);
