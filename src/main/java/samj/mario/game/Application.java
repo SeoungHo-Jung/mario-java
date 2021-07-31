@@ -5,7 +5,7 @@ import java.awt.*;
 
 public class Application {
 
-    public static final int CANVAS_WIDTH = 256;
+    public static final int CANVAS_WIDTH = 256; // orig 256
     public static final int CANVAS_HEIGHT = 240;
     public static final Dimension CANVAS_DIMENSIONS = new Dimension(CANVAS_WIDTH, CANVAS_HEIGHT);
     public static final String NAME = "Mario Bros";
