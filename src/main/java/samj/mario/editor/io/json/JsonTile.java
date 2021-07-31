@@ -11,5 +11,6 @@ public class JsonTile {
     public JsonEnemyType enemyType;
     public Integer x;
     public Integer y;
+    @JsonInclude(JsonInclude.Include.NON_DEFAULT)
     public Boolean isAnimated;
 }
