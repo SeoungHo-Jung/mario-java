@@ -40,7 +40,7 @@ public class LevelEditor implements ActionListener {
     private JMenuItem propertiesMenuItem;
 
     private final int gridSize = 16;
-    private final int paletteColumns = 8;
+    private final int paletteColumns = 12;
 
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);

@@ -23,7 +23,7 @@ public class TileData {
     static {
         List<Tile> fgTiles = new ArrayList<>();
 
-//        fgTiles.add(Tile.EMPTY_TILE);
+        fgTiles.add(Tile.EMPTY_TILE);
 
 //        // Rock
 //        fgTiles.add(Tile.builder()
@@ -67,6 +67,8 @@ public class TileData {
                 [
                     {"x": 0, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
                     {"x": 1, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 2, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 0, "y": 1, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
                     {"x": 0, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
                     {"x": 1, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
                     {"x": 0, "y": 10, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
