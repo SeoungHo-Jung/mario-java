@@ -1,0 +1,1949 @@
+{
+  "name": "Test Level",
+  "seconds": 300,
+  "backgroundColor": {
+    "r": 0.0,
+    "g": 0.0,
+    "b": 0.0
+  },
+  "tiles": [
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 24,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 24,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 24,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 24,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 24,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 24,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 10
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 10
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 0,
+        "y": 9
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 9
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      }
+    ],
+    [
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      }
+    ],
+    [
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "EMPTY"
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      },
+      {
+        "type": "SOLID",
+        "x": 1,
+        "y": 0
+      }
+    ]
+  ]
+}

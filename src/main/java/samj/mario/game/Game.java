@@ -8,7 +8,8 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.*;
+import java.util.List;
 
 import static samj.mario.game.Application.CANVAS_HEIGHT;
 import static samj.mario.game.Application.CANVAS_WIDTH;
@@ -28,11 +29,16 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private int frames = 0;
     private double prevTime;
 
+    //Size of grid is 16 pixel
+    private final int gridSize = 16;
     //Frame size
     private int frameWidth = CANVAS_WIDTH;
     private int frameHeight = CANVAS_HEIGHT;
-    private final int levelWidth = 1280;
-    private final int levelHeight = 256;
+    private int levelWidth = 1280;
+    private int levelHeight = 256;
+
+    //Level and tiles
+    List<List<Tile>> tiles;
 
 
     //mario's status
@@ -98,24 +104,24 @@ public class Game extends Canvas implements Runnable, KeyListener {
     //Test cases
     private String demoLevel =
             "                 #####                                                          " +
-            "        ####                                                                    " +
-            "           ##                 #####                                             " +
-            "                   #####             #####                                      " +
-            "     ###                                                                        " +
-            "     #####              ######                                                  " +
-            "              ####                                                              " +
-            "##                  ######                                                      " +
-            "         ##                                      ##                             " +
-            "                                                ####                            " +
-            "   ###      ##                  # # # # # #    ######                           " +
-            "                               # # # # # # #  ########                          " +
-            "                                             ##########                         " +
-            "################################################################################" +
-            "################################################################################";
+                    "        ####                                                                    " +
+                    "           ##                 #####                                             " +
+                    "                   #####             #####                                      " +
+                    "     ###                                                                        " +
+                    "     #####              ######                                                  " +
+                    "              ####                                                              " +
+                    "##                  ######                                                      " +
+                    "         ##                                      ##                             " +
+                    "                                                ####                            " +
+                    "   ###      ##                  # # # # # #    ######                           " +
+                    "                               # # # # # # #  ########                          " +
+                    "                                             ##########                         " +
+                    "################################################################################" +
+                    "################################################################################";
 
 
     private String demoLevelTwo =
-                    "################" +
+            "################" +
                     "###       ####  " +
                     "                " +
                     "     ######   ##" +
@@ -132,7 +138,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
                     "################";
 
     private String demoLevelThree =
-                    "################" +
+            "################" +
                     "            ####" +
                     "#       ##      " +
                     "#    ##    #####" +
@@ -148,12 +154,27 @@ public class Game extends Canvas implements Runnable, KeyListener {
                     "################" +
                     "################";
 
+
     public void init() {
+        //Load level from json
+        Level level;
+        URL jsonFile = getClass().getClassLoader().getResource("levels/test-level.json");
+        level = jsonParser.levelLoader(jsonFile);
+
+        tiles = new ArrayList<List<Tile>>();
+        tiles = level.tiles;
+
+        //Resize level size depending on the input
+        levelHeight = tiles.size() * gridSize;
+        levelWidth = tiles.get(0).size() * gridSize;
+
+
         // Load the sprite sheet image
         String spriteFile = "image/player.png";
         URL imageURL = getClass().getClassLoader().getResource(spriteFile);
 
         String tileSpriteFile = "image/tiles.png";
+
         URL tileImageURL = getClass().getClassLoader().getResource(tileSpriteFile);
         if (imageURL == null || tileImageURL == null) { //tileImageURL == null
             System.err.println("Couldn't find sprite file: " + spriteFile);
@@ -210,10 +231,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
     }
 
     public void render() {
-        // Draw the graphics to the screen
-        marioImg = spriteSheet.getSubimage(colCurr, 32, marioWidth, marioHeight);
-        //Mystery numbers. Must fix
-        blockImg = tileSpriteSheet.getSubimage(0, 0, blockWidth, blockHeight);
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             // Use a double-buffering strategy
@@ -233,9 +250,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
     }
 
     private void drawSprites(Graphics g) {
-        // Draw the sprites on top of the background
-
-        //  x = 120 and y = 100 is completely arbitrary. Will need to replace with actual variables.
+        // Draw the graphics to the screen
+        marioImg = spriteSheet.getSubimage(colCurr, 32, marioWidth, marioHeight);
+        //Mystery numbers. Must fix
+        blockImg = tileSpriteSheet.getSubimage(0, 0, blockWidth, blockHeight);
 
         //clear the previous image that was drawn.
         g.clearRect(0, 0, frameWidth, frameHeight);
@@ -246,12 +264,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         // Figure out why
+        //tiles.get(y).get(x).type != Tile.TileType.EMPTY
         int offset = redrawFromHere % 16;
-        for(int y = 0; y < reachableOrNot.length; y++){
-            for (int x = 0; x < reachableOrNot[y].length; x++){
-                if(x >= redrawFromHere / 16 && x < (frameWidth + redrawFromHere) / 16 + 1) {
-                    if (reachableOrNot[y][x] == '#') {
-                        g.drawImage(blockImg, (x - (redrawFromHere / 16)) * 16 - offset, y * 16, null);
+        for(int row = 0; row < tiles.size(); row++){
+            for (int col = 0; col < tiles.get(row).size(); col++){
+                if(col >= redrawFromHere / 16 && col < (frameWidth + redrawFromHere) / 16 + 1) {
+                    if (tiles.get(row).get(col).type != Tile.TileType.EMPTY) {
+                        blockImg = tileSpriteSheet.getSubimage(tiles.get(row).get(col).x * gridSize, tiles.get(row).get(col).y * gridSize, blockWidth, blockHeight);
+                        g.drawImage(blockImg, (col - (redrawFromHere / 16)) * 16 - offset, row * 16, null);
                     }
                 }
             }
@@ -388,10 +408,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         if(status == MarioStatus.JUMPING && !up_key_pressed){
             status = MarioStatus.FALLING;
         }
-
-
-        if(!right_key_pressed && !left_key_pressed && !up_key_pressed && !down_key_pressed){
-            status = MarioStatus.FALLING;
+        if(!right_key_pressed && !left_key_pressed){
             if(marioHorizontalSpeed >= marioMinSpeed){
                 marioHorizontalSpeed -= acceleration;
                 if(marioHorizontalSpeed < 0){
@@ -404,7 +421,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
                     marioHorizontalSpeed = 0;
                 }
             }
-
         }
 
         if(status == MarioStatus.FALLING){
@@ -457,7 +473,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
         else{
             if(status != MarioStatus.JUMPING)
-            status = MarioStatus.FALLING;
+                status = MarioStatus.FALLING;
         }
 
         /*
@@ -483,24 +499,23 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         if(YinBetween){
-            if(marioHorizontalSpeed > 0 && reachableOrNot[gridY + 1][(int)((marioX + marioWidth) / 16)] == '#'){
+            if(marioHorizontalSpeed > 0 && tiles.get(gridY + 1).get((int)((marioX + marioWidth) / 16)).type != Tile.TileType.EMPTY){
                 check = false;
                 collisionLocation = Warning_Collide.RIGHT;
             }
-            if(marioHorizontalSpeed < 0 && reachableOrNot[gridY + 1][(int)(marioX / 16)] == '#'){
+            if(marioHorizontalSpeed < 0 && tiles.get(gridY + 1).get((int)(marioX / 16)).type != Tile.TileType.EMPTY){
                 check = false;
                 collisionLocation = Warning_Collide.LEFT;
             }
 
-
             if(marioVerticalSpeed > 0){
-                if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX] == '#'){
+                if(tiles.get((int)((marioY + marioHeight)/16)).get(gridX).type != Tile.TileType.EMPTY){
                     check = false;
                     collisionLocation = Warning_Collide.DOWN;
 
                 }
             }
-            if(marioVerticalSpeed < 0 && reachableOrNot[(int)(marioY / 16)][gridX] == '#'){
+            if(marioVerticalSpeed < 0 && tiles.get((int)(marioY / 16)).get(gridX).type != Tile.TileType.EMPTY){
                 //System.out.println("here");
                 check = false;
                 collisionLocation = Warning_Collide.UP;
@@ -509,39 +524,34 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         if(XinBetween){
-            if(marioHorizontalSpeed > 0 && reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] == '#'){
+            if(marioHorizontalSpeed > 0 && tiles.get(gridY).get((int)((marioX + marioWidth) / 16)).type != Tile.TileType.EMPTY){
                 check = false;
                 collisionLocation = Warning_Collide.RIGHT;
 
             }
-            if(marioHorizontalSpeed < 0 && reachableOrNot[gridY][(int)(marioX / 16)] == '#'){
+            if(marioHorizontalSpeed < 0 && tiles.get(gridY).get((int)(marioX / 16)).type != Tile.TileType.EMPTY){
                 check = false;
                 collisionLocation = Warning_Collide.LEFT;
 
             }
             if(marioVerticalSpeed > 0){
-                if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX + 1] == '#'){
+                if(tiles.get((int)((marioY + marioHeight)/16)).get(gridX + 1).type != Tile.TileType.EMPTY){
                     check = false;
                     collisionLocation = Warning_Collide.DOWN;
 
                 }
             }
-            if(marioVerticalSpeed < 0 && reachableOrNot[(int)(marioY / 16)][gridX + 1] == '#'){
+            if(marioVerticalSpeed < 0 && tiles.get((int)(marioY / 16)).get(gridX + 1).type != Tile.TileType.EMPTY){
                 check = false;
                 collisionLocation = Warning_Collide.UP;
 
             }
         }
-
-        if(!YinBetween){
-            if(reachableOrNot[gridY][gridX] == '#'){
+        //tiles.get(gridY).get(gridX).type != Tile.TileType.EMPTY
+        if(!YinBetween || !XinBetween){
+            if(tiles.get(gridY).get(gridX).type != Tile.TileType.EMPTY){
                 return false;
 
-            }
-        }
-        if(!XinBetween){
-            if(reachableOrNot[gridY][gridX] == '#'){
-                return false;
             }
         }
         if(check){
@@ -602,7 +612,17 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
     }
 
+    public void tilesTo2DArray(){
+        for(int y = 0; y < reachableOrNot.length; y++){
+            for(int x = 0; x < reachableOrNot[y].length; x++){
+                if(tiles.get(y).get(x).type == Tile.TileType.EMPTY){
+                    reachableOrNot[y][x] = '#';
+                }
+            }
+        }
+    }
 }
+
 
 //Dealing with levels
 /*
@@ -615,5 +635,3 @@ a. Work on retrieving stuff from json (parsing).
 b. Actually use the retrieved data to build the level
 c. Test.
  */
-
-
