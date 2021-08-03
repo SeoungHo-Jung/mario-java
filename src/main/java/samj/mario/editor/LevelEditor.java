@@ -183,8 +183,10 @@ public class LevelEditor implements ActionListener {
                 if (tile.getPrimaryDisplayIcon() != null) {
                     int panelX = x * gridSize;
                     int panelY = y * gridSize;
-                    Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
-                    g.drawImage(iconImage, panelX, panelY, null);
+                    Image primaryIconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
+                    Image secondaryIconImage = iconLoader.getImageForIcon(tile.getSecondaryDisplayIcon());
+                    g.drawImage(primaryIconImage, panelX, panelY, null);
+                    g.drawImage(secondaryIconImage, panelX, panelY, null);
                 }
             }
         }
