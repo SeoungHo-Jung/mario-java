@@ -23,12 +23,9 @@ public class TileData {
 
         for (TileDefinition tileDef : tileDefs) {
             List<TileType> types = tileDef.allowedTypes;
-            List<ContainerType> containerTypes = tileDef.allowedContainerTypes;
             final int paletteCount = tileDef.paletteCount;
-            if (containerTypes == null) {
-                containerTypes = Collections.singletonList(null); // hack to still loop once
-            }
             for (TileType type : types) {
+                List<ContainerType> containerTypes = type == TileType.CONTAINER ? tileDef.allowedContainerTypes : Collections.singletonList(null);
                 for (ContainerType containerType : containerTypes) {
                     for (int palette = 0; palette < paletteCount; palette++) {
                         final int x = tileDef.x;
