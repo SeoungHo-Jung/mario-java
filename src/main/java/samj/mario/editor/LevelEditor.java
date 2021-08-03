@@ -41,6 +41,8 @@ public class LevelEditor implements ActionListener {
     private JMenuItem quitMenuItem;
     private JMenuItem undoMenuItem;
     private JMenuItem propertiesMenuItem;
+    private JCheckBoxMenuItem gridMenuItem;
+    private JCheckBoxMenuItem overlayMenuItem;
 
     private final int gridSize = 16;
     private final int paletteColumns = 12;
@@ -54,6 +56,7 @@ public class LevelEditor implements ActionListener {
     private Level level;
     private Tile selectedTile = Tile.EMPTY_TILE;
     private boolean isGridEnabled = true;
+    private boolean isOverlayEnabled = true;
 
     private Stack<EditorCommand> undoStack = new Stack<>();
 
@@ -162,6 +165,23 @@ public class LevelEditor implements ActionListener {
         propertiesMenuItem.addActionListener(this);
         editMenu.add(propertiesMenuItem);
 
+        viewMenu = new JMenu("View");
+        menuBar.add(viewMenu);
+
+        gridMenuItem = new JCheckBoxMenuItem("Show Grid");
+        gridMenuItem.setActionCommand("grid-toggle");
+        gridMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.META_DOWN_MASK));
+        gridMenuItem.addActionListener(this);
+        gridMenuItem.setSelected(isGridEnabled);
+        viewMenu.add(gridMenuItem);
+
+        overlayMenuItem = new JCheckBoxMenuItem("Show Tile Icons");
+        overlayMenuItem.setActionCommand("overlay-toggle");
+        overlayMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.META_DOWN_MASK));
+        overlayMenuItem.addActionListener(this);
+        overlayMenuItem.setSelected(isOverlayEnabled);
+        viewMenu.add(overlayMenuItem);
+
         FRAME.setJMenuBar(menuBar);
     }
 
@@ -184,9 +204,11 @@ public class LevelEditor implements ActionListener {
                     int panelX = x * gridSize;
                     int panelY = y * gridSize;
                     Image primaryIconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
-                    Image secondaryIconImage = iconLoader.getImageForIcon(tile.getSecondaryDisplayIcon());
                     g.drawImage(primaryIconImage, panelX, panelY, null);
-                    g.drawImage(secondaryIconImage, panelX, panelY, null);
+                    if (isOverlayEnabled) {
+                        Image secondaryIconImage = iconLoader.getImageForIcon(tile.getSecondaryDisplayIcon());
+                        g.drawImage(secondaryIconImage, panelX, panelY, null);
+                    }
                 }
             }
         }
@@ -357,6 +379,18 @@ public class LevelEditor implements ActionListener {
         dialog.setVisible(true);
     }
 
+    private void handleGridToggleRequested(ActionEvent e) {
+        AbstractButton button = (AbstractButton) e.getSource();
+        isGridEnabled = button.isSelected();
+        levelPanel.repaint();
+    }
+
+    private void handleOverlayToggleRequested(ActionEvent e) {
+        AbstractButton button = (AbstractButton) e.getSource();
+        isOverlayEnabled = button.isSelected();
+        levelPanel.repaint();
+    }
+
     private void handleQuitRequested() {
         if (getDialogConfirmation()) {
             System.exit(0);
@@ -372,6 +406,8 @@ public class LevelEditor implements ActionListener {
             case "save" -> handleSaveRequested();
             case "undo" -> handleUndoRequested();
             case "properties" -> handlePropertiesRequested();
+            case "grid-toggle" -> handleGridToggleRequested(e);
+            case "overlay-toggle" -> handleOverlayToggleRequested(e);
             case "quit" -> handleQuitRequested();
         }
     }
