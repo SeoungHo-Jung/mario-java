@@ -20,19 +20,25 @@ public class IconLoader {
     }
 
     private BufferedImage tileIcons;
+    private BufferedImage editorIcons;
 
     public void loadIcons() {
-        String tilesFile = "image/tiles.png";
+        tileIcons = loadIconsFile("image/tiles.png");
+        editorIcons = loadIconsFile("image/editor.png");
+    }
+
+    private BufferedImage loadIconsFile(String tilesFile) {
         URL imageURL = getClass().getClassLoader().getResource(tilesFile);
         if (imageURL == null) {
-            System.err.println("Couldn't find icon file: " + tilesFile);
+            throw new RuntimeException("Couldn't find icon file: " + tilesFile);
         } else {
             try {
                 BufferedImage in = ImageIO.read(imageURL);
-                tileIcons = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                tileIcons.getGraphics().drawImage(in, 0, 0, null);
+                BufferedImage icons = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                icons.getGraphics().drawImage(in, 0, 0, null);
+                return icons;
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new RuntimeException("Failed to load icon file: " + tilesFile, e);
             }
         }
     }
@@ -49,13 +55,10 @@ public class IconLoader {
             case TILES -> {
                 return tileIcons.getSubimage(x, y, iconSize, iconSize);
             }
-//            case ITEMS -> {
-//            }
-//            case ENEMY -> {
-//            }
-            default -> {
-                throw new UnsupportedOperationException(icon.getSpriteSheet() + " icons are not supported");
+            case EDITOR -> {
+                return editorIcons.getSubimage(x, y, iconSize, iconSize);
             }
+            default -> throw new UnsupportedOperationException(icon.getSpriteSheet() + " icons are not supported");
         }
     }
 }

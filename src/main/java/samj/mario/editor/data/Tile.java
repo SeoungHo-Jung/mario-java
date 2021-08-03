@@ -129,6 +129,62 @@ public class Tile {
             return this;
         }
 
+        public Icon getPrimaryDisplayIcon() {
+            return primaryDisplayIcon;
+        }
+
+        public Icon getSecondaryDisplayIcon() {
+            return secondaryDisplayIcon;
+        }
+
+        public char getTileChar() {
+            return tileChar;
+        }
+
+        public short getTileIndex() {
+            return tileIndex;
+        }
+
+        public Integer getTileX() {
+            return tileX;
+        }
+
+        public Integer getTileY() {
+            return tileY;
+        }
+
+        public Integer getTilePalette() {
+            return tilePalette;
+        }
+
+        public boolean isAnimated() {
+            return isAnimated;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public TileType getType() {
+            return type;
+        }
+
+        public ContainerType getContainerType() {
+            return containerType;
+        }
+
+        public EnemyType getEnemyType() {
+            return enemyType;
+        }
+
+        public Direction getDirection() {
+            return direction;
+        }
+
+        public Integer getCount() {
+            return count;
+        }
+
         public Tile build() {
             return new Tile(this);
         }

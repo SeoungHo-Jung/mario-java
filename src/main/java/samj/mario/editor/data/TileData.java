@@ -49,7 +49,7 @@ public class TileData {
                             case CONTAINER -> builder.setCount(1);
                             case TRANSPORT_ENTRANCE, TRANSPORT_EXIT -> builder.setDirection(Direction.DOWNWARD);
                         }
-
+                        builder.setSecondaryDisplayTileIcon(getSecondaryDisplayIcon(builder));
                         Tile tile = builder.build();
                         fgTiles.add(tile);
                     }
@@ -71,11 +71,12 @@ public class TileData {
     }
 
     private static List<TileDefinition> getTileDefinitions() {
+
         String tileDefJson =
                 """
                 [
                     {"x": 0, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 1, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
+                    {"x": 1, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID", "BOUNCE", "BREAKABLE", "CONTAINER"], "allowedContainerTypes": ["COIN", "STAR", "ONE_UP", "POWER_UP"]},
                     {"x": 2, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
                     {"x": 0, "y": 1, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
                     {"x": 0, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
@@ -94,5 +95,65 @@ public class TileData {
             throw new RuntimeException("Couldn't deserialize tile config string", e);
         }
         return tileDefs;
+    }
+
+    private static Icon getSecondaryDisplayIcon(Tile.Builder tileBuilder) {
+        switch (tileBuilder.getType()) {
+            case BREAKABLE -> {
+                return new Icon(IconSheet.EDITOR, 2, 0);
+            }
+            case BOUNCE -> {
+                return new Icon(IconSheet.EDITOR, 1, 0);
+            }
+            case CONTAINER -> {
+                switch (tileBuilder.getContainerType()) {
+                    case COIN -> {
+                        return new Icon(IconSheet.EDITOR, 3, 2);
+                    }
+                    case POWER_UP -> {
+                        return new Icon(IconSheet.EDITOR, 0, 2);
+                    }
+                    case STAR -> {
+                        return new Icon(IconSheet.EDITOR, 1, 2);
+                    }
+                    case ONE_UP -> {
+                        return new Icon(IconSheet.EDITOR, 2, 2);
+                    }
+                    default -> {
+                        return null;
+                    }
+                }
+            }
+            case TRANSPORT_ENTRANCE -> {
+                // TODO
+                return null;
+            }
+            case TRANSPORT_EXIT -> {
+                // TODO
+                return null;
+            }
+            case MARIO_SPAWN -> {
+                return new Icon(IconSheet.EDITOR, 0, 3);
+            }
+            case ENEMY_SPAWN -> {
+                switch (tileBuilder.getEnemyType()) {
+                    case LITTLE_GOOMBA -> {
+                        return new Icon(IconSheet.EDITOR, 1, 1);
+                    }
+                    case GREEN_KOOPA_TROOPA -> {
+                        return new Icon(IconSheet.EDITOR, 0, 1);
+                    }
+                    case BULLET_BILL -> {
+                        return new Icon(IconSheet.EDITOR, 2, 1);
+                    }
+                    default -> {
+                        return null;
+                    }
+                }
+            }
+            default -> {
+                return null;
+            }
+        }
     }
 }

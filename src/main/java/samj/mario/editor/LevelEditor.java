@@ -212,10 +212,12 @@ public class LevelEditor implements ActionListener {
 
         for (int i = 0; i < fgTiles.size(); i++) {
             Tile tile = fgTiles.get(i);
-            Image iconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
+            Image primaryIconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
+            Image secondaryIconImage = iconLoader.getImageForIcon(tile.getSecondaryDisplayIcon());
             int x = (i % paletteColumns) * gridSize;
             int y = (i / paletteColumns) * gridSize;
-            g.drawImage(iconImage, x, y, null);
+            g.drawImage(primaryIconImage, x, y, null);
+            g.drawImage(secondaryIconImage, x, y, null);
         }
     }
 
