@@ -4,15 +4,11 @@ public class Tile {
 
     public static Tile EMPTY_TILE = Tile.builder()
             .setType(TileType.EMPTY)
-            .setTileIndex((short) 0x0000)
-            .setTileChar(' ')
             .setName("Empty Space")
             .build();
 
     private final Icon primaryDisplayIcon;
     private final Icon secondaryDisplayIcon;
-    private final char tileChar;
-    private final short tileIndex;
     private final Integer tileX;
     private final Integer tileY;
     private final Integer tilePalette;
@@ -27,8 +23,6 @@ public class Tile {
     private Tile(Builder builder) {
         this.primaryDisplayIcon = builder.primaryDisplayIcon;
         this.secondaryDisplayIcon = builder.secondaryDisplayIcon;
-        this.tileChar = builder.tileChar;
-        this.tileIndex = builder.tileIndex;
         this.tileX = builder.tileX;
         this.tileY = builder.tileY;
         this.tilePalette = builder.tilePalette;
@@ -44,8 +38,6 @@ public class Tile {
     public static class Builder {
         private Icon primaryDisplayIcon = null;
         private Icon secondaryDisplayIcon = null;
-        private char tileChar = '\0';
-        private short tileIndex = -1;
         private Integer tileX = null;
         private Integer tileY = null;
         private Integer tilePalette = null;
@@ -66,16 +58,6 @@ public class Tile {
 
         public Builder setSecondaryDisplayTileIcon(Icon secondaryDisplayIcon) {
             this.secondaryDisplayIcon = secondaryDisplayIcon;
-            return this;
-        }
-
-        public Builder setTileChar(char tileChar) {
-            this.tileChar = tileChar;
-            return this;
-        }
-
-        public Builder setTileIndex(short tileIndex) {
-            this.tileIndex = tileIndex;
             return this;
         }
 
@@ -137,14 +119,6 @@ public class Tile {
             return secondaryDisplayIcon;
         }
 
-        public char getTileChar() {
-            return tileChar;
-        }
-
-        public short getTileIndex() {
-            return tileIndex;
-        }
-
         public Integer getTileX() {
             return tileX;
         }
@@ -200,14 +174,6 @@ public class Tile {
 
     public Icon getSecondaryDisplayIcon() {
         return secondaryDisplayIcon;
-    }
-
-    public char getTileChar() {
-        return tileChar;
-    }
-
-    public short getTileIndex() {
-        return tileIndex;
     }
 
     public Integer getTileX() {

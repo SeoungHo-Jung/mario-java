@@ -14,8 +14,6 @@ import static samj.mario.editor.util.Json.OBJECT_MAPPER;
 
 public class TileData {
     public static List<Tile> TILES;
-    public static Map<Short, Tile> TILES_BY_INDEX;
-    public static Map<Character, Tile> TILES_BY_CHAR;
 
     static {
         List<TileDefinition> tileDefs = getTileDefinitions();
@@ -58,16 +56,6 @@ public class TileData {
         }
 
         TILES = Collections.unmodifiableList(fgTiles);
-
-        // Create a hashmap of tiles for quick lookup by char
-        TILES_BY_CHAR = TILES.stream()
-                .filter(tile -> tile.getTileChar() != '\0')
-                .collect(Collectors.toUnmodifiableMap(Tile::getTileChar, Function.identity()));
-
-        // Create a hashmap of tiles for quick lookup by index
-        TILES_BY_INDEX = TILES.stream()
-                .filter(tile -> tile.getTileIndex() != -1)
-                .collect(Collectors.toUnmodifiableMap(Tile::getTileIndex, Function.identity()));
     }
 
     private static List<TileDefinition> getTileDefinitions() {
