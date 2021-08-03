@@ -44,12 +44,12 @@ public class LevelEditor implements ActionListener {
     private JCheckBoxMenuItem gridMenuItem;
     private JCheckBoxMenuItem overlayMenuItem;
 
-    private final int gridSize = 16;
-    private final int paletteColumns = 12;
+    private static final int GRID_SIZE = 16;
+    private static final int PALETTE_COLUMNS = 12;
 
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
-    private final IconLoader iconLoader = new IconLoader(gridSize);
+    private final IconLoader iconLoader = new IconLoader(GRID_SIZE);
 
     private int levelPanelWidth;
     private int levelPanelHeight;
@@ -58,7 +58,7 @@ public class LevelEditor implements ActionListener {
     private boolean isGridEnabled = true;
     private boolean isOverlayEnabled = true;
 
-    private Stack<EditorCommand> undoStack = new Stack<>();
+    private final Stack<EditorCommand> undoStack = new Stack<>();
 
     public LevelEditor() {
         $$$setupUI$$$();
@@ -201,8 +201,8 @@ public class LevelEditor implements ActionListener {
             for (int y = 0; y < level.getHeight(); y++) {
                 Tile tile = level.getTileMatrix().getTile(x, y);
                 if (tile.getPrimaryDisplayIcon() != null) {
-                    int panelX = x * gridSize;
-                    int panelY = y * gridSize;
+                    int panelX = x * GRID_SIZE;
+                    int panelY = y * GRID_SIZE;
                     Image primaryIconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
                     g.drawImage(primaryIconImage, panelX, panelY, null);
                     if (isOverlayEnabled) {
@@ -221,12 +221,12 @@ public class LevelEditor implements ActionListener {
         g.setColor(Color.CYAN);
 
         // vertical lines
-        for (int i = gridSize; i < width; i += gridSize) {
+        for (int i = GRID_SIZE; i < width; i += GRID_SIZE) {
             g.drawLine(i, 0, i, height);
         }
 
         // horizontal lines
-        for (int i = gridSize; i < height; i += gridSize) {
+        for (int i = GRID_SIZE; i < height; i += GRID_SIZE) {
             g.drawLine(0, i, width, i);
         }
     }
@@ -238,8 +238,8 @@ public class LevelEditor implements ActionListener {
             Tile tile = fgTiles.get(i);
             Image primaryIconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
             Image secondaryIconImage = iconLoader.getImageForIcon(tile.getSecondaryDisplayIcon());
-            int x = (i % paletteColumns) * gridSize;
-            int y = (i / paletteColumns) * gridSize;
+            int x = (i % PALETTE_COLUMNS) * GRID_SIZE;
+            int y = (i / PALETTE_COLUMNS) * GRID_SIZE;
             g.drawImage(primaryIconImage, x, y, null);
             g.drawImage(secondaryIconImage, x, y, null);
         }
@@ -247,7 +247,7 @@ public class LevelEditor implements ActionListener {
 
     private void drawPreview(Graphics g) {
         Image iconImage = iconLoader.getImageForIcon(selectedTile.getPrimaryDisplayIcon());
-        g.drawImage(iconImage, 0, 0, gridSize * 2, gridSize * 2, null);
+        g.drawImage(iconImage, 0, 0, GRID_SIZE * 2, GRID_SIZE * 2, null);
     }
 
     public void doCommand(EditorCommand command) {
@@ -262,8 +262,8 @@ public class LevelEditor implements ActionListener {
         level = new Level();
         level.setDimensions(width, height);
         level.setTileMatrix(new TileMatrix(width, height));
-        levelPanelWidth = width * gridSize;
-        levelPanelHeight = height * gridSize;
+        levelPanelWidth = width * GRID_SIZE;
+        levelPanelHeight = height * GRID_SIZE;
 
         undoStack.clear();
         repaintLevel();
@@ -271,8 +271,8 @@ public class LevelEditor implements ActionListener {
 
     private void loadExistingLevel(Level level) {
         this.level = level;
-        levelPanelWidth = level.getWidth() * gridSize;
-        levelPanelHeight = level.getHeight() * gridSize;
+        levelPanelWidth = level.getWidth() * GRID_SIZE;
+        levelPanelHeight = level.getHeight() * GRID_SIZE;
 
         undoStack.clear();
         repaintLevel();
@@ -280,8 +280,8 @@ public class LevelEditor implements ActionListener {
 
     public void changeLevelDimensions(int width, int height) {
         level.setDimensions(width, height);
-        levelPanelWidth = width * gridSize;
-        levelPanelHeight = height * gridSize;
+        levelPanelWidth = width * GRID_SIZE;
+        levelPanelHeight = height * GRID_SIZE;
 
         // TODO: Validate that no tiles are being deleted
 
@@ -314,8 +314,8 @@ public class LevelEditor implements ActionListener {
     }
 
     private void handleLevelPanelMouseEvent(MouseEvent e) {
-        int x = e.getX() / gridSize;
-        int y = e.getY() / gridSize;
+        int x = e.getX() / GRID_SIZE;
+        int y = e.getY() / GRID_SIZE;
         if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
             Tile oldTile = level.getTileMatrix().getTile(x, y);
             EditorCommand command = new ChangeTileCommand(x, y, selectedTile, oldTile, this);
@@ -325,9 +325,9 @@ public class LevelEditor implements ActionListener {
 
     private void handleTilePalettePanelMouseEvent(MouseEvent e) {
         List<Tile> fgTiles = TileData.TILES;
-        int x = e.getX() / gridSize;
-        int y = e.getY() / gridSize;
-        int index = (y * paletteColumns) + x;
+        int x = e.getX() / GRID_SIZE;
+        int y = e.getY() / GRID_SIZE;
+        int index = (y * PALETTE_COLUMNS) + x;
         if (index >= 0 && index < fgTiles.size()) {
             selectedTile = fgTiles.get(index);
         }
