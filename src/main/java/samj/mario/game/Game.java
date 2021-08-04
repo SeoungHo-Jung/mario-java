@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.List;
 
+import static java.lang.System.exit;
 import static samj.mario.game.Application.CANVAS_HEIGHT;
 import static samj.mario.game.Application.CANVAS_WIDTH;
 import static java.awt.event.KeyEvent.*;
@@ -34,8 +35,8 @@ public class Game extends Canvas implements Runnable, KeyListener {
     //Frame size
     private int frameWidth = CANVAS_WIDTH;
     private int frameHeight = CANVAS_HEIGHT;
-    private int levelWidth = 1280;
-    private int levelHeight = 256;
+    private int levelWidth;
+    private int levelHeight;
 
     //Level and tiles
     List<List<Tile>> tiles;
@@ -104,7 +105,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
         URL jsonFile = getClass().getClassLoader().getResource("levels/test-level.json");
         level = jsonParser.levelLoader(jsonFile);
 
-        tiles = new ArrayList<List<Tile>>();
         tiles = level.tiles;
 
         //Resize level size depending on the input
@@ -201,7 +201,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
         int redrawFromHere = 0;
         if(marioX > 128){
             redrawFromHere = (int)marioX - (frameWidth / 2);
-            //System.out.println("Frame position is : " + redrawFromHere);
         }
 
         // Figure out why
@@ -222,13 +221,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
         g.drawImage(marioImg, (int)(marioX - redrawFromHere), (int)marioY, null);
 
     }
-    /*
-    private BufferedImage getSpecificImage(String command){
-        switch (command){
-            case "normal":
-
-        }
-    }*/
 
 
     @Override
@@ -313,7 +305,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
             }
         }
         if(up_key_pressed){
-            //System.out.println("mario speed is : " + marioVerticalSpeed);
             lastKeyPressed = Last_Key_Pressed.UP;
             if(status == MarioStatus.STANDING){
                 marioVerticalSpeed = -3.5;
@@ -409,6 +400,11 @@ public class Game extends Canvas implements Runnable, KeyListener {
                 status = MarioStatus.FALLING;
         }
 
+        if(marioY >= frameHeight + marioHeight){
+            status = MarioStatus.DEAD;
+            exit(0);
+        }
+
         /*
         float midPoint = (redrawFromHere + frameWidth)/2;
         if(marioX > midPoint){
@@ -424,7 +420,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
     public boolean safeToMove(int gridX, int gridY, boolean XinBetween, boolean YinBetween){
 
-        boolean check = true;
+        boolean safeToMove = true;
 
         //If mario is out of frame, it returns true no matter what
         if(marioX < 0 || marioX > levelWidth - marioWidth || marioY < 0 || marioY > levelHeight - marioHeight){
@@ -432,29 +428,28 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         if(tiles.get(gridY).get(gridX).type != Tile.TileType.EMPTY){
-            check = false;
+            safeToMove = false;
         }
 
         if(YinBetween){
             if(marioHorizontalSpeed > 0 && tiles.get(gridY + 1).get((int)((marioX + marioWidth) / gridSize)).type != Tile.TileType.EMPTY){
-                check = false;
+                safeToMove = false;
                 collisionLocation = Warning_Collide.RIGHT;
             }
             if(marioHorizontalSpeed < 0 && tiles.get(gridY + 1).get((int)(marioX / gridSize)).type != Tile.TileType.EMPTY){
-                check = false;
+                safeToMove = false;
                 collisionLocation = Warning_Collide.LEFT;
             }
 
             if(marioVerticalSpeed > 0){
                 if(tiles.get((int)((marioY + marioHeight)/gridSize)).get(gridX).type != Tile.TileType.EMPTY){
-                    check = false;
+                    safeToMove = false;
                     collisionLocation = Warning_Collide.DOWN;
 
                 }
             }
             if(marioVerticalSpeed < 0 && tiles.get((int)(marioY / gridSize)).get(gridX).type != Tile.TileType.EMPTY){
-                //System.out.println("here");
-                check = false;
+                safeToMove = false;
                 collisionLocation = Warning_Collide.UP;
 
             }
@@ -462,24 +457,24 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
         if(XinBetween){
             if(marioHorizontalSpeed > 0 && tiles.get(gridY).get((int)((marioX + marioWidth) / gridSize)).type != Tile.TileType.EMPTY){
-                check = false;
+                safeToMove = false;
                 collisionLocation = Warning_Collide.RIGHT;
 
             }
             if(marioHorizontalSpeed < 0 && tiles.get(gridY).get((int)(marioX / gridSize)).type != Tile.TileType.EMPTY){
-                check = false;
+                safeToMove = false;
                 collisionLocation = Warning_Collide.LEFT;
 
             }
             if(marioVerticalSpeed > 0){
                 if(tiles.get((int)((marioY + marioHeight)/gridSize)).get(gridX + 1).type != Tile.TileType.EMPTY){
-                    check = false;
+                    safeToMove = false;
                     collisionLocation = Warning_Collide.DOWN;
 
                 }
             }
             if(marioVerticalSpeed < 0 && tiles.get((int)(marioY / gridSize)).get(gridX + 1).type != Tile.TileType.EMPTY){
-                check = false;
+                safeToMove = false;
                 collisionLocation = Warning_Collide.UP;
 
             }
@@ -487,14 +482,14 @@ public class Game extends Canvas implements Runnable, KeyListener {
         //tiles.get(gridY).get(gridX).type != Tile.TileType.EMPTY
         if(!YinBetween || !XinBetween){
             if(tiles.get(gridY).get(gridX).type != Tile.TileType.EMPTY){
-                check = false;
+                safeToMove = false;
             }
         }
-        if(check){
+        if(safeToMove){
             collisionLocation = Warning_Collide.NULL;
         }
 
-        return check;
+        return safeToMove;
     }
 
     @Override
