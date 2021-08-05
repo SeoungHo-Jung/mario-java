@@ -19,6 +19,13 @@ import static java.awt.event.KeyEvent.*;
 public class Game extends Canvas implements Runnable, KeyListener {
     public Mario mario = new Mario();
 
+    //List of sprite sheets in res
+    public SpriteSheet playerSpriteSheet = new SpriteSheet("player");
+    public SpriteSheet playerlSpriteSheet = new SpriteSheet("playerl");
+    public SpriteSheet tilesSpriteSheet = new SpriteSheet("tiles");
+    public SpriteSheet enemySpriteSheet = new SpriteSheet("enemy");
+    public SpriteSheet enemyrSpriteSheet = new SpriteSheet("enemyr");
+
     // Sprite Sheet
     private BufferedImage spriteSheet;
     private BufferedImage marioImg;
@@ -95,54 +102,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
         levelWidth = tiles.get(0).size() * gridSize;
 
 
-        // Load the sprite sheet image
-        String spriteFile = "image/player.png";
-        URL imageURL = getClass().getClassLoader().getResource(spriteFile);
-
-        String tileSpriteFile = "image/tiles.png";
-
-        URL tileImageURL = getClass().getClassLoader().getResource(tileSpriteFile);
-        if (imageURL == null || tileImageURL == null) { //tileImageURL == null
-            System.err.println("Couldn't find sprite file: " + spriteFile);
-        } else {
-            try {
-                BufferedImage in = ImageIO.read(imageURL);
-                spriteSheet = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                spriteSheet.getGraphics().drawImage(in, 0, 0, null);
-
-                BufferedImage in2 = ImageIO.read(tileImageURL);
-                tileSpriteSheet = new BufferedImage(in2.getWidth(), in2.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                tileSpriteSheet.getGraphics().drawImage(in2, 0, 0, null);
-            } catch (IOException ex) {
-                ex.printStackTrace();
-            }
-
-            // Set the alpha channel to 0 for pixels with the "transparency" color
-
-            int transparentColor = 0;
-            for (int x = 0; x < spriteSheet.getWidth(); x++) {
-                for (int y = 0; y < spriteSheet.getHeight(); y++) {
-                    int[] pixel = spriteSheet.getRaster().getPixel(x, y, (int[]) null);
-                    int rgbColor = (pixel[0] << 16) | pixel[1] << 8 | pixel[2];
-                    int[] pixelCopy = Arrays.copyOf(pixel, pixel.length);
-                    pixelCopy[3] = rgbColor == transparentColor ? 0x00 : 0xFF;
-                    spriteSheet.getRaster().setPixel(x, y, pixelCopy);
-                }
-            }
-
-
-            int  tileTransparentColor = 0;
-            for (int i = 0; i < tileSpriteSheet.getWidth(); i++) {
-                for (int j = 0; j < tileSpriteSheet.getHeight(); j++) {
-                    int[] tilePixel = tileSpriteSheet.getRaster().getPixel(i, j, (int[]) null);
-                    int tileRgbColor = (tilePixel[0] << 16) | tilePixel[1] << 8 | tilePixel[2];
-                    int[] tilePixelCopy = Arrays.copyOf(tilePixel, tilePixel.length);
-                    tilePixelCopy[3] = tileRgbColor == transparentColor ? 0x00 : 0xFF;
-                    tileSpriteSheet.getRaster().setPixel(i, j, tilePixelCopy);
-                }
-            }
-        }
-
         // Register the KeyListener for this Canvas
         addKeyListener(this);
 
@@ -177,7 +136,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
     private void drawSprites(Graphics g) {
         // Draw the graphics to the screen
-        marioImg = spriteSheet.getSubimage(mario.marioImgX, mario.marioImgY, mario.marioWidth, mario.marioHeight);
+        marioImg = playerSpriteSheet.loadedSpriteSheet.getSubimage(mario.marioImgX, mario.marioImgY, mario.marioWidth, mario.marioHeight);
 
         //clear the previous image that was drawn.
         g.clearRect(0, 0, frameWidth, frameHeight);
@@ -193,7 +152,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
             for (int col = 0; col < tiles.get(row).size(); col++){
                 if(col >= redrawFromHere / gridSize && col < (frameWidth + redrawFromHere) / gridSize + 1) {
                     if (tiles.get(row).get(col).type != Tile.TileType.EMPTY) {
-                        blockImg = tileSpriteSheet.getSubimage(tiles.get(row).get(col).x * gridSize, tiles.get(row).get(col).y * gridSize, blockWidth, blockHeight);
+                        blockImg = tilesSpriteSheet.loadedSpriteSheet.getSubimage(tiles.get(row).get(col).x * gridSize, tiles.get(row).get(col).y * gridSize, blockWidth, blockHeight);
                         g.drawImage(blockImg, (col - (redrawFromHere / gridSize)) * gridSize - offset, row * gridSize, null);
                     }
                 }

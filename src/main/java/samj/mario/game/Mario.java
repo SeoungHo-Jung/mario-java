@@ -8,17 +8,23 @@ public class Mario {
     //String marioStatus;
     int marioImgX;
     int marioImgY;
+    int lifeCount;
+    int earnedPoints;
 
     public Mario(){
-        //small mario's size is 16 X 16 pixels
-        this.marioWidth = 16;
-        this.marioHeight = 16;
-        //mario's initial position, may change
-        this.marioX = 32;
-        this.marioY = 192;
         //this.marioStatus = "STANDING";
+
+        //small mario's size is 16 X 16 pixels
+        marioWidth = 16;
+        marioHeight = 16;
+        //mario's initial position, may change
+        marioX = 32;
+        marioY = 192;
         //small mario position on sprite sheet
-        this.marioImgX = 80;
-        this.marioImgY = 32;
+        marioImgX = 80;
+        marioImgY = 32;
+        //Player info
+        lifeCount = 3;
+        earnedPoints = 0;
     }
 }
