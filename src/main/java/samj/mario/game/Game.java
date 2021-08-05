@@ -17,7 +17,7 @@ import static samj.mario.game.Application.CANVAS_WIDTH;
 import static java.awt.event.KeyEvent.*;
 
 public class Game extends Canvas implements Runnable, KeyListener {
-
+    public Mario mario = new Mario();
 
     // Sprite Sheet
     private BufferedImage spriteSheet;
@@ -56,16 +56,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
         RIGHT, LEFT, UP, DOWN, NULL;
     }
     Warning_Collide collisionLocation = Warning_Collide.NULL;
-    boolean[] collisionList = new boolean[4];
-
-    //Mario's positions : initialized as
-    float marioX = 32;
-    float marioY = 192;
-
-
-    //Mario's size : initialized as 16 X 16
-    int marioWidth = 16;
-    int marioHeight = 16;
 
     //Block size;
     private final int blockWidth = 16;
@@ -88,13 +78,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
     double marioMinSpeed = 0;
 
 
-    //Column numbers for run()
-    int colStart = 80;
-    int colEnd = 416;
-    int colCurr = 80;
-
-    //Checks if Mario is out of the screen or not
-    boolean outOfFrame;
 
     //Checks which key was pressed last
     Last_Key_Pressed lastKeyPressed;
@@ -194,13 +177,13 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
     private void drawSprites(Graphics g) {
         // Draw the graphics to the screen
-        marioImg = spriteSheet.getSubimage(colCurr, 32, marioWidth, marioHeight);
+        marioImg = spriteSheet.getSubimage(mario.marioImgX, mario.marioImgY, mario.marioWidth, mario.marioHeight);
 
         //clear the previous image that was drawn.
         g.clearRect(0, 0, frameWidth, frameHeight);
         int redrawFromHere = 0;
-        if(marioX > 128){
-            redrawFromHere = (int)marioX - (frameWidth / 2);
+        if(mario.marioX > 128){
+            redrawFromHere = (int)mario.marioX - (frameWidth / 2);
         }
 
         // Figure out why
@@ -218,7 +201,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         //draw new image
-        g.drawImage(marioImg, (int)(marioX - redrawFromHere), (int)marioY, null);
+        g.drawImage(marioImg, (int)(mario.marioX - redrawFromHere), (int)mario.marioY, null);
 
     }
 
@@ -277,10 +260,10 @@ public class Game extends Canvas implements Runnable, KeyListener {
     public void moveMario(){
 
         if(status == MarioStatus.JUMPING){
-            colCurr = 160;
+            mario.marioImgX = 160;
         }
         if(status == MarioStatus.FALLING || status == MarioStatus.STANDING){
-            colCurr = 80;
+            mario.marioImgX = 80;
         }
 
         //Checks if there is collision
@@ -352,23 +335,23 @@ public class Game extends Canvas implements Runnable, KeyListener {
             marioVerticalSpeed += gravity;
         }
 
-        float marioTempX = marioX;
-        float marioTempY = marioY;
+        float marioTempX = mario.marioX;
+        float marioTempY = mario.marioY;
 
-        marioX += marioHorizontalSpeed;
-        marioY += marioVerticalSpeed;
+        mario.marioX += marioHorizontalSpeed;
+        mario.marioY += marioVerticalSpeed;
 
 
-        int gridXscale = (int)(marioX/gridSize);
-        int gridYscale = (int)(marioY/gridSize);
+        int gridXscale = (int)(mario.marioX/gridSize);
+        int gridYscale = (int)(mario.marioY/gridSize);
 
         //Checks if mario's position is between two grids
         boolean XinBetween = false;
         boolean YinBetween = false;
-        if(marioX % gridSize != 0){
+        if(mario.marioX % gridSize != 0){
             XinBetween = true;
         }
-        if(marioY % gridSize != 0){
+        if(mario.marioY % gridSize != 0){
             YinBetween = true;
         }
 
@@ -383,16 +366,16 @@ public class Game extends Canvas implements Runnable, KeyListener {
             if(collisionLocation == Warning_Collide.DOWN){
                 marioVerticalSpeed = 0;
                 status = MarioStatus.STANDING;
-                marioY = Math.round(marioTempY);
+                mario.marioY = Math.round(marioTempY);
             }
             if(collisionLocation == Warning_Collide.UP){
                 marioVerticalSpeed = 0;
                 status = MarioStatus.FALLING;
-                marioY = Math.round(marioTempY);
+                mario.marioY = Math.round(marioTempY);
             }
             if(collisionLocation == Warning_Collide.LEFT || collisionLocation == Warning_Collide.RIGHT){
                 marioHorizontalSpeed = 0;
-                marioX = Math.round(marioTempX);
+                mario.marioX = Math.round(marioTempX);
             }
         }
         else{
@@ -400,7 +383,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
                 status = MarioStatus.FALLING;
         }
 
-        if(marioY >= frameHeight + marioHeight){
+        if(mario.marioY >= frameHeight + mario.marioHeight){
             status = MarioStatus.DEAD;
             exit(0);
         }
@@ -423,7 +406,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         boolean safeToMove = true;
 
         //If mario is out of frame, it returns true no matter what
-        if(marioX < 0 || marioX > levelWidth - marioWidth || marioY < 0 || marioY > levelHeight - marioHeight){
+        if(mario.marioX < 0 || mario.marioX > levelWidth - mario.marioWidth || mario.marioY < 0 || mario.marioY > levelHeight - mario.marioHeight){
             return true;
         }
 
@@ -432,23 +415,23 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         if(YinBetween){
-            if(marioHorizontalSpeed > 0 && tiles.get(gridY + 1).get((int)((marioX + marioWidth) / gridSize)).type != Tile.TileType.EMPTY){
+            if(marioHorizontalSpeed > 0 && tiles.get(gridY + 1).get((int)((mario.marioX + mario.marioWidth) / gridSize)).type != Tile.TileType.EMPTY){
                 safeToMove = false;
                 collisionLocation = Warning_Collide.RIGHT;
             }
-            if(marioHorizontalSpeed < 0 && tiles.get(gridY + 1).get((int)(marioX / gridSize)).type != Tile.TileType.EMPTY){
+            if(marioHorizontalSpeed < 0 && tiles.get(gridY + 1).get((int)(mario.marioX / gridSize)).type != Tile.TileType.EMPTY){
                 safeToMove = false;
                 collisionLocation = Warning_Collide.LEFT;
             }
 
             if(marioVerticalSpeed > 0){
-                if(tiles.get((int)((marioY + marioHeight)/gridSize)).get(gridX).type != Tile.TileType.EMPTY){
+                if(tiles.get((int)((mario.marioY + mario.marioHeight)/gridSize)).get(gridX).type != Tile.TileType.EMPTY){
                     safeToMove = false;
                     collisionLocation = Warning_Collide.DOWN;
 
                 }
             }
-            if(marioVerticalSpeed < 0 && tiles.get((int)(marioY / gridSize)).get(gridX).type != Tile.TileType.EMPTY){
+            if(marioVerticalSpeed < 0 && tiles.get((int)(mario.marioY / gridSize)).get(gridX).type != Tile.TileType.EMPTY){
                 safeToMove = false;
                 collisionLocation = Warning_Collide.UP;
 
@@ -456,24 +439,24 @@ public class Game extends Canvas implements Runnable, KeyListener {
         }
 
         if(XinBetween){
-            if(marioHorizontalSpeed > 0 && tiles.get(gridY).get((int)((marioX + marioWidth) / gridSize)).type != Tile.TileType.EMPTY){
+            if(marioHorizontalSpeed > 0 && tiles.get(gridY).get((int)((mario.marioX + mario.marioWidth) / gridSize)).type != Tile.TileType.EMPTY){
                 safeToMove = false;
                 collisionLocation = Warning_Collide.RIGHT;
 
             }
-            if(marioHorizontalSpeed < 0 && tiles.get(gridY).get((int)(marioX / gridSize)).type != Tile.TileType.EMPTY){
+            if(marioHorizontalSpeed < 0 && tiles.get(gridY).get((int)(mario.marioX / gridSize)).type != Tile.TileType.EMPTY){
                 safeToMove = false;
                 collisionLocation = Warning_Collide.LEFT;
 
             }
             if(marioVerticalSpeed > 0){
-                if(tiles.get((int)((marioY + marioHeight)/gridSize)).get(gridX + 1).type != Tile.TileType.EMPTY){
+                if(tiles.get((int)((mario.marioY + mario.marioHeight)/gridSize)).get(gridX + 1).type != Tile.TileType.EMPTY){
                     safeToMove = false;
                     collisionLocation = Warning_Collide.DOWN;
 
                 }
             }
-            if(marioVerticalSpeed < 0 && tiles.get((int)(marioY / gridSize)).get(gridX + 1).type != Tile.TileType.EMPTY){
+            if(marioVerticalSpeed < 0 && tiles.get((int)(mario.marioY / gridSize)).get(gridX + 1).type != Tile.TileType.EMPTY){
                 safeToMove = false;
                 collisionLocation = Warning_Collide.UP;
 
