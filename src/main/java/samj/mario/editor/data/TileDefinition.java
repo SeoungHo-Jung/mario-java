@@ -14,14 +14,4 @@ public class TileDefinition {
     // Required for deserialization
     public TileDefinition() {
     }
-
-    public TileDefinition(int x, int y, int paletteCount, boolean isAnimated, List<TileType> allowedTypes, List<ContainerType> allowedContainerTypes, EnemyType enemyType) {
-        this.x = x;
-        this.y = y;
-        this.paletteCount = paletteCount;
-        this.isAnimated = isAnimated;
-        this.allowedTypes = allowedTypes;
-        this.allowedContainerTypes = allowedContainerTypes;
-        this.enemyType = enemyType;
-    }
 }
