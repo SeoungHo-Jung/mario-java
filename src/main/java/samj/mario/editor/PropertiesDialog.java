@@ -3,6 +3,7 @@ package samj.mario.editor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import samj.mario.editor.command.ResizeLevelCommand;
 
 import javax.swing.*;
 import java.awt.*;

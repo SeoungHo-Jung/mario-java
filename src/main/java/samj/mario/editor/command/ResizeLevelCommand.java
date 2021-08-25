@@ -1,4 +1,7 @@
-package samj.mario.editor;
+package samj.mario.editor.command;
+
+import samj.mario.editor.LevelEditor;
+import samj.mario.editor.command.EditorCommand;
 
 public class ResizeLevelCommand implements EditorCommand {
 

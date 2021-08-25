@@ -3,6 +3,8 @@ package samj.mario.editor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import samj.mario.editor.command.ChangeTileCommand;
+import samj.mario.editor.command.EditorCommand;
 import samj.mario.editor.data.Level;
 import samj.mario.editor.data.Tile;
 import samj.mario.editor.data.TileData;

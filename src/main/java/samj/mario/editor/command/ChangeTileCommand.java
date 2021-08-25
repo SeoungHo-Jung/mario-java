@@ -1,5 +1,6 @@
-package samj.mario.editor;
+package samj.mario.editor.command;
 
+import samj.mario.editor.LevelEditor;
 import samj.mario.editor.data.Tile;
 
 public class ChangeTileCommand implements EditorCommand {
