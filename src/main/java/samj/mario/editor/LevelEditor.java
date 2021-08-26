@@ -5,10 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import samj.mario.editor.command.ChangeTileCommand;
 import samj.mario.editor.command.EditorCommand;
-import samj.mario.editor.data.Level;
-import samj.mario.editor.data.Tile;
-import samj.mario.editor.data.TileData;
-import samj.mario.editor.data.TileMatrix;
+import samj.mario.editor.data.*;
 import samj.mario.editor.io.FileIO;
 import samj.mario.editor.io.IconLoader;
 import samj.mario.editor.io.JsonLevelFormat;
@@ -23,6 +20,8 @@ import java.util.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static samj.mario.editor.data.TileData.TILE_DEFINITIONS;
+
 public class LevelEditor implements ActionListener {
 
     private static JFrame FRAME;
@@ -32,13 +31,13 @@ public class LevelEditor implements ActionListener {
     private JPanel levelPanel;
     private JPanel toolControlPanel;
     private JPanel selectedTilePreviewPanel;
-    private JTabbedPane paletteTabbedPane;
     private JScrollPane tilePaletteScrollPane;
     private JPanel selectedTilePanel;
     private JButton selectButton;
     private JButton drawButton;
     private JButton eraseButton;
     private JPanel selectedTileAttributesPanel;
+    private JPanel tilePalettePanel;
 
     private JMenuBar menuBar;
     private JMenu fileMenu;
@@ -54,7 +53,7 @@ public class LevelEditor implements ActionListener {
     private JCheckBoxMenuItem overlayMenuItem;
 
     public static final int GRID_SIZE = 16;
-    public static final int PALETTE_COLUMNS = 12;
+    public static final int PALETTE_COLUMNS = 8;
 
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
@@ -76,6 +75,13 @@ public class LevelEditor implements ActionListener {
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
                 handleLevelPanelMouseEvent(e);
+            }
+        });
+        tilePalettePanel.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseReleased(MouseEvent e) {
+                super.mouseReleased(e);
+                handleTilePalettePanelMouseEvent(e);
             }
         });
 
@@ -100,6 +106,19 @@ public class LevelEditor implements ActionListener {
             }
         };
 
+        tilePalettePanel = new JPanel() {
+            @Override
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                drawTilePalette(g);
+            }
+        };
+        Dimension tilePanelDimensions = new Dimension(PALETTE_COLUMNS * GRID_SIZE, (TILE_DEFINITIONS.size() / PALETTE_COLUMNS) * GRID_SIZE);
+        tilePalettePanel.setMinimumSize(tilePanelDimensions);
+        tilePalettePanel.setPreferredSize(tilePanelDimensions);
+        tilePalettePanel.setMaximumSize(tilePanelDimensions);
+        tilePalettePanel.setBorder(BorderFactory.createLoweredSoftBevelBorder());
+
         selectedTilePreviewPanel = new JPanel() {
             @Override
             protected void paintComponent(Graphics g) {
@@ -108,28 +127,7 @@ public class LevelEditor implements ActionListener {
             }
         };
 
-        createPaletteTabs();
         createMenuBar();
-    }
-
-    private void createPaletteTabs() {
-        paletteTabbedPane = new JTabbedPane();
-
-        final Map<String, List<Tile>> tilesByCategory = TileData.TILES.stream()
-                // TODO: Determine sorting order
-//                .sorted(Comparator.comparing(Tile::getTilePalette).thenComparing(Tile::getTileY).thenComparing(Tile::getTileX))
-                .collect(Collectors.groupingBy(tile -> tile.getType().getDisplayName()));
-
-        // TODO: Determine order for categories as they appear in tabs
-        for (String category : tilesByCategory.keySet()) {
-            PaletteTab paletteTab = new PaletteTab(tilesByCategory.get(category), iconLoader,
-                    tile -> {
-                        selectedTile = tile;
-                        selectedTilePreviewPanel.repaint();
-                    });
-            JComponent paletteTabComponent = paletteTab.$$$getRootComponent$$$();
-            paletteTabbedPane.addTab(category, paletteTabComponent);
-        }
     }
 
     private void createMenuBar() {
@@ -246,6 +244,17 @@ public class LevelEditor implements ActionListener {
         }
     }
 
+    private void drawTilePalette(Graphics g) {
+        for (int i = 0; i < TILE_DEFINITIONS.size(); i++) {
+            TileDefinition tileDef = TILE_DEFINITIONS.get(i);
+            Tile tile = tileDef.prototype;
+            Image primaryIconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
+            int x = (i % PALETTE_COLUMNS) * GRID_SIZE;
+            int y = (i / PALETTE_COLUMNS) * GRID_SIZE;
+            g.drawImage(primaryIconImage, x, y, null);
+        }
+    }
+
     private void drawPreview(Graphics g) {
         Image iconImage = iconLoader.getImageForIcon(selectedTile.getPrimaryDisplayIcon());
         g.drawImage(iconImage, 0, 0, GRID_SIZE * 2, GRID_SIZE * 2, null);
@@ -321,6 +330,16 @@ public class LevelEditor implements ActionListener {
             Tile oldTile = level.getTileMatrix().getTile(x, y);
             EditorCommand command = new ChangeTileCommand(x, y, selectedTile, oldTile, this);
             doCommand(command);
+        }
+    }
+
+    private void handleTilePalettePanelMouseEvent(MouseEvent e) {
+        int x = e.getX() / GRID_SIZE;
+        int y = e.getY() / GRID_SIZE;
+        int index = (y * PALETTE_COLUMNS) + x;
+        if (index >= 0 && index < TILE_DEFINITIONS.size()) {
+            selectedTile = TILE_DEFINITIONS.get(index).prototype;
+            selectedTilePreviewPanel.repaint();
         }
     }
 
@@ -437,7 +456,7 @@ public class LevelEditor implements ActionListener {
         levelPanel.setPreferredSize(new Dimension(-1, -1));
         levelScrollPane.setViewportView(levelPanel);
         final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel2.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         panel1.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(300, -1), new Dimension(300, -1), new Dimension(300, -1), 0, false));
         panel2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         toolControlPanel = new JPanel();
@@ -458,14 +477,12 @@ public class LevelEditor implements ActionListener {
         toolControlPanel.add(spacer1, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, 1, null, null, null, 0, false));
         final Spacer spacer2 = new Spacer();
         toolControlPanel.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
-        paletteTabbedPane.setTabLayoutPolicy(0);
-        paletteTabbedPane.setTabPlacement(1);
-        panel2.add(paletteTabbedPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 1, false));
         tilePaletteScrollPane = new JScrollPane();
-        panel2.add(tilePaletteScrollPane, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        panel2.add(tilePaletteScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        tilePaletteScrollPane.setViewportView(tilePalettePanel);
         selectedTilePanel = new JPanel();
         selectedTilePanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel2.add(selectedTilePanel, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        panel2.add(selectedTilePanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         selectedTilePanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(32, 32), new Dimension(32, 32), null, 0, false));
         selectedTileAttributesPanel = new JPanel();
         selectedTileAttributesPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
