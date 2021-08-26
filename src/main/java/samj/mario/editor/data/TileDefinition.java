@@ -10,6 +10,7 @@ public class TileDefinition {
     public List<TileType> allowedTypes;
     public List<ContainerType> allowedContainerTypes;
     public EnemyType enemyType;
+    public Tile prototype;
 
     // Required for deserialization
     public TileDefinition() {

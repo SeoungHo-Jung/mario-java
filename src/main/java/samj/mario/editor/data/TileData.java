@@ -13,15 +13,16 @@ import java.util.stream.Collectors;
 import static samj.mario.editor.util.Json.OBJECT_MAPPER;
 
 public class TileData {
+    public static List<TileDefinition> TILE_DEFINITIONS;
     public static List<Tile> TILES;
 
     static {
-        List<TileDefinition> tileDefs = getTileDefinitions();
+        TILE_DEFINITIONS = getTileDefinitions();
 
         List<Tile> fgTiles = new ArrayList<>();
         fgTiles.add(Tile.EMPTY_TILE);
 
-        for (TileDefinition tileDef : tileDefs) {
+        for (TileDefinition tileDef : TILE_DEFINITIONS) {
             List<TileType> types = tileDef.allowedTypes;
             final int paletteCount = tileDef.paletteCount;
             for (TileType type : types) {
@@ -106,6 +107,19 @@ public class TileData {
             e.printStackTrace();
             throw new RuntimeException("Couldn't deserialize tile config string", e);
         }
+
+        // Create a prototypical default Tile for each tile definition
+        for (TileDefinition tileDef : tileDefs) {
+            int x = tileDef.x;
+            int y = tileDef.y;
+            tileDef.prototype = Tile.builder()
+                    .setTileX(x)
+                    .setTileY(y)
+                    .setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, x, y))
+                    .setType(tileDef.allowedTypes.get(0)) // Use the first allowed type as the default type for this tile
+                    .build();
+        }
+
         return tileDefs;
     }
 
