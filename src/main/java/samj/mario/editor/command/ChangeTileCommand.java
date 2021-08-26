@@ -28,6 +28,6 @@ public class ChangeTileCommand implements EditorCommand {
     @Override
     public void undo() {
         levelEditor.getLevel().getTileMatrix().setTile(x, y, oldTile);
-        levelEditor.getLevelPanel().repaint();
+        levelEditor.repaintLevel();
     }
 }

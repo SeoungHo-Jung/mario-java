@@ -3,10 +3,7 @@ package samj.mario.editor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
-import samj.mario.editor.command.ChangeTileCommand;
-import samj.mario.editor.command.EditorCommand;
-import samj.mario.editor.command.EraseTileCommand;
-import samj.mario.editor.command.SelectGridTileCommand;
+import samj.mario.editor.command.*;
 import samj.mario.editor.data.*;
 import samj.mario.editor.io.FileIO;
 import samj.mario.editor.io.IconLoader;
@@ -56,17 +53,25 @@ public class LevelEditor implements ActionListener {
     public static final int GRID_SIZE = 16;
     public static final int PALETTE_COLUMNS = 8;
 
-    public LevelEditor setSelectedGridTileX(int selectedGridTileX) {
+    private Tile getSelectedGridTile() {
+        return level.getTileMatrix().getTile(selectedGridTileX, selectedGridTileY);
+    }
+
+    public void setSelectedGridTile(int selectedGridTileX, int selectedGridTileY) {
         this.selectedGridTileX = selectedGridTileX;
-        return this;
-    }
-
-    public LevelEditor setSelectedGridTileY(int selectedGridTileY) {
         this.selectedGridTileY = selectedGridTileY;
-        return this;
+        repaintLevel();
     }
 
-    enum EditorMode {
+    public void setCurrentMode(EditorMode mode) {
+        this.currentMode = mode;
+        selectButton.setSelected(mode == EditorMode.SELECT);
+        drawButton.setSelected(mode == EditorMode.DRAW);
+        eraseButton.setSelected(mode == EditorMode.ERASE);
+        repaintLevel();
+    }
+
+    public enum EditorMode {
         SELECT,
         DRAW,
         ERASE
@@ -90,6 +95,7 @@ public class LevelEditor implements ActionListener {
 
     public LevelEditor() {
         $$$setupUI$$$();
+        LevelEditor levelEditor = this;
         levelPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -107,28 +113,22 @@ public class LevelEditor implements ActionListener {
         selectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                currentMode = EditorMode.SELECT;
-                selectButton.setSelected(true);
-                drawButton.setSelected(false);
-                eraseButton.setSelected(false);
+                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.SELECT, levelEditor);
+                doCommand(command);
             }
         });
         drawButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                currentMode = EditorMode.DRAW;
-                drawButton.setSelected(true);
-                selectButton.setSelected(false);
-                eraseButton.setSelected(false);
+                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.DRAW, levelEditor);
+                doCommand(command);
             }
         });
         eraseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                currentMode = EditorMode.ERASE;
-                eraseButton.setSelected(true);
-                drawButton.setSelected(false);
-                selectButton.setSelected(false);
+                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.ERASE, levelEditor);
+                doCommand(command);
             }
         });
 
@@ -319,8 +319,9 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawPreview(Graphics g) {
-        Image iconImage = iconLoader.getImageForIcon(selectedPaletteTile.getPrimaryDisplayIcon());
-        g.drawImage(iconImage, 0, 0, GRID_SIZE * 2, GRID_SIZE * 2, null);
+        Tile selectedGridTile = getSelectedGridTile();
+        Image primaryIcon = iconLoader.getImageForIcon(selectedGridTile.getPrimaryDisplayIcon());
+        g.drawImage(primaryIcon, 0, 0, GRID_SIZE * 2, GRID_SIZE * 2, null);
     }
 
     public void doCommand(EditorCommand command) {
@@ -363,13 +364,14 @@ public class LevelEditor implements ActionListener {
         repaintLevel();
     }
 
-    private void repaintLevel() {
+    public void repaintLevel() {
         // Resize components & repaint
         levelPanel.setPreferredSize(new Dimension(levelPanelWidth, levelPanelHeight));
         JViewport viewport = levelScrollPane.getViewport();
         viewport.setViewSize(new Dimension(levelPanelWidth, levelPanelHeight));
         levelScrollPane.revalidate();
         levelScrollPane.repaint();
+        selectedTilePreviewPanel.repaint();
     }
 
     private boolean getDialogConfirmation() {
@@ -415,7 +417,6 @@ public class LevelEditor implements ActionListener {
         int index = (y * PALETTE_COLUMNS) + x;
         if (index >= 0 && index < TILE_DEFINITIONS.size()) {
             selectedPaletteTile = TILE_DEFINITIONS.get(index).prototype;
-            selectedTilePreviewPanel.repaint();
         }
     }
 

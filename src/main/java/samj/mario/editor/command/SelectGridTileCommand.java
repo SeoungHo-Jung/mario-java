@@ -4,11 +4,11 @@ import samj.mario.editor.LevelEditor;
 
 public class SelectGridTileCommand implements EditorCommand {
 
-    private int oldX;
-    private int oldY;
-    private int newX;
-    private int newY;
-    private LevelEditor levelEditor;
+    private final int oldX;
+    private final int oldY;
+    private final int newX;
+    private final int newY;
+    private final LevelEditor levelEditor;
 
     public SelectGridTileCommand(int oldX, int oldY, int newX, int newY, LevelEditor levelEditor) {
         this.oldX = oldX;
@@ -20,20 +20,11 @@ public class SelectGridTileCommand implements EditorCommand {
 
     @Override
     public void execute() {
-        levelEditor.setSelectedGridTileX(newX);
-        levelEditor.setSelectedGridTileY(newY);
-        handleSelectionChange(newX, newY);
+        levelEditor.setSelectedGridTile(newX, newY);
     }
 
     @Override
     public void undo() {
-        levelEditor.setSelectedGridTileX(oldX);
-        levelEditor.setSelectedGridTileY(oldY);
-        handleSelectionChange(oldX, oldY);
-    }
-
-    private void handleSelectionChange(int x, int y) {
-        System.out.println("Selected grid (" + x + "," + y + ")");
-        levelEditor.getLevelPanel().repaint();
+        levelEditor.setSelectedGridTile(oldX, oldY);
     }
 }
