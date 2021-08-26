@@ -113,24 +113,33 @@ public class LevelEditor implements ActionListener {
         selectButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.SELECT, levelEditor);
-                doCommand(command);
+                if (currentMode != EditorMode.SELECT) {
+                    EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.SELECT, levelEditor);
+                    doCommand(command);
+                }
             }
         });
         drawButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.DRAW, levelEditor);
-                doCommand(command);
+                if (currentMode != EditorMode.DRAW) {
+                    EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.DRAW, levelEditor);
+                    doCommand(command);
+                }
             }
         });
         eraseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.ERASE, levelEditor);
-                doCommand(command);
+                if (currentMode != EditorMode.ERASE) {
+                    EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.ERASE, levelEditor);
+                    doCommand(command);
+                }
             }
         });
+
+        // Update display to reflect the default mode
+        setCurrentMode(currentMode);
 
         // By default, create an empty level on startup
         createNewLevel();
@@ -540,6 +549,7 @@ public class LevelEditor implements ActionListener {
         toolControlPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
         panel2.add(toolControlPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(-1, 50), new Dimension(-1, 50), new Dimension(-1, 50), 0, false));
         final JToolBar toolBar1 = new JToolBar();
+        toolBar1.setFloatable(false);
         toolControlPanel.add(toolBar1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(-1, 20), null, 0, false));
         selectButton = new JButton();
         selectButton.setText("Select");

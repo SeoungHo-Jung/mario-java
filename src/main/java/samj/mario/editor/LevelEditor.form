@@ -73,7 +73,9 @@
                         <preferred-size width="-1" height="20"/>
                       </grid>
                     </constraints>
-                    <properties/>
+                    <properties>
+                      <floatable value="false"/>
+                    </properties>
                     <border type="none"/>
                     <children>
                       <component id="1a3c6" class="javax.swing.JButton" binding="selectButton">
