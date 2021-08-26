@@ -5,6 +5,8 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import samj.mario.editor.command.ChangeTileCommand;
 import samj.mario.editor.command.EditorCommand;
+import samj.mario.editor.command.EraseTileCommand;
+import samj.mario.editor.command.SelectGridTileCommand;
 import samj.mario.editor.data.*;
 import samj.mario.editor.io.FileIO;
 import samj.mario.editor.io.IconLoader;
@@ -17,9 +19,8 @@ import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
-import java.util.List;
-import java.util.stream.Collectors;
 
+import static samj.mario.editor.data.Tile.EMPTY_TILE;
 import static samj.mario.editor.data.TileData.TILE_DEFINITIONS;
 
 public class LevelEditor implements ActionListener {
@@ -55,14 +56,33 @@ public class LevelEditor implements ActionListener {
     public static final int GRID_SIZE = 16;
     public static final int PALETTE_COLUMNS = 8;
 
+    public LevelEditor setSelectedGridTileX(int selectedGridTileX) {
+        this.selectedGridTileX = selectedGridTileX;
+        return this;
+    }
+
+    public LevelEditor setSelectedGridTileY(int selectedGridTileY) {
+        this.selectedGridTileY = selectedGridTileY;
+        return this;
+    }
+
+    enum EditorMode {
+        SELECT,
+        DRAW,
+        ERASE
+    }
+
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
     private final IconLoader iconLoader = new IconLoader(GRID_SIZE);
 
+    private EditorMode currentMode = EditorMode.SELECT;
     private int levelPanelWidth;
     private int levelPanelHeight;
     private Level level;
-    private Tile selectedTile = Tile.EMPTY_TILE;
+    private int selectedGridTileX;
+    private int selectedGridTileY;
+    private Tile selectedPaletteTile = EMPTY_TILE; // TODO: Should this be the default?
     private boolean isGridEnabled = true;
     private boolean isOverlayEnabled = true;
 
@@ -82,6 +102,33 @@ public class LevelEditor implements ActionListener {
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
                 handleTilePalettePanelMouseEvent(e);
+            }
+        });
+        selectButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentMode = EditorMode.SELECT;
+                selectButton.setSelected(true);
+                drawButton.setSelected(false);
+                eraseButton.setSelected(false);
+            }
+        });
+        drawButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentMode = EditorMode.DRAW;
+                drawButton.setSelected(true);
+                selectButton.setSelected(false);
+                eraseButton.setSelected(false);
+            }
+        });
+        eraseButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                currentMode = EditorMode.ERASE;
+                eraseButton.setSelected(true);
+                drawButton.setSelected(false);
+                selectButton.setSelected(false);
             }
         });
 
@@ -207,6 +254,9 @@ public class LevelEditor implements ActionListener {
         if (isGridEnabled) {
             drawGrid(g);
         }
+        if (currentMode == EditorMode.SELECT) {
+            drawSelectionBox(g);
+        }
     }
 
     private void drawTiles(Graphics g) {
@@ -244,6 +294,19 @@ public class LevelEditor implements ActionListener {
         }
     }
 
+    private void drawSelectionBox(Graphics g) {
+        int x = selectedGridTileX * GRID_SIZE;
+        int y = selectedGridTileY * GRID_SIZE;
+
+        g.setColor(Color.RED);
+
+        // draw a square, upper left at x,y
+        g.drawLine(x, y, x + GRID_SIZE, y);
+        g.drawLine(x, y, x, y + GRID_SIZE);
+        g.drawLine(x + GRID_SIZE, y, x + GRID_SIZE, y + GRID_SIZE);
+        g.drawLine(x, y + GRID_SIZE, x + GRID_SIZE, y + GRID_SIZE);
+    }
+
     private void drawTilePalette(Graphics g) {
         for (int i = 0; i < TILE_DEFINITIONS.size(); i++) {
             TileDefinition tileDef = TILE_DEFINITIONS.get(i);
@@ -256,7 +319,7 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawPreview(Graphics g) {
-        Image iconImage = iconLoader.getImageForIcon(selectedTile.getPrimaryDisplayIcon());
+        Image iconImage = iconLoader.getImageForIcon(selectedPaletteTile.getPrimaryDisplayIcon());
         g.drawImage(iconImage, 0, 0, GRID_SIZE * 2, GRID_SIZE * 2, null);
     }
 
@@ -327,9 +390,22 @@ public class LevelEditor implements ActionListener {
         int x = e.getX() / GRID_SIZE;
         int y = e.getY() / GRID_SIZE;
         if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
-            Tile oldTile = level.getTileMatrix().getTile(x, y);
-            EditorCommand command = new ChangeTileCommand(x, y, selectedTile, oldTile, this);
-            doCommand(command);
+            switch (currentMode) {
+                case SELECT -> {
+                    EditorCommand command = new SelectGridTileCommand(selectedGridTileX, selectedGridTileY, x, y, this);
+                    doCommand(command);
+                }
+                case DRAW -> {
+                    Tile oldTile = level.getTileMatrix().getTile(x, y);
+                    EditorCommand command = new ChangeTileCommand(x, y, selectedPaletteTile, oldTile, this);
+                    doCommand(command);
+                }
+                case ERASE -> {
+                    Tile oldTile = level.getTileMatrix().getTile(x, y);
+                    EditorCommand command = new EraseTileCommand(x, y, oldTile, this);
+                    doCommand(command);
+                }
+            }
         }
     }
 
@@ -338,7 +414,7 @@ public class LevelEditor implements ActionListener {
         int y = e.getY() / GRID_SIZE;
         int index = (y * PALETTE_COLUMNS) + x;
         if (index >= 0 && index < TILE_DEFINITIONS.size()) {
-            selectedTile = TILE_DEFINITIONS.get(index).prototype;
+            selectedPaletteTile = TILE_DEFINITIONS.get(index).prototype;
             selectedTilePreviewPanel.repaint();
         }
     }
