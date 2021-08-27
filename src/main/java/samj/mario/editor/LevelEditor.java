@@ -12,12 +12,13 @@ import samj.mario.editor.io.LevelFormat;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.util.Stack;
 
-import static samj.mario.editor.data.Tile.EMPTY_TILE;
 import static samj.mario.editor.data.TileData.TILE_DEFINITIONS;
 
 public class LevelEditor implements ActionListener {
@@ -36,9 +37,12 @@ public class LevelEditor implements ActionListener {
     private JButton eraseButton;
     private JPanel selectedTileAttributesPanel;
     private JPanel tilePalettePanel;
-    private JPanel tileBehaviorPanel;
-    private JComboBox tileBehaviorComboBox;
+    private JPanel behaviorAttributesPanel;
+    private JComboBox behaviorComboBox;
     private JPanel sideBarPanel;
+    private JPanel containerAttributesPanel;
+    private JComboBox containerComboBox;
+    private JSpinner containerCountSpinner;
 
     private JMenuBar menuBar;
     private JMenu fileMenu;
@@ -80,12 +84,27 @@ public class LevelEditor implements ActionListener {
 
     private final Stack<EditorCommand> undoStack = new Stack<>();
 
-    private final ItemListener tileBehaviorComboBoxItemListener = e -> {
+    private final ItemListener behaviorComboBoxItemListener = e -> {
         if (e.getStateChange() == ItemEvent.SELECTED) {
             Tile selectedTile = getSelectedGridTile();
             EditorCommand command = new ChangeTileTypeCommand(selectedTile, selectedTile.getType(), (TileType) e.getItem(), thiz);
             doCommand(command);
         }
+    };
+
+    private final ItemListener containerComboBoxItemListener = e -> {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+            Tile selectedTile = getSelectedGridTile();
+            EditorCommand command = new ChangeContainerTypeCommand(selectedTile, selectedTile.getContainerType(), (ContainerType) e.getItem(), thiz);
+            doCommand(command);
+        }
+    };
+
+    private final ChangeListener containerCountSpinnerChangeListener = e -> {
+        Tile selectedTile = getSelectedGridTile();
+        JSpinner spinner = (JSpinner) e.getSource();
+        EditorCommand command = new ChangeContainerCountCommand(selectedTile, selectedTile.getCount(), (Integer) spinner.getValue(), thiz);
+        doCommand(command);
     };
 
     private Tile getSelectedGridTile() {
@@ -142,7 +161,9 @@ public class LevelEditor implements ActionListener {
                 doCommand(command);
             }
         });
-        tileBehaviorComboBox.addItemListener(tileBehaviorComboBoxItemListener);
+        behaviorComboBox.addItemListener(behaviorComboBoxItemListener);
+        containerComboBox.addItemListener(containerComboBoxItemListener);
+        containerCountSpinner.addChangeListener(containerCountSpinnerChangeListener);
 
         // By default, create an empty level on startup
         createNewLevel();
@@ -397,12 +418,31 @@ public class LevelEditor implements ActionListener {
 
         // Set up the tile attribute controls
         Tile selectedTile = getSelectedGridTile();
-        // remove the item listener to prevent sending events while the items list is modified
-        tileBehaviorComboBox.removeItemListener(tileBehaviorComboBoxItemListener);
-        tileBehaviorComboBox.removeAllItems();
-        selectedTile.getAllowedTileTypes().forEach(type -> tileBehaviorComboBox.addItem(type));
-        tileBehaviorComboBox.setSelectedItem(selectedTile.getType());
-        tileBehaviorComboBox.addItemListener(tileBehaviorComboBoxItemListener);
+        TileType selectedTileType = selectedTile.getType();
+
+        // remove the listeners to prevent sending events while the values are modified
+        behaviorComboBox.removeItemListener(behaviorComboBoxItemListener);
+        containerComboBox.removeItemListener(containerComboBoxItemListener);
+        containerCountSpinner.removeChangeListener(containerCountSpinnerChangeListener);
+
+        behaviorComboBox.removeAllItems();
+        selectedTile.getAllowedTileTypes().forEach(type -> behaviorComboBox.addItem(type));
+        behaviorComboBox.setSelectedItem(selectedTileType);
+
+        if (selectedTileType == TileType.CONTAINER) {
+            containerAttributesPanel.setVisible(true);
+            containerComboBox.removeAllItems();
+            selectedTile.getAllowedContainerTypes().forEach(type -> containerComboBox.addItem(type));
+            containerComboBox.setSelectedItem(selectedTile.getContainerType());
+            containerCountSpinner.setValue(selectedTile.getCount());
+        } else {
+            containerAttributesPanel.setVisible(false);
+        }
+
+        // put back the listeners
+        behaviorComboBox.addItemListener(behaviorComboBoxItemListener);
+        containerComboBox.addItemListener(containerComboBoxItemListener);
+        containerCountSpinner.addChangeListener(containerCountSpinnerChangeListener);
     }
 
     private boolean getDialogConfirmation() {
@@ -595,16 +635,29 @@ public class LevelEditor implements ActionListener {
         sideBarPanel.add(selectedTilePanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         selectedTilePanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(32, 32), new Dimension(32, 32), null, 0, false));
         selectedTileAttributesPanel = new JPanel();
-        selectedTileAttributesPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
+        selectedTileAttributesPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         selectedTilePanel.add(selectedTileAttributesPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
-        tileBehaviorPanel = new JPanel();
-        tileBehaviorPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        selectedTileAttributesPanel.add(tileBehaviorPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        behaviorAttributesPanel = new JPanel();
+        behaviorAttributesPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        selectedTileAttributesPanel.add(behaviorAttributesPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         final JLabel label1 = new JLabel();
         label1.setText("Behavior:");
-        tileBehaviorPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
-        tileBehaviorComboBox = new JComboBox();
-        tileBehaviorPanel.add(tileBehaviorComboBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        behaviorAttributesPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        behaviorComboBox = new JComboBox();
+        behaviorAttributesPanel.add(behaviorComboBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        containerAttributesPanel = new JPanel();
+        containerAttributesPanel.setLayout(new GridLayoutManager(4, 1, new Insets(0, 0, 0, 0), -1, -1));
+        selectedTileAttributesPanel.add(containerAttributesPanel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label2 = new JLabel();
+        label2.setText("Item Type:");
+        containerAttributesPanel.add(label2, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        containerComboBox = new JComboBox();
+        containerAttributesPanel.add(containerComboBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        final JLabel label3 = new JLabel();
+        label3.setText("Item Count");
+        containerAttributesPanel.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        containerCountSpinner = new JSpinner();
+        containerAttributesPanel.add(containerCountSpinner, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**

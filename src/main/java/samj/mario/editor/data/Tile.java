@@ -19,11 +19,12 @@ public class Tile {
     private final boolean isAnimated;
     private final String name;
     private TileType type;
-    private final ContainerType containerType;
+    private ContainerType containerType;
     private final EnemyType enemyType;
     private final Direction direction;
-    private final Integer count;
+    private Integer count;
     private final List<TileType> allowedTileTypes;
+    private final List<ContainerType> allowedContainerTypes;
 
     private Tile(Builder builder) {
         this.primaryDisplayIcon = builder.primaryDisplayIcon;
@@ -39,6 +40,7 @@ public class Tile {
         this.direction = builder.direction;
         this.count = builder.count;
         this.allowedTileTypes = builder.allowedTileTypes;
+        this.allowedContainerTypes = builder.allowedContainerTypes;
     }
 
     public static class Builder {
@@ -55,6 +57,7 @@ public class Tile {
         private Direction direction = null;
         private Integer count = null;
         private List<TileType> allowedTileTypes = Collections.emptyList();
+        private List<ContainerType> allowedContainerTypes = Collections.emptyList();
 
         private Builder() {}
 
@@ -123,6 +126,11 @@ public class Tile {
             return this;
         }
 
+        public Builder setAllowedContainerTypes(List<ContainerType> allowedContainerTypes) {
+            this.allowedContainerTypes = allowedContainerTypes;
+            return this;
+        }
+
         public Icon getPrimaryDisplayIcon() {
             return primaryDisplayIcon;
         }
@@ -175,6 +183,10 @@ public class Tile {
             return allowedTileTypes;
         }
 
+        public List<ContainerType> getAllowedContainerTypes() {
+            return allowedContainerTypes;
+        }
+
         public Tile build() {
             return new Tile(this);
         }
@@ -217,7 +229,11 @@ public class Tile {
     }
 
     public ContainerType getContainerType() {
-        return containerType;
+        return (type == TileType.CONTAINER &&
+                containerType == null &&
+                allowedContainerTypes != null &&
+                !allowedTileTypes.isEmpty()
+                ? allowedContainerTypes.get(0) : containerType);
     }
 
     public EnemyType getEnemyType() {
@@ -229,15 +245,30 @@ public class Tile {
     }
 
     public Integer getCount() {
-        return count;
+        // default count is 1 if unset and type is CONTAINER
+        return (type == TileType.CONTAINER && count == null) ? 1 : count;
     }
 
     public List<TileType> getAllowedTileTypes() {
         return allowedTileTypes;
     }
 
+    public List<ContainerType> getAllowedContainerTypes() {
+        return allowedContainerTypes;
+    }
+
     public Tile setType(TileType type) {
         this.type = type;
+        return this;
+    }
+
+    public Tile setContainerType(ContainerType containerType) {
+        this.containerType = containerType;
+        return this;
+    }
+
+    public Tile setCount(Integer count) {
+        this.count = count;
         return this;
     }
 }
