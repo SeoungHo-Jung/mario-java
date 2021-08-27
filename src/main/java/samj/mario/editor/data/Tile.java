@@ -1,10 +1,14 @@
 package samj.mario.editor.data;
 
+import java.util.Collections;
+import java.util.List;
+
 public class Tile {
 
     public static Tile EMPTY_TILE = Tile.builder()
             .setType(TileType.EMPTY)
             .setName("Empty Space")
+            .setAllowedTileTypes(List.of(TileType.EMPTY))
             .build();
 
     private final Icon primaryDisplayIcon;
@@ -14,11 +18,12 @@ public class Tile {
     private final Integer tilePalette;
     private final boolean isAnimated;
     private final String name;
-    private final TileType type;
+    private TileType type;
     private final ContainerType containerType;
     private final EnemyType enemyType;
     private final Direction direction;
     private final Integer count;
+    private final List<TileType> allowedTileTypes;
 
     private Tile(Builder builder) {
         this.primaryDisplayIcon = builder.primaryDisplayIcon;
@@ -33,6 +38,7 @@ public class Tile {
         this.enemyType = builder.enemyType;
         this.direction = builder.direction;
         this.count = builder.count;
+        this.allowedTileTypes = builder.allowedTileTypes;
     }
 
     public static class Builder {
@@ -48,6 +54,7 @@ public class Tile {
         private EnemyType enemyType = null;
         private Direction direction = null;
         private Integer count = null;
+        private List<TileType> allowedTileTypes = Collections.emptyList();
 
         private Builder() {}
 
@@ -111,6 +118,11 @@ public class Tile {
             return this;
         }
 
+        public Builder setAllowedTileTypes(List<TileType> allowedTileTypes) {
+            this.allowedTileTypes = allowedTileTypes;
+            return this;
+        }
+
         public Icon getPrimaryDisplayIcon() {
             return primaryDisplayIcon;
         }
@@ -157,6 +169,10 @@ public class Tile {
 
         public Integer getCount() {
             return count;
+        }
+
+        public List<TileType> getAllowedTileTypes() {
+            return allowedTileTypes;
         }
 
         public Tile build() {
@@ -214,5 +230,14 @@ public class Tile {
 
     public Integer getCount() {
         return count;
+    }
+
+    public List<TileType> getAllowedTileTypes() {
+        return allowedTileTypes;
+    }
+
+    public Tile setType(TileType type) {
+        this.type = type;
+        return this;
     }
 }

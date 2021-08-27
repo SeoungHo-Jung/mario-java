@@ -117,6 +117,7 @@ public class TileData {
                     .setTileY(y)
                     .setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, x, y))
                     .setType(tileDef.allowedTypes.get(0)) // Use the first allowed type as the default type for this tile
+                    .setAllowedTileTypes(tileDef.allowedTypes)
                     .build();
         }
 

@@ -15,7 +15,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.util.*;
+import java.util.Stack;
 
 import static samj.mario.editor.data.Tile.EMPTY_TILE;
 import static samj.mario.editor.data.TileData.TILE_DEFINITIONS;
@@ -36,6 +36,9 @@ public class LevelEditor implements ActionListener {
     private JButton eraseButton;
     private JPanel selectedTileAttributesPanel;
     private JPanel tilePalettePanel;
+    private JPanel tileBehaviorPanel;
+    private JComboBox tileBehaviorComboBox;
+    private JPanel sideBarPanel;
 
     private JMenuBar menuBar;
     private JMenu fileMenu;
@@ -50,32 +53,17 @@ public class LevelEditor implements ActionListener {
     private JCheckBoxMenuItem gridMenuItem;
     private JCheckBoxMenuItem overlayMenuItem;
 
+
     public static final int GRID_SIZE = 16;
     public static final int PALETTE_COLUMNS = 8;
-
-    private Tile getSelectedGridTile() {
-        return level.getTileMatrix().getTile(selectedGridTileX, selectedGridTileY);
-    }
-
-    public void setSelectedGridTile(int selectedGridTileX, int selectedGridTileY) {
-        this.selectedGridTileX = selectedGridTileX;
-        this.selectedGridTileY = selectedGridTileY;
-        repaintLevel();
-    }
-
-    public void setCurrentMode(EditorMode mode) {
-        this.currentMode = mode;
-        selectButton.setSelected(mode == EditorMode.SELECT);
-        drawButton.setSelected(mode == EditorMode.DRAW);
-        eraseButton.setSelected(mode == EditorMode.ERASE);
-        repaintLevel();
-    }
 
     public enum EditorMode {
         SELECT,
         DRAW,
         ERASE
     }
+
+    private final LevelEditor thiz = this;
 
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
@@ -93,9 +81,36 @@ public class LevelEditor implements ActionListener {
 
     private final Stack<EditorCommand> undoStack = new Stack<>();
 
+    private final ItemListener tileBehaviorComboBoxItemListener = e -> {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+            Tile selectedTile = getSelectedGridTile();
+            EditorCommand command = new ChangeTileTypeCommand(selectedTile, selectedTile.getType(), (TileType) e.getItem(), thiz);
+            doCommand(command);
+        }
+    };
+
+    private Tile getSelectedGridTile() {
+        return level.getTileMatrix().getTile(selectedGridTileX, selectedGridTileY);
+    }
+
+    public void setSelectedGridTile(int selectedGridTileX, int selectedGridTileY) {
+        this.selectedGridTileX = selectedGridTileX;
+        this.selectedGridTileY = selectedGridTileY;
+        repaintLevel();
+        refreshAttributeControls();
+    }
+
+    public void setCurrentMode(EditorMode mode) {
+        this.currentMode = mode;
+        selectButton.setSelected(mode == EditorMode.SELECT);
+        drawButton.setSelected(mode == EditorMode.DRAW);
+        eraseButton.setSelected(mode == EditorMode.ERASE);
+        repaintLevel();
+        refreshAttributeControls();
+    }
+
     public LevelEditor() {
         $$$setupUI$$$();
-        LevelEditor levelEditor = this;
         levelPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
@@ -110,39 +125,31 @@ public class LevelEditor implements ActionListener {
                 handleTilePalettePanelMouseEvent(e);
             }
         });
-        selectButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentMode != EditorMode.SELECT) {
-                    EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.SELECT, levelEditor);
-                    doCommand(command);
-                }
+        selectButton.addActionListener(e -> {
+            if (currentMode != EditorMode.SELECT) {
+                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.SELECT, thiz);
+                doCommand(command);
             }
         });
-        drawButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentMode != EditorMode.DRAW) {
-                    EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.DRAW, levelEditor);
-                    doCommand(command);
-                }
+        drawButton.addActionListener(e -> {
+            if (currentMode != EditorMode.DRAW) {
+                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.DRAW, thiz);
+                doCommand(command);
             }
         });
-        eraseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (currentMode != EditorMode.ERASE) {
-                    EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.ERASE, levelEditor);
-                    doCommand(command);
-                }
+        eraseButton.addActionListener(e -> {
+            if (currentMode != EditorMode.ERASE) {
+                EditorCommand command = new ChangeEditorModeCommand(currentMode, EditorMode.ERASE, thiz);
+                doCommand(command);
             }
         });
-
-        // Update display to reflect the default mode
-        setCurrentMode(currentMode);
+        tileBehaviorComboBox.addItemListener(tileBehaviorComboBoxItemListener);
 
         // By default, create an empty level on startup
         createNewLevel();
+
+        // Update display to reflect the default mode
+        setCurrentMode(currentMode);
     }
 
     public JPanel getLevelPanel() {
@@ -350,6 +357,7 @@ public class LevelEditor implements ActionListener {
 
         undoStack.clear();
         repaintLevel();
+        refreshAttributeControls();
     }
 
     private void loadExistingLevel(Level level) {
@@ -359,6 +367,7 @@ public class LevelEditor implements ActionListener {
 
         undoStack.clear();
         repaintLevel();
+        refreshAttributeControls();
     }
 
     public void changeLevelDimensions(int width, int height) {
@@ -381,6 +390,20 @@ public class LevelEditor implements ActionListener {
         levelScrollPane.revalidate();
         levelScrollPane.repaint();
         selectedTilePreviewPanel.repaint();
+    }
+
+    public void refreshAttributeControls() {
+        // Only show attribute controls in SELECT mode
+        selectedTileAttributesPanel.setVisible(currentMode == EditorMode.SELECT);
+
+        // Set up the tile attribute controls
+        Tile selectedTile = getSelectedGridTile();
+        // remove the item listener to prevent sending events while the items list is modified
+        tileBehaviorComboBox.removeItemListener(tileBehaviorComboBoxItemListener);
+        tileBehaviorComboBox.removeAllItems();
+        selectedTile.getAllowedTileTypes().forEach(type -> tileBehaviorComboBox.addItem(type));
+        tileBehaviorComboBox.setSelectedItem(selectedTile.getType());
+        tileBehaviorComboBox.addItemListener(tileBehaviorComboBoxItemListener);
     }
 
     private boolean getDialogConfirmation() {
@@ -541,15 +564,16 @@ public class LevelEditor implements ActionListener {
         levelPanel.setAutoscrolls(false);
         levelPanel.setPreferredSize(new Dimension(-1, -1));
         levelScrollPane.setViewportView(levelPanel);
-        final JPanel panel2 = new JPanel();
-        panel2.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
-        panel1.add(panel2, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(300, -1), new Dimension(300, -1), new Dimension(300, -1), 0, false));
-        panel2.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        sideBarPanel = new JPanel();
+        sideBarPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
+        panel1.add(sideBarPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, new Dimension(300, -1), new Dimension(300, -1), new Dimension(300, -1), 0, false));
+        sideBarPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createLineBorder(Color.black), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
         toolControlPanel = new JPanel();
         toolControlPanel.setLayout(new GridLayoutManager(2, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel2.add(toolControlPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(-1, 50), new Dimension(-1, 50), new Dimension(-1, 50), 0, false));
+        sideBarPanel.add(toolControlPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, new Dimension(-1, 50), new Dimension(-1, 50), new Dimension(-1, 50), 0, false));
         final JToolBar toolBar1 = new JToolBar();
         toolBar1.setFloatable(false);
+        toolBar1.setVisible(true);
         toolControlPanel.add(toolBar1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(-1, 20), null, 0, false));
         selectButton = new JButton();
         selectButton.setText("Select");
@@ -565,15 +589,23 @@ public class LevelEditor implements ActionListener {
         final Spacer spacer2 = new Spacer();
         toolControlPanel.add(spacer2, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tilePaletteScrollPane = new JScrollPane();
-        panel2.add(tilePaletteScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        sideBarPanel.add(tilePaletteScrollPane, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_NORTH, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
         tilePaletteScrollPane.setViewportView(tilePalettePanel);
         selectedTilePanel = new JPanel();
         selectedTilePanel.setLayout(new GridLayoutManager(1, 2, new Insets(0, 0, 0, 0), -1, -1));
-        panel2.add(selectedTilePanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        sideBarPanel.add(selectedTilePanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         selectedTilePanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(32, 32), new Dimension(32, 32), null, 0, false));
         selectedTileAttributesPanel = new JPanel();
         selectedTileAttributesPanel.setLayout(new GridLayoutManager(1, 1, new Insets(0, 0, 0, 0), -1, -1));
         selectedTilePanel.add(selectedTileAttributesPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        tileBehaviorPanel = new JPanel();
+        tileBehaviorPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        selectedTileAttributesPanel.add(tileBehaviorPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label1 = new JLabel();
+        label1.setText("Behavior:");
+        tileBehaviorPanel.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        tileBehaviorComboBox = new JComboBox();
+        tileBehaviorPanel.add(tileBehaviorComboBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
