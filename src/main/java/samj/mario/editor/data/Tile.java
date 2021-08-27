@@ -26,6 +26,23 @@ public class Tile {
     private final List<TileType> allowedTileTypes;
     private final List<ContainerType> allowedContainerTypes;
 
+    public Tile(Tile t) {
+        this.primaryDisplayIcon = t.primaryDisplayIcon;
+        this.secondaryDisplayIcon = t.secondaryDisplayIcon;
+        this.tileX = t.tileX;
+        this.tileY = t.tileY;
+        this.tilePalette = t.tilePalette;
+        this.isAnimated = t.isAnimated;
+        this.name = t.name;
+        this.type = t.type;
+        this.containerType = t.containerType;
+        this.enemyType = t.enemyType;
+        this.direction = t.direction;
+        this.count = t.count;
+        this.allowedTileTypes = t.allowedTileTypes;
+        this.allowedContainerTypes = t.allowedContainerTypes;
+    }
+
     private Tile(Builder builder) {
         this.primaryDisplayIcon = builder.primaryDisplayIcon;
         this.secondaryDisplayIcon = builder.secondaryDisplayIcon;

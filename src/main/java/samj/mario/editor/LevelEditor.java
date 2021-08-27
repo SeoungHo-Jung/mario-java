@@ -470,7 +470,7 @@ public class LevelEditor implements ActionListener {
                 }
                 case DRAW -> {
                     Tile oldTile = level.getTileMatrix().getTile(x, y);
-                    EditorCommand command = new ChangeTileCommand(x, y, selectedPaletteTile, oldTile, this);
+                    EditorCommand command = new ChangeTileCommand(x, y, new Tile(selectedPaletteTile), oldTile, this);
                     doCommand(command);
                 }
                 case ERASE -> {
