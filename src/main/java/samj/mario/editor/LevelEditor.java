@@ -53,7 +53,6 @@ public class LevelEditor implements ActionListener {
     private JCheckBoxMenuItem gridMenuItem;
     private JCheckBoxMenuItem overlayMenuItem;
 
-
     public static final int GRID_SIZE = 16;
     public static final int PALETTE_COLUMNS = 8;
 
@@ -75,7 +74,7 @@ public class LevelEditor implements ActionListener {
     private Level level;
     private int selectedGridTileX;
     private int selectedGridTileY;
-    private Tile selectedPaletteTile = EMPTY_TILE; // TODO: Should this be the default?
+    private Tile selectedPaletteTile;
     private boolean isGridEnabled = true;
     private boolean isOverlayEnabled = true;
 
