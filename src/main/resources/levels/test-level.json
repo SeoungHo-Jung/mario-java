@@ -818,7 +818,8 @@
         "type": "EMPTY"
       },
       {
-        "type": "SOLID",
+        "type": "CONTAINER",
+        "containerType": "POWER_UP",
         "x": 24,
         "y": 0
       },
@@ -1094,12 +1095,14 @@
         "type": "EMPTY"
       },
       {
-        "type": "SOLID",
+        "type": "CONTAINER",
+        "containerType": "POWER_UP",
         "x": 24,
         "y": 0
       },
       {
-        "type": "SOLID",
+        "type": "CONTAINER",
+        "containerType": "POWER_UP",
         "x": 24,
         "y": 0
       },
@@ -1239,7 +1242,8 @@
         "type": "EMPTY"
       },
       {
-        "type": "SOLID",
+        "type": "CONTAINER",
+        "containerType": "POWER_UP",
         "x": 24,
         "y": 0
       },
@@ -1247,7 +1251,8 @@
         "type": "EMPTY"
       },
       {
-        "type": "SOLID",
+        "type": "CONTAINER",
+        "containerType": "POWER_UP",
         "x": 24,
         "y": 0
       },
@@ -1255,7 +1260,8 @@
         "type": "EMPTY"
       },
       {
-        "type": "SOLID",
+        "type": "CONTAINER",
+        "containerType": "POWER_UP",
         "x": 24,
         "y": 0
       },

@@ -11,6 +11,7 @@ public class Mario {
     int lifeCount;
     int earnedPoints;
 
+
     public Mario(){
         //this.marioStatus = "STANDING";
 

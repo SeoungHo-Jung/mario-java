@@ -12,20 +12,12 @@ public class Tile {
         COIN, POWER_UP, STAR, ONE_UP
     }
     public TileType type;
-    //ContainerType container_Type;
+
+    public ContainerType containerType;
     public Integer x;
     public Integer y;
     public boolean isAnimated;
 
     public Tile(){}
-
-
-    public int getTileX(){
-        return x;
-    }
-
-    public int getTileY(){
-        return y;
-    }
 
 }
