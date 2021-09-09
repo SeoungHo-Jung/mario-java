@@ -118,6 +118,12 @@ public class LevelEditor implements ActionListener {
     private final ChangeListener containerCountSpinnerChangeListener = e -> {
         Tile selectedTile = getSelectedGridTile();
         JSpinner spinner = (JSpinner) e.getSource();
+        // Value must be positive
+        if ((Integer) spinner.getValue() < 1) {
+            spinner.removeChangeListener(thiz.containerCountSpinnerChangeListener);
+            spinner.setValue(1);
+            spinner.addChangeListener(thiz.containerCountSpinnerChangeListener);
+        }
         EditorCommand command = new ChangeContainerCountCommand(selectedTile, selectedTile.getCount(), (Integer) spinner.getValue(), thiz);
         doCommand(command);
     };
