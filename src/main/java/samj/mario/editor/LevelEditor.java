@@ -79,6 +79,8 @@ public class LevelEditor implements ActionListener {
     private int selectedGridTileX;
     private int selectedGridTileY;
     private Tile selectedPaletteTile;
+    private Integer selectedPaletteTileX;
+    private Integer selectedPaletteTileY;
     private boolean isGridEnabled = true;
     private boolean isOverlayEnabled = true;
 
@@ -337,10 +339,7 @@ public class LevelEditor implements ActionListener {
         g.setColor(Color.RED);
 
         // draw a square, upper left at x,y
-        g.drawLine(x, y, x + GRID_SIZE, y);
-        g.drawLine(x, y, x, y + GRID_SIZE);
-        g.drawLine(x + GRID_SIZE, y, x + GRID_SIZE, y + GRID_SIZE);
-        g.drawLine(x, y + GRID_SIZE, x + GRID_SIZE, y + GRID_SIZE);
+        g.drawRect(x, y, GRID_SIZE, GRID_SIZE);
     }
 
     private void drawTilePalette(Graphics g) {
@@ -351,6 +350,13 @@ public class LevelEditor implements ActionListener {
             int x = (i % PALETTE_COLUMNS) * GRID_SIZE;
             int y = (i / PALETTE_COLUMNS) * GRID_SIZE;
             g.drawImage(primaryIconImage, x, y, null);
+        }
+        // draw border around the selected tile and shade with transparent color
+        if (selectedPaletteTileX != null && selectedPaletteTileY != null) {
+            g.setColor(new Color(0, 0, 0));
+            g.drawRect(selectedPaletteTileX * GRID_SIZE, selectedPaletteTileY * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+            g.setColor(new Color(0, 0, 0, 64));
+            g.fillRect(selectedPaletteTileX * GRID_SIZE, selectedPaletteTileY * GRID_SIZE, GRID_SIZE, GRID_SIZE);
         }
     }
 
@@ -409,6 +415,7 @@ public class LevelEditor implements ActionListener {
         viewport.setViewSize(new Dimension(levelPanelWidth, levelPanelHeight));
         levelScrollPane.revalidate();
         levelScrollPane.repaint();
+        tilePalettePanel.repaint();
         selectedTilePreviewPanel.repaint();
     }
 
@@ -489,6 +496,9 @@ public class LevelEditor implements ActionListener {
         if (index >= 0 && index < TILE_DEFINITIONS.size()) {
             selectedPaletteTile = TILE_DEFINITIONS.get(index).prototype;
         }
+        selectedPaletteTileX = x;
+        selectedPaletteTileY = y;
+        repaintLevel();
     }
 
     private void handleNewRequested() {
