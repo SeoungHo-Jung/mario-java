@@ -3,6 +3,7 @@ package samj.mario.editor.io;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import samj.mario.editor.data.*;
 import samj.mario.editor.io.json.JsonColor;
+import samj.mario.editor.io.json.JsonEnemySpawn;
 import samj.mario.editor.io.json.JsonLevel;
 import samj.mario.editor.io.json.JsonTile;
 
@@ -25,7 +26,9 @@ public class JsonLevelFormat implements LevelFormat {
                 JsonTile jsonTile = new JsonTile();
                 jsonTile.type = tile.getType();
                 jsonTile.containerType = tile.getContainerType();
-                jsonTile.enemyType = tile.getEnemyType();
+                if (tile.getEnemyType() != null) {
+                    jsonTile.enemySpawn = new JsonEnemySpawn(tile.getEnemyType());
+                }
                 jsonTile.direction = tile.getDirection();
                 jsonTile.containerCount = tile.getCount();
                 jsonTile.x = tile.getTileX();
@@ -95,12 +98,15 @@ public class JsonLevelFormat implements LevelFormat {
                         .setAnimated(jsonTile.isAnimated != null ? jsonTile.isAnimated : false)
                         .setType(jsonTile.type)
                         .setContainerType(jsonTile.containerType)
-                        .setEnemyType(jsonTile.enemyType)
                         .setDirection(jsonTile.direction)
                         .setCount(jsonTile.containerCount);
 
                 if (jsonTile.x != null && jsonTile.y != null) {
                     builder.setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, jsonTile.x, jsonTile.y));
+                }
+
+                if (jsonTile.enemySpawn != null) {
+                    builder.setEnemyType(jsonTile.enemySpawn.type);
                 }
 
                 tiles.add(builder.build());
