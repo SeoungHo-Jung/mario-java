@@ -20,7 +20,7 @@ public class Tile {
     private final String name;
     private TileType type;
     private ContainerType containerType;
-    private final EnemyType enemyType;
+    private EnemyType enemyType;
     private final Direction direction;
     private Integer count;
     private final List<TileType> allowedTileTypes;
@@ -281,6 +281,11 @@ public class Tile {
 
     public Tile setContainerType(ContainerType containerType) {
         this.containerType = containerType;
+        return this;
+    }
+
+    public Tile setEnemyType(EnemyType enemyType) {
+        this.enemyType = enemyType;
         return this;
     }
 

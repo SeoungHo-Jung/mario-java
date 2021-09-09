@@ -43,6 +43,8 @@ public class LevelEditor implements ActionListener {
     private JPanel containerAttributesPanel;
     private JComboBox containerComboBox;
     private JSpinner containerCountSpinner;
+    private JPanel enemyAttributesPanel;
+    private JComboBox enemyTypeComboBox;
 
     private JMenuBar menuBar;
     private JMenu fileMenu;
@@ -59,6 +61,7 @@ public class LevelEditor implements ActionListener {
 
     public static final int GRID_SIZE = 16;
     public static final int PALETTE_COLUMNS = 8;
+    private static final String COMBO_BOX_NONE_ITEM = "NONE";
 
     public enum EditorMode {
         SELECT,
@@ -101,6 +104,16 @@ public class LevelEditor implements ActionListener {
             doCommand(command);
         }
     };
+
+    private final ItemListener enemyTypeComboBoxItemListener = e -> {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+            Tile selectedTile = getSelectedGridTile();
+            EnemyType newEnemyType = e.getItem() == COMBO_BOX_NONE_ITEM ? null : (EnemyType) e.getItem();
+            EditorCommand command = new SetEnemySpawnCommand(selectedTile, selectedTile.getEnemyType(), newEnemyType, thiz);
+            doCommand(command);
+        }
+    };
+
 
     private final ChangeListener containerCountSpinnerChangeListener = e -> {
         Tile selectedTile = getSelectedGridTile();
@@ -431,6 +444,7 @@ public class LevelEditor implements ActionListener {
         behaviorComboBox.removeItemListener(behaviorComboBoxItemListener);
         containerComboBox.removeItemListener(containerComboBoxItemListener);
         containerCountSpinner.removeChangeListener(containerCountSpinnerChangeListener);
+        enemyTypeComboBox.removeItemListener(enemyTypeComboBoxItemListener);
 
         behaviorComboBox.removeAllItems();
         selectedTile.getAllowedTileTypes().forEach(type -> behaviorComboBox.addItem(type));
@@ -446,10 +460,29 @@ public class LevelEditor implements ActionListener {
             containerAttributesPanel.setVisible(false);
         }
 
+        if (selectedTileType == TileType.EMPTY || selectedTileType == TileType.BACKGROUND) {
+            enemyAttributesPanel.setVisible(true);
+            enemyTypeComboBox.removeAllItems();
+            enemyTypeComboBox.addItem(COMBO_BOX_NONE_ITEM);
+            for (EnemyType type : EnemyType.values()) {
+                if (type != EnemyType.UNKNOWN) {
+                    enemyTypeComboBox.addItem(type);
+                }
+            }
+            if (selectedTile.getEnemyType() != null) {
+                enemyTypeComboBox.setSelectedItem(selectedTile.getEnemyType());
+            } else {
+                enemyTypeComboBox.setSelectedItem(COMBO_BOX_NONE_ITEM);
+            }
+        } else {
+            enemyAttributesPanel.setVisible(false);
+        }
+
         // put back the listeners
         behaviorComboBox.addItemListener(behaviorComboBoxItemListener);
         containerComboBox.addItemListener(containerComboBoxItemListener);
         containerCountSpinner.addChangeListener(containerCountSpinnerChangeListener);
+        enemyTypeComboBox.addItemListener(enemyTypeComboBoxItemListener);
     }
 
     private boolean getDialogConfirmation() {
@@ -645,7 +678,7 @@ public class LevelEditor implements ActionListener {
         sideBarPanel.add(selectedTilePanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         selectedTilePanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(32, 32), new Dimension(32, 32), null, 0, false));
         selectedTileAttributesPanel = new JPanel();
-        selectedTileAttributesPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        selectedTileAttributesPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         selectedTilePanel.add(selectedTileAttributesPanel, new GridConstraints(0, 1, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
         behaviorAttributesPanel = new JPanel();
         behaviorAttributesPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
@@ -668,6 +701,14 @@ public class LevelEditor implements ActionListener {
         containerAttributesPanel.add(label3, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         containerCountSpinner = new JSpinner();
         containerAttributesPanel.add(containerCountSpinner, new GridConstraints(3, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_WANT_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        enemyAttributesPanel = new JPanel();
+        enemyAttributesPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        selectedTileAttributesPanel.add(enemyAttributesPanel, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_BOTH, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, null, null, null, 0, false));
+        final JLabel label4 = new JLabel();
+        label4.setText("Enemy Spawn");
+        enemyAttributesPanel.add(label4, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
+        enemyTypeComboBox = new JComboBox();
+        enemyAttributesPanel.add(enemyTypeComboBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 
     /**
