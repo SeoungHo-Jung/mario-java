@@ -68,6 +68,7 @@
 
 ###### EnemySpawn (Object)
 | Property | Type | Nullability | Description |
+| -------- | ---- | ----------- | ----------- |
 | `type` | `EnemyType` | _Required_ | The type of enemy to spawn from this tile - Eg. goomba, koopa, etc. |
 
 ###### Color (Object)
