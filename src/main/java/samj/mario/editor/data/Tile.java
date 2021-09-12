@@ -8,7 +8,8 @@ public class Tile {
     public static Tile EMPTY_TILE = Tile.builder()
             .setType(TileType.EMPTY)
             .setName("Empty Space")
-            .setAllowedTileTypes(List.of(TileType.EMPTY))
+            .setAllowedTileTypes(List.of(TileType.EMPTY, TileType.CONTAINER))
+            .setAllowedContainerTypes(List.of(ContainerType.COIN, ContainerType.STAR, ContainerType.POWER_UP, ContainerType.ONE_UP))
             .build();
 
     private final Icon primaryDisplayIcon;
@@ -249,7 +250,7 @@ public class Tile {
         return (type == TileType.CONTAINER &&
                 containerType == null &&
                 allowedContainerTypes != null &&
-                !allowedTileTypes.isEmpty()
+                !allowedContainerTypes.isEmpty()
                 ? allowedContainerTypes.get(0) : containerType);
     }
 
