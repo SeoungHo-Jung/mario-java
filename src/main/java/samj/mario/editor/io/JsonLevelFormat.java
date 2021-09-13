@@ -101,10 +101,6 @@ public class JsonLevelFormat implements LevelFormat {
                         .setDirection(jsonTile.direction)
                         .setCount(jsonTile.containerCount);
 
-                if (jsonTile.x != null && jsonTile.y != null) {
-                    builder.setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, jsonTile.x, jsonTile.y));
-                }
-
                 if (jsonTile.enemySpawn != null && jsonTile.enemySpawn.type != EnemyType.UNKNOWN) {
                     builder.setEnemyType(jsonTile.enemySpawn.type);
                 }

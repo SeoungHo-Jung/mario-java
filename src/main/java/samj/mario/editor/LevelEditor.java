@@ -220,7 +220,7 @@ public class LevelEditor implements ActionListener {
                 drawTilePalette(g);
             }
         };
-        Dimension tilePanelDimensions = new Dimension(PALETTE_COLUMNS * GRID_SIZE, (TILE_DEFINITIONS.size() / PALETTE_COLUMNS) * GRID_SIZE);
+        Dimension tilePanelDimensions = new Dimension(PALETTE_COLUMNS * GRID_SIZE, ((int) Math.ceil((double) TILE_DEFINITIONS.size() / (double) PALETTE_COLUMNS)) * GRID_SIZE);
         tilePalettePanel.setMinimumSize(tilePanelDimensions);
         tilePalettePanel.setPreferredSize(tilePanelDimensions);
         tilePalettePanel.setMaximumSize(tilePanelDimensions);

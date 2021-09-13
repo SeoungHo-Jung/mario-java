@@ -3,8 +3,8 @@ package samj.mario.editor.data;
 import java.util.List;
 
 public class TileDefinition {
-    public int x;
-    public int y;
+    public Integer x;
+    public Integer y;
     public int paletteCount;
     public boolean isAnimated;
     public List<TileType> allowedTypes;

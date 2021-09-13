@@ -56,8 +56,6 @@ public class Tile {
     }
 
     public static class Builder {
-        private Icon primaryDisplayIcon = null;
-        private Icon secondaryDisplayIcon = null;
         private Integer tileX = null;
         private Integer tileY = null;
         private Integer tilePalette = null;
@@ -72,16 +70,6 @@ public class Tile {
         private List<ContainerType> allowedContainerTypes = Collections.emptyList();
 
         private Builder() {}
-
-        public Builder setPrimaryDisplayTileIcon(Icon primaryDisplayIcon) {
-            this.primaryDisplayIcon = primaryDisplayIcon;
-            return this;
-        }
-
-        public Builder setSecondaryDisplayTileIcon(Icon secondaryDisplayIcon) {
-            this.secondaryDisplayIcon = secondaryDisplayIcon;
-            return this;
-        }
 
         public Builder setName(String name) {
             this.name = name;
@@ -141,14 +129,6 @@ public class Tile {
         public Builder setAllowedContainerTypes(List<ContainerType> allowedContainerTypes) {
             this.allowedContainerTypes = allowedContainerTypes;
             return this;
-        }
-
-        public Icon getPrimaryDisplayIcon() {
-            return primaryDisplayIcon;
-        }
-
-        public Icon getSecondaryDisplayIcon() {
-            return secondaryDisplayIcon;
         }
 
         public Integer getTileX() {
