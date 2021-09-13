@@ -395,14 +395,14 @@ public class LevelEditor implements ActionListener {
     }
 
     private void createNewLevel() {
-        final int width = 16;
-        final int height = 16;
+        final int defaultWidth = 100;
+        final int defaultHeight = 15;
 
         level = new Level();
-        level.setDimensions(width, height);
-        level.setTileMatrix(new TileMatrix(width, height));
-        levelPanelWidth = width * GRID_SIZE;
-        levelPanelHeight = height * GRID_SIZE;
+        level.setDimensions(defaultWidth, defaultHeight);
+        level.setTileMatrix(new TileMatrix(defaultWidth, defaultHeight));
+        levelPanelWidth = defaultWidth * GRID_SIZE;
+        levelPanelHeight = defaultHeight * GRID_SIZE;
 
         undoStack.clear();
         repaintLevel();
