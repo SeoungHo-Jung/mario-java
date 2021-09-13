@@ -229,8 +229,12 @@ public class Tile {
     }
 
     public Integer getCount() {
-        // default count is 1 if unset and type is CONTAINER
-        return (type == TileType.CONTAINER && count == null) ? 1 : count;
+        if (type == TileType.CONTAINER) {
+            // default count is 1 if unset and type is CONTAINER
+            return count == null ? 1 : count;
+        } else {
+            return null;
+        }
     }
 
     public List<TileType> getAllowedTileTypes() {

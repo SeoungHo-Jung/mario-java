@@ -55,7 +55,7 @@ public class TileData {
                     {"x": 3, "y": 8, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
                     {"x": 2, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
                     {"x": 3, "y": 9, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["SOLID"]},
-                    {"x": 24, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["CONTAINER", "SOLID"]},
+                    {"x": 24, "y": 0, "paletteCount": 1, "isAnimated": false, "allowedTypes": ["CONTAINER", "SOLID"], "allowedContainerTypes": ["COIN", "STAR", "ONE_UP", "POWER_UP"]},
                     {"paletteCount": 1, "isAnimated": true, "allowedTypes": ["COIN"]}
                 ]
                 """;

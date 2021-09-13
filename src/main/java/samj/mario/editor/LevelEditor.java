@@ -384,9 +384,12 @@ public class LevelEditor implements ActionListener {
     }
 
     private void drawPreview(Graphics g) {
+        final int previewScaleFactor = 3;
         Tile selectedGridTile = getSelectedGridTile();
         Image primaryIcon = iconLoader.getImageForIcon(iconResolver.primaryDisplayIcon(selectedGridTile));
-        g.drawImage(primaryIcon, 0, 0, GRID_SIZE * 2, GRID_SIZE * 2, null);
+        g.drawImage(primaryIcon, 0, 0, GRID_SIZE * previewScaleFactor, GRID_SIZE * previewScaleFactor, null);
+        Image secondaryIcon = iconLoader.getImageForIcon(iconResolver.secondaryDisplayIcon(selectedGridTile));
+        g.drawImage(secondaryIcon, 0, 0, GRID_SIZE * previewScaleFactor, GRID_SIZE * previewScaleFactor, null);
     }
 
     public void doCommand(EditorCommand command) {
@@ -397,9 +400,15 @@ public class LevelEditor implements ActionListener {
     private void createNewLevel() {
         final int defaultWidth = 100;
         final int defaultHeight = 15;
+        final Color defaultBackgroundColor = new Color(152, 137, 255);
+        final String defaultName = "New Level";
+        final int defaultTimeLimit = 300;
 
         level = new Level();
         level.setDimensions(defaultWidth, defaultHeight);
+        level.setBackgroundColor(defaultBackgroundColor);
+        level.setName(defaultName);
+        level.setTimeLimit(defaultTimeLimit);
         level.setTileMatrix(new TileMatrix(defaultWidth, defaultHeight));
         levelPanelWidth = defaultWidth * GRID_SIZE;
         levelPanelHeight = defaultHeight * GRID_SIZE;
@@ -429,6 +438,19 @@ public class LevelEditor implements ActionListener {
         level.setTileMatrix(new TileMatrix(width, height, level.getTileMatrix()));
 
         repaintLevel();
+    }
+
+    public void changeLevelBackgroundColor(Color color) {
+        level.setBackgroundColor(color);
+        repaintLevel();
+    }
+
+    public void changeLevelName(String name) {
+        level.setName(name);
+    }
+
+    public void changeTimeLimit(int limit) {
+        level.setTimeLimit(limit);
     }
 
     public void repaintLevel() {
@@ -720,8 +742,8 @@ public class LevelEditor implements ActionListener {
         enemyAttributesPanel.add(enemyTypeComboBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         selectedTilePreviewWrapperPanel = new JPanel();
         selectedTilePreviewWrapperPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
-        selectedTilePanel.add(selectedTilePreviewWrapperPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(45, -1), new Dimension(45, -1), new Dimension(45, -1), 0, false));
-        selectedTilePreviewWrapperPanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(32, 32), new Dimension(32, 32), new Dimension(32, -1), 0, false));
+        selectedTilePanel.add(selectedTilePreviewWrapperPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(52, -1), new Dimension(52, -1), new Dimension(52, -1), 0, true));
+        selectedTilePreviewWrapperPanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(52, 52), new Dimension(52, 52), new Dimension(50, 50), 0, false));
         selectedTilePreviewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(-4473925)));
         final Spacer spacer1 = new Spacer();
         selectedTilePreviewWrapperPanel.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
