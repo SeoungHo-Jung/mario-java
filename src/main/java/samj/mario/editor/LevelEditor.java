@@ -10,6 +10,7 @@ import samj.mario.editor.io.FileIO;
 import samj.mario.editor.io.IconLoader;
 import samj.mario.editor.io.JsonLevelFormat;
 import samj.mario.editor.io.LevelFormat;
+import samj.mario.editor.util.OsUtil;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -61,6 +62,7 @@ public class LevelEditor implements ActionListener {
     private JCheckBoxMenuItem gridMenuItem;
     private JCheckBoxMenuItem overlayMenuItem;
 
+    public static final int SYSTEM_COMMAND_MODIFIER = OsUtil.isMac() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
     public static final int GRID_SIZE = 16;
     public static final int PALETTE_COLUMNS = 8;
     private static final String COMBO_BOX_NONE_ITEM = "NONE";
@@ -256,7 +258,7 @@ public class LevelEditor implements ActionListener {
 
         saveMenuItem = new JMenuItem("Save");
         saveMenuItem.setActionCommand("save");
-        saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.META_DOWN_MASK));
+        saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, SYSTEM_COMMAND_MODIFIER));
         saveMenuItem.addActionListener(this);
         fileMenu.add(saveMenuItem);
 
@@ -264,7 +266,7 @@ public class LevelEditor implements ActionListener {
 
         quitMenuItem = new JMenuItem("Quit");
         quitMenuItem.setActionCommand("quit");
-        quitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, InputEvent.META_DOWN_MASK));
+        quitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, SYSTEM_COMMAND_MODIFIER));
         quitMenuItem.addActionListener(this);
         fileMenu.add(quitMenuItem);
 
@@ -273,7 +275,7 @@ public class LevelEditor implements ActionListener {
 
         undoMenuItem = new JMenuItem("Undo");
         undoMenuItem.setActionCommand("undo");
-        undoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.META_DOWN_MASK));
+        undoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, SYSTEM_COMMAND_MODIFIER));
         undoMenuItem.addActionListener(this);
         editMenu.add(undoMenuItem);
 
@@ -289,14 +291,14 @@ public class LevelEditor implements ActionListener {
 
         gridMenuItem = new JCheckBoxMenuItem("Show Grid");
         gridMenuItem.setActionCommand("grid-toggle");
-        gridMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, InputEvent.META_DOWN_MASK));
+        gridMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, SYSTEM_COMMAND_MODIFIER));
         gridMenuItem.addActionListener(this);
         gridMenuItem.setSelected(isGridEnabled);
         viewMenu.add(gridMenuItem);
 
         overlayMenuItem = new JCheckBoxMenuItem("Show Tile Icons");
         overlayMenuItem.setActionCommand("overlay-toggle");
-        overlayMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, InputEvent.META_DOWN_MASK));
+        overlayMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, SYSTEM_COMMAND_MODIFIER));
         overlayMenuItem.addActionListener(this);
         overlayMenuItem.setSelected(isOverlayEnabled);
         viewMenu.add(overlayMenuItem);
@@ -743,7 +745,7 @@ public class LevelEditor implements ActionListener {
         selectedTilePreviewWrapperPanel = new JPanel();
         selectedTilePreviewWrapperPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
         selectedTilePanel.add(selectedTilePreviewWrapperPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(52, -1), new Dimension(52, -1), new Dimension(52, -1), 0, true));
-        selectedTilePreviewWrapperPanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(52, 52), new Dimension(52, 52), new Dimension(50, 50), 0, false));
+        selectedTilePreviewWrapperPanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(52, 52), new Dimension(52, 52), new Dimension(52, 52), 0, false));
         selectedTilePreviewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(-4473925)));
         final Spacer spacer1 = new Spacer();
         selectedTilePreviewWrapperPanel.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
