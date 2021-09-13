@@ -19,7 +19,9 @@ import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
+import java.text.Format;
 import java.util.Stack;
+import java.util.logging.SimpleFormatter;
 
 import static samj.mario.editor.data.TileData.TILE_DEFINITIONS;
 
@@ -48,6 +50,7 @@ public class LevelEditor implements ActionListener {
     private JPanel enemyAttributesPanel;
     private JComboBox enemyTypeComboBox;
     private JPanel selectedTilePreviewWrapperPanel;
+    private JLabel selectedTileCoordinateLabel;
 
     private JMenuBar menuBar;
     private JMenu fileMenu;
@@ -140,8 +143,13 @@ public class LevelEditor implements ActionListener {
     public void setSelectedGridTile(int selectedGridTileX, int selectedGridTileY) {
         this.selectedGridTileX = selectedGridTileX;
         this.selectedGridTileY = selectedGridTileY;
+        refreshSelectedTileCoordinates(selectedGridTileX, selectedGridTileY);
         repaintLevel();
         refreshAttributeControls();
+    }
+
+    private void refreshSelectedTileCoordinates(int selectedGridTileX, int selectedGridTileY) {
+        this.selectedTileCoordinateLabel.setText(String.format("(%d,%d)", selectedGridTileX, selectedGridTileY));
     }
 
     public void setCurrentMode(EditorMode mode) {
@@ -414,7 +422,13 @@ public class LevelEditor implements ActionListener {
         level.setTileMatrix(new TileMatrix(defaultWidth, defaultHeight));
         levelPanelWidth = defaultWidth * GRID_SIZE;
         levelPanelHeight = defaultHeight * GRID_SIZE;
+        resetEditor();
+    }
 
+    private void resetEditor() {
+        selectedGridTileX = 0;
+        selectedGridTileY = 0;
+        refreshSelectedTileCoordinates(0, 0);
         undoStack.clear();
         repaintLevel();
         refreshAttributeControls();
@@ -424,10 +438,7 @@ public class LevelEditor implements ActionListener {
         this.level = level;
         levelPanelWidth = level.getWidth() * GRID_SIZE;
         levelPanelHeight = level.getHeight() * GRID_SIZE;
-
-        undoStack.clear();
-        repaintLevel();
-        refreshAttributeControls();
+        resetEditor();
     }
 
     public void changeLevelDimensions(int width, int height) {
@@ -743,12 +754,16 @@ public class LevelEditor implements ActionListener {
         enemyTypeComboBox = new JComboBox();
         enemyAttributesPanel.add(enemyTypeComboBox, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_HORIZONTAL, GridConstraints.SIZEPOLICY_CAN_GROW, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
         selectedTilePreviewWrapperPanel = new JPanel();
-        selectedTilePreviewWrapperPanel.setLayout(new GridLayoutManager(2, 1, new Insets(0, 0, 0, 0), -1, -1));
+        selectedTilePreviewWrapperPanel.setLayout(new GridLayoutManager(3, 1, new Insets(0, 0, 0, 0), -1, -1));
         selectedTilePanel.add(selectedTilePreviewWrapperPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(52, -1), new Dimension(52, -1), new Dimension(52, -1), 0, true));
-        selectedTilePreviewWrapperPanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(52, 52), new Dimension(52, 52), new Dimension(52, 52), 0, false));
+        selectedTilePreviewWrapperPanel.add(selectedTilePreviewPanel, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_CAN_SHRINK | GridConstraints.SIZEPOLICY_CAN_GROW, new Dimension(52, 52), new Dimension(48, 52), new Dimension(52, 52), 0, false));
         selectedTilePreviewPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), null, TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, new Color(-4473925)));
         final Spacer spacer1 = new Spacer();
-        selectedTilePreviewWrapperPanel.add(spacer1, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, null, null, 0, false));
+        selectedTilePreviewWrapperPanel.add(spacer1, new GridConstraints(2, 0, 1, 1, GridConstraints.ANCHOR_CENTER, GridConstraints.FILL_VERTICAL, 1, GridConstraints.SIZEPOLICY_WANT_GROW, null, new Dimension(48, 14), null, 0, false));
+        selectedTileCoordinateLabel = new JLabel();
+        selectedTileCoordinateLabel.setHorizontalTextPosition(0);
+        selectedTileCoordinateLabel.setText("");
+        selectedTilePreviewWrapperPanel.add(selectedTileCoordinateLabel, new GridConstraints(1, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, new Dimension(48, 0), null, 0, false));
     }
 
     /**
