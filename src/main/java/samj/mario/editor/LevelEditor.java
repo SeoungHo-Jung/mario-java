@@ -213,10 +213,6 @@ public class LevelEditor implements ActionListener {
         setCurrentMode(currentMode);
     }
 
-    public JPanel getLevelPanel() {
-        return levelPanel;
-    }
-
     public Level getLevel() {
         return level;
     }
@@ -325,6 +321,7 @@ public class LevelEditor implements ActionListener {
         g.setColor(Color.WHITE);
         g.fillRect(0, 0, levelPanelWidth, levelPanelHeight);
         if (level != null) {
+            drawBackground(g);
             drawTiles(g);
         }
         if (isGridEnabled) {
@@ -333,6 +330,11 @@ public class LevelEditor implements ActionListener {
         if (currentMode == EditorMode.SELECT) {
             drawSelectionBox(g);
         }
+    }
+
+    private void drawBackground(Graphics g) {
+        g.setColor(level.getBackgroundColor());
+        g.fillRect(0, 0, levelPanelWidth, levelPanelHeight);
     }
 
     private void drawTiles(Graphics g) {
@@ -360,7 +362,7 @@ public class LevelEditor implements ActionListener {
         int width = levelPanelWidth;
         int height = levelPanelHeight;
 
-        g.setColor(Color.CYAN);
+        g.setColor(Color.LIGHT_GRAY);
 
         int scaledGridSize = GRID_SIZE * GRID_SCALE_FACTOR;
 
@@ -451,8 +453,8 @@ public class LevelEditor implements ActionListener {
 
     private void loadExistingLevel(Level level) {
         this.level = level;
-        levelPanelWidth = level.getWidth() * GRID_SIZE;
-        levelPanelHeight = level.getHeight() * GRID_SIZE;
+        levelPanelWidth = level.getWidth() * GRID_SIZE * GRID_SCALE_FACTOR;
+        levelPanelHeight = level.getHeight() * GRID_SIZE * GRID_SCALE_FACTOR;
         resetEditor();
 
         logger.debug("Existing Level loaded");
@@ -460,8 +462,8 @@ public class LevelEditor implements ActionListener {
 
     public void changeLevelDimensions(int width, int height) {
         level.setDimensions(width, height);
-        levelPanelWidth = width * GRID_SIZE;
-        levelPanelHeight = height * GRID_SIZE;
+        levelPanelWidth = width * GRID_SIZE * GRID_SCALE_FACTOR;
+        levelPanelHeight = height * GRID_SIZE * GRID_SCALE_FACTOR;
 
         // TODO: Validate that no tiles are being deleted
 
