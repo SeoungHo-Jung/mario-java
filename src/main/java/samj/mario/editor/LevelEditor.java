@@ -73,6 +73,9 @@ public class LevelEditor implements ActionListener {
     public static final int GRID_SIZE = 16;
     public static final int PALETTE_COLUMNS = 8;
     private static final String COMBO_BOX_NONE_ITEM = "NONE";
+    private static final int GRID_SCALE_FACTOR = 2;
+    private static final int PALETTE_SCALE_FACTOR = 2;
+    private static final int PREVIEW_SCALE_FACTOR = 3;
 
     public enum EditorMode {
         SELECT,
@@ -234,7 +237,7 @@ public class LevelEditor implements ActionListener {
                 drawTilePalette(g);
             }
         };
-        Dimension tilePanelDimensions = new Dimension(PALETTE_COLUMNS * GRID_SIZE, ((int) Math.ceil((double) TILE_DEFINITIONS.size() / (double) PALETTE_COLUMNS)) * GRID_SIZE);
+        Dimension tilePanelDimensions = new Dimension(PALETTE_COLUMNS * GRID_SIZE * PALETTE_SCALE_FACTOR, ((int) Math.ceil((double) TILE_DEFINITIONS.size() / (double) PALETTE_COLUMNS)) * GRID_SIZE * PALETTE_SCALE_FACTOR);
         tilePalettePanel.setMinimumSize(tilePanelDimensions);
         tilePalettePanel.setPreferredSize(tilePanelDimensions);
         tilePalettePanel.setMaximumSize(tilePanelDimensions);
@@ -338,15 +341,16 @@ public class LevelEditor implements ActionListener {
                 Tile tile = level.getTileMatrix().getTile(x, y);
                 Icon primaryDisplayIcon = iconResolver.primaryDisplayIcon(tile);
                 Icon secondaryDisplayIcon = iconResolver.secondaryDisplayIcon(tile);
-                int panelX = x * GRID_SIZE;
-                int panelY = y * GRID_SIZE;
+                int scaledGridSize = GRID_SIZE * GRID_SCALE_FACTOR;
+                int panelX = x * scaledGridSize;
+                int panelY = y * scaledGridSize;
                 if (primaryDisplayIcon != null) {
                     Image primaryIconImage = iconLoader.getImageForIcon(primaryDisplayIcon);
-                    g.drawImage(primaryIconImage, panelX, panelY, null);
+                    g.drawImage(primaryIconImage, panelX, panelY, scaledGridSize, scaledGridSize, null);
                 }
                 if (isOverlayEnabled && secondaryDisplayIcon != null) {
                     Image secondaryIconImage = iconLoader.getImageForIcon(secondaryDisplayIcon);
-                    g.drawImage(secondaryIconImage, panelX, panelY, null);
+                    g.drawImage(secondaryIconImage, panelX, panelY, scaledGridSize, scaledGridSize, null);
                 }
             }
         }
@@ -358,52 +362,57 @@ public class LevelEditor implements ActionListener {
 
         g.setColor(Color.CYAN);
 
+        int scaledGridSize = GRID_SIZE * GRID_SCALE_FACTOR;
+
         // vertical lines
-        for (int i = GRID_SIZE; i < width; i += GRID_SIZE) {
+        for (int i = scaledGridSize; i < width; i += scaledGridSize) {
             g.drawLine(i, 0, i, height);
         }
 
         // horizontal lines
-        for (int i = GRID_SIZE; i < height; i += GRID_SIZE) {
+        for (int i = scaledGridSize; i < height; i += scaledGridSize) {
             g.drawLine(0, i, width, i);
         }
     }
 
     private void drawSelectionBox(Graphics g) {
-        int x = selectedGridTileX * GRID_SIZE;
-        int y = selectedGridTileY * GRID_SIZE;
+        int scaledGridSize = GRID_SIZE * GRID_SCALE_FACTOR;
+
+        int x = selectedGridTileX * scaledGridSize;
+        int y = selectedGridTileY * scaledGridSize;
 
         g.setColor(Color.RED);
 
         // draw a square, upper left at x,y
-        g.drawRect(x, y, GRID_SIZE, GRID_SIZE);
+        g.drawRect(x, y, scaledGridSize, scaledGridSize);
     }
 
     private void drawTilePalette(Graphics g) {
+        int scaledGridSize = GRID_SIZE * PALETTE_SCALE_FACTOR;
         for (int i = 0; i < TILE_DEFINITIONS.size(); i++) {
             TileDefinition tileDef = TILE_DEFINITIONS.get(i);
             Tile tile = tileDef.prototype;
             Image primaryIconImage = iconLoader.getImageForIcon(iconResolver.primaryDisplayIcon(tile));
-            int x = (i % PALETTE_COLUMNS) * GRID_SIZE;
-            int y = (i / PALETTE_COLUMNS) * GRID_SIZE;
-            g.drawImage(primaryIconImage, x, y, null);
+            int x = (i % PALETTE_COLUMNS) * scaledGridSize;
+            int y = (i / PALETTE_COLUMNS) * scaledGridSize;
+            g.drawImage(primaryIconImage, x, y, scaledGridSize, scaledGridSize, null);
         }
         // draw border around the selected tile and shade with transparent color
         if (selectedPaletteTileX != null && selectedPaletteTileY != null) {
             g.setColor(new Color(0, 0, 0));
-            g.drawRect(selectedPaletteTileX * GRID_SIZE, selectedPaletteTileY * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+            g.drawRect(selectedPaletteTileX * scaledGridSize, selectedPaletteTileY * scaledGridSize, scaledGridSize, scaledGridSize);
             g.setColor(new Color(0, 0, 0, 64));
-            g.fillRect(selectedPaletteTileX * GRID_SIZE, selectedPaletteTileY * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+            g.fillRect(selectedPaletteTileX * scaledGridSize, selectedPaletteTileY * scaledGridSize, scaledGridSize, scaledGridSize);
         }
     }
 
     private void drawPreview(Graphics g) {
-        final int previewScaleFactor = 3;
         Tile selectedGridTile = getSelectedGridTile();
         Image primaryIcon = iconLoader.getImageForIcon(iconResolver.primaryDisplayIcon(selectedGridTile));
-        g.drawImage(primaryIcon, 0, 0, GRID_SIZE * previewScaleFactor, GRID_SIZE * previewScaleFactor, null);
+        int scaledGridSize = GRID_SIZE * PREVIEW_SCALE_FACTOR;
+        g.drawImage(primaryIcon, 0, 0, scaledGridSize, scaledGridSize, null);
         Image secondaryIcon = iconLoader.getImageForIcon(iconResolver.secondaryDisplayIcon(selectedGridTile));
-        g.drawImage(secondaryIcon, 0, 0, GRID_SIZE * previewScaleFactor, GRID_SIZE * previewScaleFactor, null);
+        g.drawImage(secondaryIcon, 0, 0, scaledGridSize, scaledGridSize, null);
     }
 
     public void doCommand(EditorCommand command) {
@@ -424,8 +433,8 @@ public class LevelEditor implements ActionListener {
         level.setName(defaultName);
         level.setTimeLimit(defaultTimeLimit);
         level.setTileMatrix(new TileMatrix(defaultWidth, defaultHeight));
-        levelPanelWidth = defaultWidth * GRID_SIZE;
-        levelPanelHeight = defaultHeight * GRID_SIZE;
+        levelPanelWidth = defaultWidth * GRID_SIZE * GRID_SCALE_FACTOR;
+        levelPanelHeight = defaultHeight * GRID_SIZE * GRID_SCALE_FACTOR;
         resetEditor();
 
         logger.debug("New Level created");
@@ -553,8 +562,9 @@ public class LevelEditor implements ActionListener {
     }
 
     private void handleLevelPanelMouseEvent(MouseEvent e) {
-        int x = e.getX() / GRID_SIZE;
-        int y = e.getY() / GRID_SIZE;
+        int scaledGridSize = GRID_SIZE * GRID_SCALE_FACTOR;
+        int x = e.getX() / scaledGridSize;
+        int y = e.getY() / scaledGridSize;
         if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
             switch (currentMode) {
                 case SELECT -> {
@@ -576,8 +586,9 @@ public class LevelEditor implements ActionListener {
     }
 
     private void handleTilePalettePanelMouseEvent(MouseEvent e) {
-        int x = e.getX() / GRID_SIZE;
-        int y = e.getY() / GRID_SIZE;
+        int scaledGridSize = GRID_SIZE * PALETTE_SCALE_FACTOR;
+        int x = e.getX() / scaledGridSize;
+        int y = e.getY() / scaledGridSize;
         int index = (y * PALETTE_COLUMNS) + x;
         if (index >= 0 && index < TILE_DEFINITIONS.size()) {
             selectedPaletteTile = TILE_DEFINITIONS.get(index).prototype;
@@ -681,7 +692,7 @@ public class LevelEditor implements ActionListener {
         frame.setContentPane(new LevelEditor().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setMinimumSize(new Dimension(400, 300));
-        frame.setPreferredSize(new Dimension(800, 600));
+        frame.setPreferredSize(new Dimension(1000, 575));
         frame.pack();
         frame.setVisible(true);
     }

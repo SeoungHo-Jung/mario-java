@@ -98,7 +98,7 @@ public class ConfirmationDialog extends JDialog {
         final JLabel label1 = new JLabel();
         label1.setHorizontalAlignment(0);
         label1.setHorizontalTextPosition(0);
-        label1.setText("Are U sure???");
+        label1.setText("Are you sure about that?");
         panel3.add(label1, new GridConstraints(0, 0, 1, 1, GridConstraints.ANCHOR_WEST, GridConstraints.FILL_NONE, GridConstraints.SIZEPOLICY_FIXED, GridConstraints.SIZEPOLICY_FIXED, null, null, null, 0, false));
     }
 

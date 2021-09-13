@@ -64,7 +64,7 @@
             <properties>
               <horizontalAlignment value="0"/>
               <horizontalTextPosition value="0"/>
-              <text value="Are U sure???"/>
+              <text value="Are you sure about that?"/>
             </properties>
           </component>
         </children>
