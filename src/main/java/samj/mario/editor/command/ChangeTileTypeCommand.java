@@ -22,6 +22,7 @@ public class ChangeTileTypeCommand implements EditorCommand {
     public void execute() {
         System.out.println("Set type: " + newType);
         tile.setType(newType);
+        levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();
     }
 
@@ -29,6 +30,7 @@ public class ChangeTileTypeCommand implements EditorCommand {
     public void undo() {
         System.out.println("Set type: " + oldType);
         tile.setType(oldType);
+        levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();
     }
 }

@@ -23,6 +23,7 @@ public class ChangeContainerTypeCommand implements EditorCommand {
     public void execute() {
         System.out.println("Set container type: " + newType);
         tile.setContainerType(newType);
+        levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();
     }
 
@@ -30,6 +31,7 @@ public class ChangeContainerTypeCommand implements EditorCommand {
     public void undo() {
         System.out.println("Set container type: " + oldType);
         tile.setContainerType(oldType);
+        levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();
     }
 }

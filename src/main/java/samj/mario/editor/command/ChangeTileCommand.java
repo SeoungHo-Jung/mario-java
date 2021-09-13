@@ -22,7 +22,7 @@ public class ChangeTileCommand implements EditorCommand {
     @Override
     public void execute() {
         levelEditor.getLevel().getTileMatrix().setTile(x, y, newTile);
-        levelEditor.getLevelPanel().repaint();
+        levelEditor.repaintLevel();
     }
 
     @Override

@@ -23,6 +23,7 @@ public class SetEnemySpawnCommand implements EditorCommand {
     public void execute() {
         System.out.println("Set enemy type: " + newType);
         tile.setEnemyType(newType);
+        levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();
     }
 
@@ -30,6 +31,7 @@ public class SetEnemySpawnCommand implements EditorCommand {
     public void undo() {
         System.out.println("Set enemy type: " + oldType);
         tile.setEnemyType(oldType);
+        levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();
     }
 }

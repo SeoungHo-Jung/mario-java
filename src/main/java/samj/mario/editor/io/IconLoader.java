@@ -1,12 +1,16 @@
 package samj.mario.editor.io;
 
 import samj.mario.editor.data.Icon;
+import samj.mario.editor.data.IconSheet;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class IconLoader {
 
@@ -19,12 +23,13 @@ public class IconLoader {
         loadIcons();
     }
 
-    private BufferedImage tileIcons;
-    private BufferedImage editorIcons;
+    private Map<IconSheet, BufferedImage> imageByIconSheet;
 
     public void loadIcons() {
-        tileIcons = loadIconsFile("image/tiles.png");
-        editorIcons = loadIconsFile("image/editor.png");
+        imageByIconSheet = Map.of(IconSheet.TILES, loadIconsFile("image/tiles.png"),
+                IconSheet.ENEMY, loadIconsFile("image/enemy.png"),
+                IconSheet.ITEMS, loadIconsFile("image/items.png"),
+                IconSheet.EDITOR, loadIconsFile("image/editor.png"));
     }
 
     private BufferedImage loadIconsFile(String tilesFile) {
@@ -45,20 +50,33 @@ public class IconLoader {
 
     public Image getImageForIcon(Icon icon) {
         if (icon == null) {
-            // return a default "null" image
-            return new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
+            return defaultImage();
         }
 
         int x = icon.getxLocation() * iconSize;
         int y = icon.getyLocation() * iconSize;
-        switch (icon.getSpriteSheet()) {
-            case TILES -> {
-                return tileIcons.getSubimage(x, y, iconSize, iconSize);
-            }
-            case EDITOR -> {
-                return editorIcons.getSubimage(x, y, iconSize, iconSize);
-            }
-            default -> throw new UnsupportedOperationException(icon.getSpriteSheet() + " icons are not supported");
+        BufferedImage image = imageByIconSheet.get(icon.getSpriteSheet());
+
+        if (image == null) {
+            System.out.println("Could not find image for IconSheet " + icon.getSpriteSheet());
+            return defaultImage();
         }
+
+        if (x + iconSize > image.getWidth()) {
+            System.out.println("Icon location out of bounds for Image " + icon.getSpriteSheet());
+            return defaultImage();
+        }
+
+        if (y + iconSize > image.getHeight()) {
+            System.out.println("Icon location out of bounds for Image " + icon.getSpriteSheet());
+            return defaultImage();
+        }
+
+        return imageByIconSheet.get(icon.getSpriteSheet()).getSubimage(x, y, iconSize, iconSize);
+    }
+
+    private BufferedImage defaultImage() {
+        // return a default "null" image
+        return new BufferedImage(iconSize, iconSize, BufferedImage.TYPE_INT_ARGB);
     }
 }

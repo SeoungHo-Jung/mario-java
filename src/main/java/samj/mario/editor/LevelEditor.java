@@ -5,6 +5,7 @@ import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
 import samj.mario.editor.command.*;
 import samj.mario.editor.data.*;
+import samj.mario.editor.data.Icon;
 import samj.mario.editor.io.FileIO;
 import samj.mario.editor.io.IconLoader;
 import samj.mario.editor.io.JsonLevelFormat;
@@ -74,6 +75,7 @@ public class LevelEditor implements ActionListener {
 
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
+    private final IconResolver iconResolver = new IconResolver();
     private final IconLoader iconLoader = new IconLoader(GRID_SIZE);
 
     private EditorMode currentMode = EditorMode.SELECT;
@@ -320,15 +322,17 @@ public class LevelEditor implements ActionListener {
         for (int x = 0; x < level.getWidth(); x++) {
             for (int y = 0; y < level.getHeight(); y++) {
                 Tile tile = level.getTileMatrix().getTile(x, y);
-                if (tile.getPrimaryDisplayIcon() != null) {
-                    int panelX = x * GRID_SIZE;
-                    int panelY = y * GRID_SIZE;
-                    Image primaryIconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
+                Icon primaryDisplayIcon = iconResolver.primaryDisplayIcon(tile);
+                Icon secondaryDisplayIcon = iconResolver.secondaryDisplayIcon(tile);
+                int panelX = x * GRID_SIZE;
+                int panelY = y * GRID_SIZE;
+                if (primaryDisplayIcon != null) {
+                    Image primaryIconImage = iconLoader.getImageForIcon(primaryDisplayIcon);
                     g.drawImage(primaryIconImage, panelX, panelY, null);
-                    if (isOverlayEnabled) {
-                        Image secondaryIconImage = iconLoader.getImageForIcon(tile.getSecondaryDisplayIcon());
-                        g.drawImage(secondaryIconImage, panelX, panelY, null);
-                    }
+                }
+                if (isOverlayEnabled && secondaryDisplayIcon != null) {
+                    Image secondaryIconImage = iconLoader.getImageForIcon(secondaryDisplayIcon);
+                    g.drawImage(secondaryIconImage, panelX, panelY, null);
                 }
             }
         }

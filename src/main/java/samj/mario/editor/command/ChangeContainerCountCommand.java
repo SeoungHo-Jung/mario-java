@@ -1,7 +1,6 @@
 package samj.mario.editor.command;
 
 import samj.mario.editor.LevelEditor;
-import samj.mario.editor.data.ContainerType;
 import samj.mario.editor.data.Tile;
 
 public class ChangeContainerCountCommand implements EditorCommand {
