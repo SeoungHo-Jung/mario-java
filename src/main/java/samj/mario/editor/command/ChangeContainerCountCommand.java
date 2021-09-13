@@ -1,9 +1,13 @@
 package samj.mario.editor.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import samj.mario.editor.LevelEditor;
 import samj.mario.editor.data.Tile;
 
 public class ChangeContainerCountCommand implements EditorCommand {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChangeContainerCountCommand.class);
 
     private final Tile tile;
     private final Integer oldValue;
@@ -19,14 +23,14 @@ public class ChangeContainerCountCommand implements EditorCommand {
 
     @Override
     public void execute() {
-        System.out.println("Set container count: " + newValue);
+        logger.debug("Set container count: {}", newValue);
         tile.setCount(newValue);
         levelEditor.refreshAttributeControls();
     }
 
     @Override
     public void undo() {
-        System.out.println("Set container count: " + oldValue);
+        logger.debug("Set container count: {}", oldValue);
         tile.setCount(oldValue);
         levelEditor.refreshAttributeControls();
     }

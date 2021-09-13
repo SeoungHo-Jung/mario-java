@@ -1,11 +1,15 @@
 package samj.mario.editor.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import samj.mario.editor.LevelEditor;
 import samj.mario.editor.data.ContainerType;
 import samj.mario.editor.data.EnemyType;
 import samj.mario.editor.data.Tile;
 
 public class SetEnemySpawnCommand implements EditorCommand {
+
+    private static final Logger logger = LoggerFactory.getLogger(SetEnemySpawnCommand.class);
 
     private final Tile tile;
     private final EnemyType oldType;
@@ -21,7 +25,7 @@ public class SetEnemySpawnCommand implements EditorCommand {
 
     @Override
     public void execute() {
-        System.out.println("Set enemy type: " + newType);
+        logger.debug("Set enemy type: {}", newType);
         tile.setEnemyType(newType);
         levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();
@@ -29,7 +33,7 @@ public class SetEnemySpawnCommand implements EditorCommand {
 
     @Override
     public void undo() {
-        System.out.println("Set enemy type: " + oldType);
+        logger.debug("Set enemy type: {}", oldType);
         tile.setEnemyType(oldType);
         levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();

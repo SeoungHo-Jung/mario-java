@@ -1,10 +1,14 @@
 package samj.mario.editor.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import samj.mario.editor.LevelEditor;
 
 import java.awt.*;
 
 public class ChangeLevelPropertiesCommand implements EditorCommand {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChangeLevelPropertiesCommand.class);
 
     private final int oldWidth;
     private final int oldHeight;

@@ -3,6 +3,8 @@ package samj.mario.editor;
 import com.intellij.uiDesigner.core.GridConstraints;
 import com.intellij.uiDesigner.core.GridLayoutManager;
 import com.intellij.uiDesigner.core.Spacer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import samj.mario.editor.command.*;
 import samj.mario.editor.data.*;
 import samj.mario.editor.data.Icon;
@@ -26,6 +28,8 @@ import java.util.logging.SimpleFormatter;
 import static samj.mario.editor.data.TileData.TILE_DEFINITIONS;
 
 public class LevelEditor implements ActionListener {
+
+    private static final Logger logger = LoggerFactory.getLogger(LevelEditor.class);
 
     private static JFrame FRAME;
 
@@ -423,6 +427,8 @@ public class LevelEditor implements ActionListener {
         levelPanelWidth = defaultWidth * GRID_SIZE;
         levelPanelHeight = defaultHeight * GRID_SIZE;
         resetEditor();
+
+        logger.debug("New Level created");
     }
 
     private void resetEditor() {
@@ -439,6 +445,8 @@ public class LevelEditor implements ActionListener {
         levelPanelWidth = level.getWidth() * GRID_SIZE;
         levelPanelHeight = level.getHeight() * GRID_SIZE;
         resetEditor();
+
+        logger.debug("Existing Level loaded");
     }
 
     public void changeLevelDimensions(int width, int height) {
@@ -580,12 +588,14 @@ public class LevelEditor implements ActionListener {
     }
 
     private void handleNewRequested() {
+        logger.debug("New requested");
         if (getDialogConfirmation()) {
             createNewLevel();
         }
     }
 
     private void handleOpenRequested() {
+        logger.debug("Open requested");
         if (!getDialogConfirmation()) {
             return;
         }
@@ -601,6 +611,7 @@ public class LevelEditor implements ActionListener {
     }
 
     private void handleSaveRequested() {
+        logger.debug("Save requested");
         JFileChooser fileChooser = new JFileChooser();
         int result = fileChooser.showSaveDialog(mainPanel);
         if (result == JFileChooser.APPROVE_OPTION) {
@@ -611,12 +622,16 @@ public class LevelEditor implements ActionListener {
 
     private void handleUndoRequested() {
         if (!undoStack.isEmpty()) {
+            logger.debug("Undo");
             EditorCommand command = undoStack.pop();
             command.undo();
+        } else {
+            logger.info("Can't Undo");
         }
     }
 
     private void handlePropertiesRequested() {
+        logger.debug("Properties dialog requested");
         PropertiesDialog dialog = new PropertiesDialog(this);
         dialog.setAlwaysOnTop(true);
         dialog.setLocationRelativeTo(mainPanel);
@@ -625,18 +640,21 @@ public class LevelEditor implements ActionListener {
     }
 
     private void handleGridToggleRequested(ActionEvent e) {
+        logger.debug("Grid toggle");
         AbstractButton button = (AbstractButton) e.getSource();
         isGridEnabled = button.isSelected();
         levelPanel.repaint();
     }
 
     private void handleOverlayToggleRequested(ActionEvent e) {
+        logger.debug("Overlay toggle");
         AbstractButton button = (AbstractButton) e.getSource();
         isOverlayEnabled = button.isSelected();
         levelPanel.repaint();
     }
 
     private void handleQuitRequested() {
+        logger.debug("Quit requested");
         if (getDialogConfirmation()) {
             System.exit(0);
         }

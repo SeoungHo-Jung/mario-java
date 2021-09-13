@@ -1,5 +1,7 @@
 package samj.mario.editor.io;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import samj.mario.editor.data.Icon;
 import samj.mario.editor.data.IconSheet;
 
@@ -13,6 +15,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IconLoader {
+
+    private static final Logger logger = LoggerFactory.getLogger(IconLoader.class);
 
     private final int iconSize;
 
@@ -41,6 +45,7 @@ public class IconLoader {
                 BufferedImage in = ImageIO.read(imageURL);
                 BufferedImage icons = new BufferedImage(in.getWidth(), in.getHeight(), BufferedImage.TYPE_INT_ARGB);
                 icons.getGraphics().drawImage(in, 0, 0, null);
+                logger.debug("Loaded icons from {}", tilesFile);
                 return icons;
             } catch (IOException e) {
                 throw new RuntimeException("Failed to load icon file: " + tilesFile, e);
@@ -58,17 +63,17 @@ public class IconLoader {
         BufferedImage image = imageByIconSheet.get(icon.getSpriteSheet());
 
         if (image == null) {
-            System.out.println("Could not find image for IconSheet " + icon.getSpriteSheet());
+            logger.warn("Could not find image for IconSheet {}", icon.getSpriteSheet());
             return defaultImage();
         }
 
         if (x + iconSize > image.getWidth()) {
-            System.out.println("Icon location out of bounds for Image " + icon.getSpriteSheet());
+            logger.warn("Icon location out of bounds for Image {}", icon.getSpriteSheet());
             return defaultImage();
         }
 
         if (y + iconSize > image.getHeight()) {
-            System.out.println("Icon location out of bounds for Image " + icon.getSpriteSheet());
+            logger.warn("Icon location out of bounds for Image {}", icon.getSpriteSheet());
             return defaultImage();
         }
 

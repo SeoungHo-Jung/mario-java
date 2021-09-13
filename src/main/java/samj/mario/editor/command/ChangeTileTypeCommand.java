@@ -1,10 +1,14 @@
 package samj.mario.editor.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import samj.mario.editor.LevelEditor;
 import samj.mario.editor.data.Tile;
 import samj.mario.editor.data.TileType;
 
 public class ChangeTileTypeCommand implements EditorCommand {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChangeTileTypeCommand.class);
 
     private final Tile tile;
     private final TileType oldType;
@@ -20,7 +24,7 @@ public class ChangeTileTypeCommand implements EditorCommand {
 
     @Override
     public void execute() {
-        System.out.println("Set type: " + newType);
+        logger.debug("Set type: {}", newType);
         tile.setType(newType);
         levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();
@@ -28,7 +32,7 @@ public class ChangeTileTypeCommand implements EditorCommand {
 
     @Override
     public void undo() {
-        System.out.println("Set type: " + oldType);
+        logger.debug("Set type: {}", oldType);
         tile.setType(oldType);
         levelEditor.repaintLevel();
         levelEditor.refreshAttributeControls();

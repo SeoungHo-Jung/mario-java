@@ -64,7 +64,6 @@ public class TileData {
         try {
             tileDefs = OBJECT_MAPPER.readValue(tileDefJson, new TypeReference<>() {});
         } catch (JsonProcessingException e) {
-            e.printStackTrace();
             throw new RuntimeException("Couldn't deserialize tile config string", e);
         }
 

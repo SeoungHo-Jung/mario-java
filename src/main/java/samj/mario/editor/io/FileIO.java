@@ -1,5 +1,8 @@
 package samj.mario.editor.io;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import samj.mario.editor.command.ChangeContainerCountCommand;
 import samj.mario.editor.data.Level;
 
 import java.io.File;
@@ -8,6 +11,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class FileIO {
+
+    private static final Logger logger = LoggerFactory.getLogger(FileIO.class);
 
     private final LevelFormat levelFormat;
 
@@ -20,9 +25,9 @@ public class FileIO {
         try (FileInputStream inputStream = new FileInputStream(file)) {
             byte[] encodedLevel = inputStream.readAllBytes();
             level = levelFormat.decode(encodedLevel);
-            System.out.println("Opened file: " + file);
+            logger.info("Opened file {}", file);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Couldn't open file {}", file, e);
         }
         return level;
     }
@@ -31,9 +36,9 @@ public class FileIO {
         byte[] encodedLevel = levelFormat.encode(level);
         try (FileOutputStream outputStream = new FileOutputStream(file)) {
             outputStream.write(encodedLevel);
-            System.out.println("Saved file: " + file);
+            logger.info("Saved file {}", file);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("Couldn't save file {}", file, e);
         }
     }
 }
