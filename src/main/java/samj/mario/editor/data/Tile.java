@@ -12,8 +12,6 @@ public class Tile {
             .setAllowedContainerTypes(List.of(ContainerType.COIN, ContainerType.STAR, ContainerType.POWER_UP, ContainerType.ONE_UP))
             .build();
 
-    private final Icon primaryDisplayIcon;
-    private final Icon secondaryDisplayIcon;
     private final Integer tileX;
     private final Integer tileY;
     private final Integer tilePalette;
@@ -28,8 +26,6 @@ public class Tile {
     private final List<ContainerType> allowedContainerTypes;
 
     public Tile(Tile t) {
-        this.primaryDisplayIcon = t.primaryDisplayIcon;
-        this.secondaryDisplayIcon = t.secondaryDisplayIcon;
         this.tileX = t.tileX;
         this.tileY = t.tileY;
         this.tilePalette = t.tilePalette;
@@ -45,8 +41,6 @@ public class Tile {
     }
 
     private Tile(Builder builder) {
-        this.primaryDisplayIcon = builder.primaryDisplayIcon;
-        this.secondaryDisplayIcon = builder.secondaryDisplayIcon;
         this.tileX = builder.tileX;
         this.tileY = builder.tileY;
         this.tilePalette = builder.tilePalette;
@@ -212,14 +206,6 @@ public class Tile {
 
     public static Builder builder() {
         return new Builder();
-    }
-
-    public Icon getPrimaryDisplayIcon() {
-        return primaryDisplayIcon;
-    }
-
-    public Icon getSecondaryDisplayIcon() {
-        return secondaryDisplayIcon;
     }
 
     public Integer getTileX() {

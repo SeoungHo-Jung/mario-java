@@ -369,7 +369,7 @@ public class LevelEditor implements ActionListener {
         for (int i = 0; i < TILE_DEFINITIONS.size(); i++) {
             TileDefinition tileDef = TILE_DEFINITIONS.get(i);
             Tile tile = tileDef.prototype;
-            Image primaryIconImage = iconLoader.getImageForIcon(tile.getPrimaryDisplayIcon());
+            Image primaryIconImage = iconLoader.getImageForIcon(iconResolver.primaryDisplayIcon(tile));
             int x = (i % PALETTE_COLUMNS) * GRID_SIZE;
             int y = (i / PALETTE_COLUMNS) * GRID_SIZE;
             g.drawImage(primaryIconImage, x, y, null);
@@ -385,7 +385,7 @@ public class LevelEditor implements ActionListener {
 
     private void drawPreview(Graphics g) {
         Tile selectedGridTile = getSelectedGridTile();
-        Image primaryIcon = iconLoader.getImageForIcon(selectedGridTile.getPrimaryDisplayIcon());
+        Image primaryIcon = iconLoader.getImageForIcon(iconResolver.primaryDisplayIcon(selectedGridTile));
         g.drawImage(primaryIcon, 0, 0, GRID_SIZE * 2, GRID_SIZE * 2, null);
     }
 
