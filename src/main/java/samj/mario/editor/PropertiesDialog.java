@@ -61,8 +61,8 @@ public class PropertiesDialog extends JDialog {
     private void onOK() {
         int oldWidth = levelEditor.getLevel().getWidth();
         int oldHeight = levelEditor.getLevel().getHeight();
-        int newWidth = (int) widthSpinner.getValue();
-        int newHeight = (int) heightSpinner.getValue();
+        int newWidth = Math.max((int) widthSpinner.getValue(), 1);
+        int newHeight = Math.max((int) heightSpinner.getValue(), 1);
 
         Color oldColor = levelEditor.getLevel().getBackgroundColor();
         Color newColor = backgroundColorChooser.getColor();
@@ -71,7 +71,7 @@ public class PropertiesDialog extends JDialog {
         String newName = levelNameTextField.getText();
 
         int oldTimeLimit = levelEditor.getLevel().getTimeLimit();
-        int newTimeLimit = (int) timeLimitSpinner.getValue();
+        int newTimeLimit = Math.max((int) timeLimitSpinner.getValue(), 1);
 
         ChangeLevelPropertiesCommand changeLevelPropertiesCommand = new ChangeLevelPropertiesCommand(oldWidth, oldHeight, newWidth, newHeight, oldName, newName, oldColor, newColor, oldTimeLimit, newTimeLimit, levelEditor);
         levelEditor.doCommand(changeLevelPropertiesCommand);
