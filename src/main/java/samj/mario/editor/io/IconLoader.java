@@ -2,7 +2,7 @@ package samj.mario.editor.io;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import samj.mario.editor.data.Icon;
+import samj.mario.editor.data.EditorIcon;
 import samj.mario.editor.data.IconSheet;
 
 import javax.imageio.ImageIO;
@@ -10,8 +10,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 public class IconLoader {
@@ -53,7 +51,7 @@ public class IconLoader {
         }
     }
 
-    public Image getImageForIcon(Icon icon) {
+    public Image getImageForIcon(EditorIcon icon) {
         if (icon == null) {
             return defaultImage();
         }

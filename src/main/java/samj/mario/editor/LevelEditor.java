@@ -7,12 +7,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import samj.mario.editor.command.*;
 import samj.mario.editor.data.*;
-import samj.mario.editor.data.Icon;
+import samj.mario.editor.data.EditorIcon;
 import samj.mario.editor.io.FileIO;
 import samj.mario.editor.io.IconLoader;
 import samj.mario.editor.io.JsonLevelFormat;
 import samj.mario.editor.io.LevelFormat;
-import samj.mario.editor.util.OsUtil;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
@@ -195,6 +194,22 @@ public class LevelEditor implements ActionListener {
         containerComboBox.addItemListener(containerComboBoxItemListener);
         containerCountSpinner.addChangeListener(containerCountSpinnerChangeListener);
 
+        // Add icons to the buttons
+        EditorIcon selectIcon = new EditorIcon(IconSheet.EDITOR, 0, 0);
+        Icon selectSwingIcon = new ImageIcon(iconLoader.getImageForIcon(selectIcon).getScaledInstance(32, 32, 0));
+        selectButton.setIcon(selectSwingIcon);
+        selectButton.setText(null);
+
+        EditorIcon drawIcon = new EditorIcon(IconSheet.EDITOR, 1, 0);
+        Icon drawSwingIcon = new ImageIcon(iconLoader.getImageForIcon(drawIcon).getScaledInstance(32, 32, 0));
+        drawButton.setIcon(drawSwingIcon);
+        drawButton.setText(null);
+
+        EditorIcon eraseIcon = new EditorIcon(IconSheet.EDITOR, 2, 0);
+        Icon eraseSwingIcon = new ImageIcon(iconLoader.getImageForIcon(eraseIcon).getScaledInstance(32, 32, 0));
+        eraseButton.setIcon(eraseSwingIcon);
+        eraseButton.setText(null);
+
         // By default, create an empty level on startup
         createNewLevel();
 
@@ -301,8 +316,8 @@ public class LevelEditor implements ActionListener {
         for (int x = 0; x < level.getWidth(); x++) {
             for (int y = 0; y < level.getHeight(); y++) {
                 Tile tile = level.getTileMatrix().getTile(x, y);
-                Icon primaryDisplayIcon = iconResolver.primaryDisplayIcon(tile);
-                Icon secondaryDisplayIcon = iconResolver.secondaryDisplayIcon(tile);
+                EditorIcon primaryDisplayIcon = iconResolver.primaryDisplayIcon(tile);
+                EditorIcon secondaryDisplayIcon = iconResolver.secondaryDisplayIcon(tile);
                 int scaledGridSize = GRID_SIZE * GRID_SCALE_FACTOR;
                 int panelX = x * scaledGridSize;
                 int panelY = y * scaledGridSize;
