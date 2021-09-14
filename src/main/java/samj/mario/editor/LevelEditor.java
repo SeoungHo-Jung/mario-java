@@ -70,7 +70,6 @@ public class LevelEditor implements ActionListener {
     }
 
     private final LevelEditor thiz = this;
-    private final JMenuBar menuBar = new EditorMenuBar(this);
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
     private final IconResolver iconResolver = new IconResolver();
@@ -272,6 +271,7 @@ public class LevelEditor implements ActionListener {
             }
         };
 
+        JMenuBar menuBar = new EditorMenuBar(this);
         FRAME.setJMenuBar(menuBar);
     }
 
