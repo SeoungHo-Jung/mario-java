@@ -16,14 +16,11 @@ import samj.mario.editor.util.OsUtil;
 
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
-import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
-import java.text.Format;
 import java.util.Stack;
-import java.util.logging.SimpleFormatter;
 
 import static samj.mario.editor.data.TileData.TILE_DEFINITIONS;
 
@@ -32,6 +29,17 @@ public class LevelEditor implements ActionListener {
     private static final Logger logger = LoggerFactory.getLogger(LevelEditor.class);
 
     private static JFrame FRAME;
+    public static final int WINDOW_MIN_WIDTH = 400;
+    public static final int WINDOW_MIN_HEIGHT = 300;
+    public static final int WINDOW_PREFERRED_WIDTH = 1000;
+    public static final int WINDOW_PREFERRED_HEIGHT = 575;
+    public static final int GRID_SIZE = 16;
+    private static final int GRID_SCALE_FACTOR = 2;
+    private static final int PALETTE_SCALE_FACTOR = 2;
+    private static final int PREVIEW_SCALE_FACTOR = 3;
+    public static final int PALETTE_COLUMNS = 8;
+    private static final String COMBO_BOX_NONE_ITEM = "NONE";
+    public static final int SYSTEM_COMMAND_MODIFIER = OsUtil.isMac() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
 
     private JPanel mainPanel;
     private JScrollPane levelScrollPane;
@@ -69,14 +77,6 @@ public class LevelEditor implements ActionListener {
     private JCheckBoxMenuItem gridMenuItem;
     private JCheckBoxMenuItem overlayMenuItem;
 
-    public static final int SYSTEM_COMMAND_MODIFIER = OsUtil.isMac() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
-    public static final int GRID_SIZE = 16;
-    public static final int PALETTE_COLUMNS = 8;
-    private static final String COMBO_BOX_NONE_ITEM = "NONE";
-    private static final int GRID_SCALE_FACTOR = 2;
-    private static final int PALETTE_SCALE_FACTOR = 2;
-    private static final int PREVIEW_SCALE_FACTOR = 3;
-
     public enum EditorMode {
         SELECT,
         DRAW,
@@ -84,7 +84,6 @@ public class LevelEditor implements ActionListener {
     }
 
     private final LevelEditor thiz = this;
-
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
     private final IconResolver iconResolver = new IconResolver();
@@ -101,7 +100,6 @@ public class LevelEditor implements ActionListener {
     private Integer selectedPaletteTileY;
     private boolean isGridEnabled = true;
     private boolean isOverlayEnabled = true;
-
     private final Stack<EditorCommand> undoStack = new Stack<>();
 
     private final ItemListener behaviorComboBoxItemListener = e -> {
@@ -129,7 +127,6 @@ public class LevelEditor implements ActionListener {
         }
     };
 
-
     private final ChangeListener containerCountSpinnerChangeListener = e -> {
         Tile selectedTile = getSelectedGridTile();
         JSpinner spinner = (JSpinner) e.getSource();
@@ -143,45 +140,49 @@ public class LevelEditor implements ActionListener {
         doCommand(command);
     };
 
-    private Tile getSelectedGridTile() {
-        return level.getTileMatrix().getTile(selectedGridTileX, selectedGridTileY);
-    }
-
-    public void setSelectedGridTile(int selectedGridTileX, int selectedGridTileY) {
-        this.selectedGridTileX = selectedGridTileX;
-        this.selectedGridTileY = selectedGridTileY;
-        refreshSelectedTileCoordinates(selectedGridTileX, selectedGridTileY);
-        repaintLevel();
-        refreshAttributeControls();
-    }
-
-    private void refreshSelectedTileCoordinates(int selectedGridTileX, int selectedGridTileY) {
-        this.selectedTileCoordinateLabel.setText(String.format("(%d,%d)", selectedGridTileX, selectedGridTileY));
-    }
-
-    public void setCurrentMode(EditorMode mode) {
-        this.currentMode = mode;
-        selectButton.setSelected(mode == EditorMode.SELECT);
-        drawButton.setSelected(mode == EditorMode.DRAW);
-        eraseButton.setSelected(mode == EditorMode.ERASE);
-        repaintLevel();
-        refreshAttributeControls();
-    }
-
     public LevelEditor() {
         $$$setupUI$$$();
         levelPanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                handleLevelPanelMouseEvent(e);
+                int scaledGridSize = GRID_SIZE * GRID_SCALE_FACTOR;
+                int x = e.getX() / scaledGridSize;
+                int y = e.getY() / scaledGridSize;
+                if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
+                    switch (currentMode) {
+                        case SELECT -> {
+                            EditorCommand command = new SelectGridTileCommand(selectedGridTileX, selectedGridTileY, x, y, LevelEditor.this);
+                            doCommand(command);
+                        }
+                        case DRAW -> {
+                            Tile oldTile = level.getTileMatrix().getTile(x, y);
+                            EditorCommand command = new ChangeTileCommand(x, y, new Tile(selectedPaletteTile), oldTile, LevelEditor.this);
+                            doCommand(command);
+                        }
+                        case ERASE -> {
+                            Tile oldTile = level.getTileMatrix().getTile(x, y);
+                            EditorCommand command = new EraseTileCommand(x, y, oldTile, LevelEditor.this);
+                            doCommand(command);
+                        }
+                    }
+                }
             }
         });
         tilePalettePanel.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseReleased(MouseEvent e) {
                 super.mouseReleased(e);
-                handleTilePalettePanelMouseEvent(e);
+                int scaledGridSize = GRID_SIZE * PALETTE_SCALE_FACTOR;
+                int x = e.getX() / scaledGridSize;
+                int y = e.getY() / scaledGridSize;
+                int index = (y * PALETTE_COLUMNS) + x;
+                if (index >= 0 && index < TILE_DEFINITIONS.size()) {
+                    selectedPaletteTile = TILE_DEFINITIONS.get(index).prototype;
+                }
+                selectedPaletteTileX = x;
+                selectedPaletteTileY = y;
+                repaintLevel();
             }
         });
         selectButton.addActionListener(e -> {
@@ -215,6 +216,36 @@ public class LevelEditor implements ActionListener {
 
     public Level getLevel() {
         return level;
+    }
+
+    private Tile getSelectedGridTile() {
+        return level.getTileMatrix().getTile(selectedGridTileX, selectedGridTileY);
+    }
+
+    public void setSelectedGridTile(int selectedGridTileX, int selectedGridTileY) {
+        this.selectedGridTileX = selectedGridTileX;
+        this.selectedGridTileY = selectedGridTileY;
+        refreshSelectedTileCoordinates(selectedGridTileX, selectedGridTileY);
+        repaintLevel();
+        refreshAttributeControls();
+    }
+
+    private void refreshSelectedTileCoordinates(int selectedGridTileX, int selectedGridTileY) {
+        this.selectedTileCoordinateLabel.setText(String.format("(%d,%d)", selectedGridTileX, selectedGridTileY));
+    }
+
+    public void setCurrentMode(EditorMode mode) {
+        this.currentMode = mode;
+        selectButton.setSelected(mode == EditorMode.SELECT);
+        drawButton.setSelected(mode == EditorMode.DRAW);
+        eraseButton.setSelected(mode == EditorMode.ERASE);
+        repaintLevel();
+        refreshAttributeControls();
+    }
+
+    public void doCommand(EditorCommand command) {
+        command.execute();
+        undoStack.push(command);
     }
 
     private void createUIComponents() {
@@ -417,74 +448,6 @@ public class LevelEditor implements ActionListener {
         g.drawImage(secondaryIcon, 0, 0, scaledGridSize, scaledGridSize, null);
     }
 
-    public void doCommand(EditorCommand command) {
-        command.execute();
-        undoStack.push(command);
-    }
-
-    private void createNewLevel() {
-        final int defaultWidth = 100;
-        final int defaultHeight = 15;
-        final Color defaultBackgroundColor = new Color(152, 137, 255);
-        final String defaultName = "New Level";
-        final int defaultTimeLimit = 300;
-
-        level = new Level();
-        level.setDimensions(defaultWidth, defaultHeight);
-        level.setBackgroundColor(defaultBackgroundColor);
-        level.setName(defaultName);
-        level.setTimeLimit(defaultTimeLimit);
-        level.setTileMatrix(new TileMatrix(defaultWidth, defaultHeight));
-        levelPanelWidth = defaultWidth * GRID_SIZE * GRID_SCALE_FACTOR;
-        levelPanelHeight = defaultHeight * GRID_SIZE * GRID_SCALE_FACTOR;
-        resetEditor();
-
-        logger.debug("New Level created");
-    }
-
-    private void resetEditor() {
-        selectedGridTileX = 0;
-        selectedGridTileY = 0;
-        refreshSelectedTileCoordinates(0, 0);
-        undoStack.clear();
-        repaintLevel();
-        refreshAttributeControls();
-    }
-
-    private void loadExistingLevel(Level level) {
-        this.level = level;
-        levelPanelWidth = level.getWidth() * GRID_SIZE * GRID_SCALE_FACTOR;
-        levelPanelHeight = level.getHeight() * GRID_SIZE * GRID_SCALE_FACTOR;
-        resetEditor();
-
-        logger.debug("Existing Level loaded");
-    }
-
-    public void changeLevelDimensions(int width, int height) {
-        level.setDimensions(width, height);
-        levelPanelWidth = width * GRID_SIZE * GRID_SCALE_FACTOR;
-        levelPanelHeight = height * GRID_SIZE * GRID_SCALE_FACTOR;
-
-        // TODO: Validate that no tiles are being deleted
-
-        level.setTileMatrix(new TileMatrix(width, height, level.getTileMatrix()));
-
-        repaintLevel();
-    }
-
-    public void changeLevelBackgroundColor(Color color) {
-        level.setBackgroundColor(color);
-        repaintLevel();
-    }
-
-    public void changeLevelName(String name) {
-        level.setName(name);
-    }
-
-    public void changeTimeLimit(int limit) {
-        level.setTimeLimit(limit);
-    }
-
     public void repaintLevel() {
         // Resize components & repaint
         levelPanel.setPreferredSize(new Dimension(levelPanelWidth, levelPanelHeight));
@@ -549,7 +512,70 @@ public class LevelEditor implements ActionListener {
         enemyTypeComboBox.addItemListener(enemyTypeComboBoxItemListener);
     }
 
-    private boolean getDialogConfirmation() {
+    private void createNewLevel() {
+        final int defaultWidth = 100;
+        final int defaultHeight = 15;
+        final Color defaultBackgroundColor = new Color(152, 137, 255);
+        final String defaultName = "New Level";
+        final int defaultTimeLimit = 300;
+
+        level = new Level();
+        level.setDimensions(defaultWidth, defaultHeight);
+        level.setBackgroundColor(defaultBackgroundColor);
+        level.setName(defaultName);
+        level.setTimeLimit(defaultTimeLimit);
+        level.setTileMatrix(new TileMatrix(defaultWidth, defaultHeight));
+        levelPanelWidth = defaultWidth * GRID_SIZE * GRID_SCALE_FACTOR;
+        levelPanelHeight = defaultHeight * GRID_SIZE * GRID_SCALE_FACTOR;
+        resetEditor();
+
+        logger.debug("New Level created");
+    }
+
+    private void loadExistingLevel(Level level) {
+        this.level = level;
+        levelPanelWidth = level.getWidth() * GRID_SIZE * GRID_SCALE_FACTOR;
+        levelPanelHeight = level.getHeight() * GRID_SIZE * GRID_SCALE_FACTOR;
+        resetEditor();
+
+        logger.debug("Existing Level loaded");
+    }
+
+    private void resetEditor() {
+        selectedGridTileX = 0;
+        selectedGridTileY = 0;
+        refreshSelectedTileCoordinates(0, 0);
+        undoStack.clear();
+        repaintLevel();
+        refreshAttributeControls();
+    }
+
+    public void changeLevelDimensions(int width, int height) {
+        level.setDimensions(width, height);
+        levelPanelWidth = width * GRID_SIZE * GRID_SCALE_FACTOR;
+        levelPanelHeight = height * GRID_SIZE * GRID_SCALE_FACTOR;
+
+        // TODO: Validate that no tiles are being deleted?
+
+        level.setTileMatrix(new TileMatrix(width, height, level.getTileMatrix()));
+
+        repaintLevel();
+    }
+
+    public void changeLevelBackgroundColor(Color color) {
+        level.setBackgroundColor(color);
+        repaintLevel();
+    }
+
+    public void changeLevelName(String name) {
+        level.setName(name);
+    }
+
+    public void changeTimeLimit(int limit) {
+        level.setTimeLimit(limit);
+    }
+
+    private boolean solicitDialogConfirmation() {
         if (undoStack.isEmpty()) {
             // this means the user hasn't done anything yet.
             return true;
@@ -563,128 +589,75 @@ public class LevelEditor implements ActionListener {
         return dialog.isConfirmed();
     }
 
-    private void handleLevelPanelMouseEvent(MouseEvent e) {
-        int scaledGridSize = GRID_SIZE * GRID_SCALE_FACTOR;
-        int x = e.getX() / scaledGridSize;
-        int y = e.getY() / scaledGridSize;
-        if (x >= 0 && x < level.getWidth() && y >= 0 && y < level.getHeight()) {
-            switch (currentMode) {
-                case SELECT -> {
-                    EditorCommand command = new SelectGridTileCommand(selectedGridTileX, selectedGridTileY, x, y, this);
-                    doCommand(command);
-                }
-                case DRAW -> {
-                    Tile oldTile = level.getTileMatrix().getTile(x, y);
-                    EditorCommand command = new ChangeTileCommand(x, y, new Tile(selectedPaletteTile), oldTile, this);
-                    doCommand(command);
-                }
-                case ERASE -> {
-                    Tile oldTile = level.getTileMatrix().getTile(x, y);
-                    EditorCommand command = new EraseTileCommand(x, y, oldTile, this);
-                    doCommand(command);
-                }
-            }
-        }
-    }
-
-    private void handleTilePalettePanelMouseEvent(MouseEvent e) {
-        int scaledGridSize = GRID_SIZE * PALETTE_SCALE_FACTOR;
-        int x = e.getX() / scaledGridSize;
-        int y = e.getY() / scaledGridSize;
-        int index = (y * PALETTE_COLUMNS) + x;
-        if (index >= 0 && index < TILE_DEFINITIONS.size()) {
-            selectedPaletteTile = TILE_DEFINITIONS.get(index).prototype;
-        }
-        selectedPaletteTileX = x;
-        selectedPaletteTileY = y;
-        repaintLevel();
-    }
-
-    private void handleNewRequested() {
-        logger.debug("New requested");
-        if (getDialogConfirmation()) {
-            createNewLevel();
-        }
-    }
-
-    private void handleOpenRequested() {
-        logger.debug("Open requested");
-        if (!getDialogConfirmation()) {
-            return;
-        }
-        JFileChooser fileChooser = new JFileChooser();
-        int result = fileChooser.showOpenDialog(mainPanel);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            Level level = fileIO.readLevelFile(selectedFile);
-            if (level != null) {
-                loadExistingLevel(level);
-            }
-        }
-    }
-
-    private void handleSaveRequested() {
-        logger.debug("Save requested");
-        JFileChooser fileChooser = new JFileChooser();
-        int result = fileChooser.showSaveDialog(mainPanel);
-        if (result == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            fileIO.writeLevelFile(selectedFile, level);
-        }
-    }
-
-    private void handleUndoRequested() {
-        if (!undoStack.isEmpty()) {
-            logger.debug("Undo");
-            EditorCommand command = undoStack.pop();
-            command.undo();
-        } else {
-            logger.info("Can't Undo");
-        }
-    }
-
-    private void handlePropertiesRequested() {
-        logger.debug("Properties dialog requested");
-        PropertiesDialog dialog = new PropertiesDialog(this);
-        dialog.setAlwaysOnTop(true);
-        dialog.setLocationRelativeTo(mainPanel);
-        dialog.pack();
-        dialog.setVisible(true);
-    }
-
-    private void handleGridToggleRequested(ActionEvent e) {
-        logger.debug("Grid toggle");
-        AbstractButton button = (AbstractButton) e.getSource();
-        isGridEnabled = button.isSelected();
-        levelPanel.repaint();
-    }
-
-    private void handleOverlayToggleRequested(ActionEvent e) {
-        logger.debug("Overlay toggle");
-        AbstractButton button = (AbstractButton) e.getSource();
-        isOverlayEnabled = button.isSelected();
-        levelPanel.repaint();
-    }
-
-    private void handleQuitRequested() {
-        logger.debug("Quit requested");
-        if (getDialogConfirmation()) {
-            System.exit(0);
-        }
-    }
-
     @Override
     public void actionPerformed(ActionEvent e) {
 
+        // Handlers for menubar items
         switch (e.getActionCommand()) {
-            case "new" -> handleNewRequested();
-            case "open" -> handleOpenRequested();
-            case "save" -> handleSaveRequested();
-            case "undo" -> handleUndoRequested();
-            case "properties" -> handlePropertiesRequested();
-            case "grid-toggle" -> handleGridToggleRequested(e);
-            case "overlay-toggle" -> handleOverlayToggleRequested(e);
-            case "quit" -> handleQuitRequested();
+            case "new" -> {
+                logger.debug("New requested");
+                if (solicitDialogConfirmation()) {
+                    createNewLevel();
+                }
+            }
+            case "open" -> {
+                logger.debug("Open requested");
+                if (solicitDialogConfirmation()) {
+                    JFileChooser fileChooser = new JFileChooser();
+                    int result = fileChooser.showOpenDialog(mainPanel);
+                    if (result == JFileChooser.APPROVE_OPTION) {
+                        File selectedFile = fileChooser.getSelectedFile();
+                        Level openedLevel = fileIO.readLevelFile(selectedFile);
+                        if (openedLevel != null) {
+                            loadExistingLevel(openedLevel);
+                        }
+                    }
+                }
+            }
+            case "save" -> {
+                logger.debug("Save requested");
+                JFileChooser fileChooser = new JFileChooser();
+                int result = fileChooser.showSaveDialog(mainPanel);
+                if (result == JFileChooser.APPROVE_OPTION) {
+                    File selectedFile = fileChooser.getSelectedFile();
+                    fileIO.writeLevelFile(selectedFile, level);
+                }
+            }
+            case "undo" -> {
+                if (!undoStack.isEmpty()) {
+                    logger.debug("Undo");
+                    EditorCommand command = undoStack.pop();
+                    command.undo();
+                } else {
+                    logger.info("Can't Undo");
+                }
+            }
+            case "properties" -> {
+                logger.debug("Properties dialog requested");
+                PropertiesDialog dialog = new PropertiesDialog(this);
+                dialog.setAlwaysOnTop(true);
+                dialog.setLocationRelativeTo(mainPanel);
+                dialog.pack();
+                dialog.setVisible(true);
+            }
+            case "grid-toggle" -> {
+                logger.debug("Grid toggle");
+                AbstractButton button = (AbstractButton) e.getSource();
+                isGridEnabled = button.isSelected();
+                levelPanel.repaint();
+            }
+            case "overlay-toggle" -> {
+                logger.debug("Overlay toggle");
+                AbstractButton button = (AbstractButton) e.getSource();
+                isOverlayEnabled = button.isSelected();
+                levelPanel.repaint();
+            }
+            case "quit" -> {
+                logger.debug("Quit requested");
+                if (solicitDialogConfirmation()) {
+                    System.exit(0);
+                }
+            }
         }
     }
 
@@ -693,8 +666,8 @@ public class LevelEditor implements ActionListener {
         FRAME = frame;
         frame.setContentPane(new LevelEditor().mainPanel);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setMinimumSize(new Dimension(400, 300));
-        frame.setPreferredSize(new Dimension(1000, 575));
+        frame.setMinimumSize(new Dimension(WINDOW_MIN_WIDTH, WINDOW_MIN_HEIGHT));
+        frame.setPreferredSize(new Dimension(WINDOW_PREFERRED_WIDTH, WINDOW_PREFERRED_HEIGHT));
         frame.pack();
         frame.setVisible(true);
     }
