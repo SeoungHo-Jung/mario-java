@@ -143,8 +143,10 @@ public class LevelEditor implements ActionListener {
                         }
                         case DRAW -> {
                             Tile oldTile = level.getTileMatrix().getTile(x, y);
-                            EditorCommand command = new ChangeTileCommand(x, y, new Tile(selectedPaletteTile), oldTile, LevelEditor.this);
-                            doCommand(command);
+                            EditorCommand changeTileCommand = new ChangeTileCommand(x, y, new Tile(selectedPaletteTile), oldTile, LevelEditor.this);
+                            doCommand(changeTileCommand);
+                            EditorCommand selectGridTileCommand = new SelectGridTileCommand(selectedGridTileX, selectedGridTileY, x, y, LevelEditor.this);
+                            doCommand(selectGridTileCommand);
                         }
                         case ERASE -> {
                             Tile oldTile = level.getTileMatrix().getTile(x, y);
@@ -359,7 +361,7 @@ public class LevelEditor implements ActionListener {
         }
         // draw border around the selected tile and shade with transparent color
         if (selectedPaletteTileX != null && selectedPaletteTileY != null) {
-            g.setColor(new Color(0, 0, 0));
+            g.setColor(Color.RED);
             g.drawRect(selectedPaletteTileX * scaledGridSize, selectedPaletteTileY * scaledGridSize, scaledGridSize, scaledGridSize);
             g.setColor(new Color(0, 0, 0, 64));
             g.fillRect(selectedPaletteTileX * scaledGridSize, selectedPaletteTileY * scaledGridSize, scaledGridSize, scaledGridSize);
@@ -553,8 +555,14 @@ public class LevelEditor implements ActionListener {
             case "undo" -> {
                 if (!undoStack.isEmpty()) {
                     logger.debug("Undo");
-                    EditorCommand command = undoStack.pop();
-                    command.undo();
+                    // Auto-undo commands:
+                    // - Select
+                    // - Change Mode
+                    EditorCommand command;
+                    do {
+                        command = undoStack.pop();
+                        command.undo();
+                    } while (!undoStack.isEmpty() && (command instanceof SelectGridTileCommand || command instanceof ChangeEditorModeCommand));
                 } else {
                     logger.info("Can't Undo");
                 }
