@@ -39,7 +39,6 @@ public class LevelEditor implements ActionListener {
     private static final int PREVIEW_SCALE_FACTOR = 3;
     public static final int PALETTE_COLUMNS = 8;
     private static final String COMBO_BOX_NONE_ITEM = "NONE";
-    public static final int SYSTEM_COMMAND_MODIFIER = OsUtil.isMac() ? InputEvent.META_DOWN_MASK : InputEvent.CTRL_DOWN_MASK;
 
     private JPanel mainPanel;
     private JScrollPane levelScrollPane;
@@ -64,19 +63,6 @@ public class LevelEditor implements ActionListener {
     private JPanel selectedTilePreviewWrapperPanel;
     private JLabel selectedTileCoordinateLabel;
 
-    private JMenuBar menuBar;
-    private JMenu fileMenu;
-    private JMenu editMenu;
-    private JMenu viewMenu;
-    private JMenuItem newMenuItem;
-    private JMenuItem openMenuItem;
-    private JMenuItem saveMenuItem;
-    private JMenuItem quitMenuItem;
-    private JMenuItem undoMenuItem;
-    private JMenuItem propertiesMenuItem;
-    private JCheckBoxMenuItem gridMenuItem;
-    private JCheckBoxMenuItem overlayMenuItem;
-
     public enum EditorMode {
         SELECT,
         DRAW,
@@ -84,6 +70,7 @@ public class LevelEditor implements ActionListener {
     }
 
     private final LevelEditor thiz = this;
+    private final JMenuBar menuBar = new EditorMenuBar(this);
     private final LevelFormat levelFormat = new JsonLevelFormat();
     private final FileIO fileIO = new FileIO(levelFormat);
     private final IconResolver iconResolver = new IconResolver();
@@ -230,6 +217,14 @@ public class LevelEditor implements ActionListener {
         refreshAttributeControls();
     }
 
+    public boolean isGridEnabled() {
+        return isGridEnabled;
+    }
+
+    public boolean isOverlayEnabled() {
+        return isOverlayEnabled;
+    }
+
     private void refreshSelectedTileCoordinates(int selectedGridTileX, int selectedGridTileY) {
         this.selectedTileCoordinateLabel.setText(String.format("(%d,%d)", selectedGridTileX, selectedGridTileY));
     }
@@ -276,74 +271,6 @@ public class LevelEditor implements ActionListener {
                 drawPreview(g);
             }
         };
-
-        createMenuBar();
-    }
-
-    private void createMenuBar() {
-        menuBar = new JMenuBar();
-
-        fileMenu = new JMenu("File");
-        menuBar.add(fileMenu);
-
-        newMenuItem = new JMenuItem("New");
-        newMenuItem.setActionCommand("new");
-        newMenuItem.addActionListener(this);
-        fileMenu.add(newMenuItem);
-
-        fileMenu.addSeparator();
-
-        openMenuItem = new JMenuItem("Open");
-        openMenuItem.setActionCommand("open");
-        openMenuItem.addActionListener(this);
-        fileMenu.add(openMenuItem);
-
-        saveMenuItem = new JMenuItem("Save");
-        saveMenuItem.setActionCommand("save");
-        saveMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, SYSTEM_COMMAND_MODIFIER));
-        saveMenuItem.addActionListener(this);
-        fileMenu.add(saveMenuItem);
-
-        fileMenu.addSeparator();
-
-        quitMenuItem = new JMenuItem("Quit");
-        quitMenuItem.setActionCommand("quit");
-        quitMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Q, SYSTEM_COMMAND_MODIFIER));
-        quitMenuItem.addActionListener(this);
-        fileMenu.add(quitMenuItem);
-
-        editMenu = new JMenu("Edit");
-        menuBar.add(editMenu);
-
-        undoMenuItem = new JMenuItem("Undo");
-        undoMenuItem.setActionCommand("undo");
-        undoMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, SYSTEM_COMMAND_MODIFIER));
-        undoMenuItem.addActionListener(this);
-        editMenu.add(undoMenuItem);
-
-        editMenu.addSeparator();
-
-        propertiesMenuItem = new JMenuItem("Properties");
-        propertiesMenuItem.setActionCommand("properties");
-        propertiesMenuItem.addActionListener(this);
-        editMenu.add(propertiesMenuItem);
-
-        viewMenu = new JMenu("View");
-        menuBar.add(viewMenu);
-
-        gridMenuItem = new JCheckBoxMenuItem("Show Grid");
-        gridMenuItem.setActionCommand("grid-toggle");
-        gridMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_G, SYSTEM_COMMAND_MODIFIER));
-        gridMenuItem.addActionListener(this);
-        gridMenuItem.setSelected(isGridEnabled);
-        viewMenu.add(gridMenuItem);
-
-        overlayMenuItem = new JCheckBoxMenuItem("Show Tile Icons");
-        overlayMenuItem.setActionCommand("overlay-toggle");
-        overlayMenuItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, SYSTEM_COMMAND_MODIFIER));
-        overlayMenuItem.addActionListener(this);
-        overlayMenuItem.setSelected(isOverlayEnabled);
-        viewMenu.add(overlayMenuItem);
 
         FRAME.setJMenuBar(menuBar);
     }
