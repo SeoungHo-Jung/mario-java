@@ -1,4 +1,4 @@
-package samj.mario.editor;
+package samj.mario.editor.command;
 
 public interface EditorCommand {
     void execute();

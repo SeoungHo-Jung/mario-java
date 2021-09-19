@@ -19,7 +19,7 @@ public class TileMatrix implements Iterable<Tile> {
         int size = width * height;
         tiles = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            tiles.add(Tile.EMPTY_TILE);
+            tiles.add(new Tile(Tile.EMPTY_TILE));
         }
     }
 
@@ -45,7 +45,7 @@ public class TileMatrix implements Iterable<Tile> {
                     tiles.add(sourceLayer.getTile(x, y));
                 } else {
                     // Pad any empty space with EMPTY_TILE
-                    tiles.add(Tile.EMPTY_TILE);
+                    tiles.add(new Tile(Tile.EMPTY_TILE));
                 }
             }
         }
@@ -59,11 +59,6 @@ public class TileMatrix implements Iterable<Tile> {
     public Tile getTile(int x, int y) {
         int index = (width * y) + x;
         return tiles.get(index);
-    }
-
-    public void resetTile(int x, int y) {
-        int index = (width * y) + x;
-        tiles.set(index, Tile.EMPTY_TILE);
     }
 
     @Override

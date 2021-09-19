@@ -1,8 +1,13 @@
-package samj.mario.editor;
+package samj.mario.editor.command;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import samj.mario.editor.LevelEditor;
 import samj.mario.editor.data.Tile;
 
 public class ChangeTileCommand implements EditorCommand {
+
+    private static final Logger logger = LoggerFactory.getLogger(ChangeTileCommand.class);
 
     private final int x;
     private final int y;
@@ -20,13 +25,15 @@ public class ChangeTileCommand implements EditorCommand {
 
     @Override
     public void execute() {
+        logger.debug("Set tile {},{}", x, y);
         levelEditor.getLevel().getTileMatrix().setTile(x, y, newTile);
-        levelEditor.getLevelPanel().repaint();
+        levelEditor.repaintLevel();
     }
 
     @Override
     public void undo() {
+        logger.debug("Set tile {},{}", x, y);
         levelEditor.getLevel().getTileMatrix().setTile(x, y, oldTile);
-        levelEditor.getLevelPanel().repaint();
+        levelEditor.repaintLevel();
     }
 }

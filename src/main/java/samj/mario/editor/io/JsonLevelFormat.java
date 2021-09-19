@@ -3,9 +3,11 @@ package samj.mario.editor.io;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import samj.mario.editor.data.*;
 import samj.mario.editor.io.json.JsonColor;
+import samj.mario.editor.io.json.JsonEnemySpawn;
 import samj.mario.editor.io.json.JsonLevel;
 import samj.mario.editor.io.json.JsonTile;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,7 +27,9 @@ public class JsonLevelFormat implements LevelFormat {
                 JsonTile jsonTile = new JsonTile();
                 jsonTile.type = tile.getType();
                 jsonTile.containerType = tile.getContainerType();
-                jsonTile.enemyType = tile.getEnemyType();
+                if (tile.getEnemyType() != null) {
+                    jsonTile.enemySpawn = new JsonEnemySpawn(tile.getEnemyType());
+                }
                 jsonTile.direction = tile.getDirection();
                 jsonTile.containerCount = tile.getCount();
                 jsonTile.x = tile.getTileX();
@@ -38,9 +42,10 @@ public class JsonLevelFormat implements LevelFormat {
 
         JsonLevel jsonLevel = new JsonLevel();
         jsonLevel.tiles = jsonTiles;
-        jsonLevel.backgroundColor = new JsonColor(0, 0, 0); // TODO
-        jsonLevel.name = "World 1-1"; // TODO
-        jsonLevel.seconds = 300; // TODO
+        jsonLevel.name = level.getName();
+        jsonLevel.seconds = level.getTimeLimit();
+        Color bgColor = level.getBackgroundColor();
+        jsonLevel.backgroundColor = new JsonColor(bgColor.getRed(), bgColor.getGreen(), bgColor.getBlue());
 
         try {
             return OBJECT_MAPPER.writeValueAsBytes(jsonLevel);
@@ -95,12 +100,11 @@ public class JsonLevelFormat implements LevelFormat {
                         .setAnimated(jsonTile.isAnimated != null ? jsonTile.isAnimated : false)
                         .setType(jsonTile.type)
                         .setContainerType(jsonTile.containerType)
-                        .setEnemyType(jsonTile.enemyType)
                         .setDirection(jsonTile.direction)
                         .setCount(jsonTile.containerCount);
 
-                if (jsonTile.x != null && jsonTile.y != null) {
-                    builder.setPrimaryDisplayTileIcon(new Icon(IconSheet.TILES, jsonTile.x, jsonTile.y));
+                if (jsonTile.enemySpawn != null && jsonTile.enemySpawn.type != EnemyType.UNKNOWN) {
+                    builder.setEnemyType(jsonTile.enemySpawn.type);
                 }
 
                 tiles.add(builder.build());
@@ -118,6 +122,9 @@ public class JsonLevelFormat implements LevelFormat {
 
         Level level = new Level();
         level.setDimensions(width, height);
+        level.setTimeLimit(jsonLevel.seconds);
+        level.setName(jsonLevel.name);
+        level.setBackgroundColor(jsonLevel.backgroundColor.asAwtColor());
         level.setTileMatrix(tileMatrix);
 
         return level;
