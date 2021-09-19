@@ -8,8 +8,10 @@ import java.awt.image.BufferStrategy;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.*;
+import java.util.List;
 
+import static java.lang.System.exit;
 import static samj.mario.game.Application.CANVAS_HEIGHT;
 import static samj.mario.game.Application.CANVAS_WIDTH;
 import static java.awt.event.KeyEvent.*;
@@ -28,11 +30,16 @@ public class Game extends Canvas implements Runnable, KeyListener {
     private int frames = 0;
     private double prevTime;
 
+    //Size of grid is 16 pixel
+    private final int gridSize = 16;
     //Frame size
     private int frameWidth = CANVAS_WIDTH;
     private int frameHeight = CANVAS_HEIGHT;
-    private final int levelWidth = 1280;
-    private final int levelHeight = 256;
+    private int levelWidth;
+    private int levelHeight;
+
+    //Level and tiles
+    List<List<Tile>> tiles;
 
 
     //mario's status
@@ -92,68 +99,25 @@ public class Game extends Canvas implements Runnable, KeyListener {
     //Checks which key was pressed last
     Last_Key_Pressed lastKeyPressed;
 
-    //Grid : Each tile is sized 16 X 16
-    private char[][] reachableOrNot = new char[15][80];
-
-    //Test cases
-    private String demoLevel =
-            "                 #####                                                          " +
-            "        ####                                                                    " +
-            "           ##                 #####                                             " +
-            "                   #####             #####                                      " +
-            "     ###                                                                        " +
-            "     #####              ######                                                  " +
-            "              ####                                                              " +
-            "##                  ######                                                      " +
-            "         ##                                      ##                             " +
-            "                                                ####                            " +
-            "   ###      ##                  # # # # # #    ######                           " +
-            "                               # # # # # # #  ########                          " +
-            "                                             ##########                         " +
-            "################################################################################" +
-            "################################################################################";
-
-
-    private String demoLevelTwo =
-                    "################" +
-                    "###       ####  " +
-                    "                " +
-                    "     ######   ##" +
-                    "        ####    " +
-                    "                " +
-                    "     ######     " +
-                    "#####      ##   " +
-                    "           ##   " +
-                    "# ##            " +
-                    "# ####          " +
-                    "# ####  ###     " +
-                    "#       ###    #" +
-                    "################" +
-                    "################";
-
-    private String demoLevelThree =
-                    "################" +
-                    "            ####" +
-                    "#       ##      " +
-                    "#    ##    #####" +
-                    "##########     #" +
-                    "#        ##### #" +
-                    "#  ##### #   # #" +
-                    "#      # # # # #" +
-                    "###### #   # # #" +
-                    "#    # ##### # #" +
-                    "# ## # #     # #" +
-                    "#  # # # ##### #" +
-                    "## #   #       #" +
-                    "################" +
-                    "################";
-
     public void init() {
+        //Load level from json
+        Level level;
+        URL jsonFile = getClass().getClassLoader().getResource("levels/test-level.json");
+        level = jsonParser.levelLoader(jsonFile);
+
+        tiles = level.tiles;
+
+        //Resize level size depending on the input
+        levelHeight = tiles.size() * gridSize;
+        levelWidth = tiles.get(0).size() * gridSize;
+
+
         // Load the sprite sheet image
         String spriteFile = "image/player.png";
         URL imageURL = getClass().getClassLoader().getResource(spriteFile);
 
         String tileSpriteFile = "image/tiles.png";
+
         URL tileImageURL = getClass().getClassLoader().getResource(tileSpriteFile);
         if (imageURL == null || tileImageURL == null) { //tileImageURL == null
             System.err.println("Couldn't find sprite file: " + spriteFile);
@@ -210,10 +174,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
     }
 
     public void render() {
-        // Draw the graphics to the screen
-        marioImg = spriteSheet.getSubimage(colCurr, 32, marioWidth, marioHeight);
-        //Mystery numbers. Must fix
-        blockImg = tileSpriteSheet.getSubimage(0, 0, blockWidth, blockHeight);
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             // Use a double-buffering strategy
@@ -233,54 +193,40 @@ public class Game extends Canvas implements Runnable, KeyListener {
     }
 
     private void drawSprites(Graphics g) {
-        // Draw the sprites on top of the background
-
-        //  x = 120 and y = 100 is completely arbitrary. Will need to replace with actual variables.
+        // Draw the graphics to the screen
+        marioImg = spriteSheet.getSubimage(colCurr, 32, marioWidth, marioHeight);
 
         //clear the previous image that was drawn.
         g.clearRect(0, 0, frameWidth, frameHeight);
         int redrawFromHere = 0;
         if(marioX > 128){
             redrawFromHere = (int)marioX - (frameWidth / 2);
-            //System.out.println("Frame position is : " + redrawFromHere);
         }
 
         // Figure out why
-        int offset = redrawFromHere % 16;
-        for(int y = 0; y < reachableOrNot.length; y++){
-            for (int x = 0; x < reachableOrNot[y].length; x++){
-                if(x >= redrawFromHere / 16 && x < (frameWidth + redrawFromHere) / 16 + 1) {
-                    if (reachableOrNot[y][x] == '#') {
-                        g.drawImage(blockImg, (x - (redrawFromHere / 16)) * 16 - offset, y * 16, null);
+        //tiles.get(y).get(x).type != Tile.TileType.EMPTY
+        int offset = redrawFromHere % gridSize;
+        for(int row = 0; row < tiles.size(); row++){
+            for (int col = 0; col < tiles.get(row).size(); col++){
+                if(col >= redrawFromHere / gridSize && col < (frameWidth + redrawFromHere) / gridSize + 1) {
+                    if (tiles.get(row).get(col).type != Tile.TileType.EMPTY) {
+                        blockImg = tileSpriteSheet.getSubimage(tiles.get(row).get(col).x * gridSize, tiles.get(row).get(col).y * gridSize, blockWidth, blockHeight);
+                        g.drawImage(blockImg, (col - (redrawFromHere / gridSize)) * gridSize - offset, row * gridSize, null);
                     }
                 }
             }
         }
 
         //draw new image
-
         g.drawImage(marioImg, (int)(marioX - redrawFromHere), (int)marioY, null);
 
     }
-    /*
-    private BufferedImage getSpecificImage(String command){
-        switch (command){
-            case "normal":
-
-        }
-    }*/
 
 
     @Override
     public void run() {
         init();
 
-        //Just fpr this implementation. Will need to move it to tick()
-        for(int i = 0; i < reachableOrNot.length; i++){
-            for (int j = 0; j < reachableOrNot[i].length; j++){
-                reachableOrNot[i][j] = demoLevel.charAt((i * reachableOrNot[i].length) + j);
-            }
-        }
 
         //The actual images start from the 80th pixel.
         prevTime = System.currentTimeMillis();
@@ -359,7 +305,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
             }
         }
         if(up_key_pressed){
-            //System.out.println("mario speed is : " + marioVerticalSpeed);
             lastKeyPressed = Last_Key_Pressed.UP;
             if(status == MarioStatus.STANDING){
                 marioVerticalSpeed = -3.5;
@@ -388,10 +333,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
         if(status == MarioStatus.JUMPING && !up_key_pressed){
             status = MarioStatus.FALLING;
         }
-
-
-        if(!right_key_pressed && !left_key_pressed && !up_key_pressed && !down_key_pressed){
-            status = MarioStatus.FALLING;
+        if(!right_key_pressed && !left_key_pressed){
             if(marioHorizontalSpeed >= marioMinSpeed){
                 marioHorizontalSpeed -= acceleration;
                 if(marioHorizontalSpeed < 0){
@@ -404,7 +346,6 @@ public class Game extends Canvas implements Runnable, KeyListener {
                     marioHorizontalSpeed = 0;
                 }
             }
-
         }
 
         if(status == MarioStatus.FALLING){
@@ -418,16 +359,16 @@ public class Game extends Canvas implements Runnable, KeyListener {
         marioY += marioVerticalSpeed;
 
 
-        int gridXscale = (int)(marioX/16);
-        int gridYscale = (int)(marioY/16);
+        int gridXscale = (int)(marioX/gridSize);
+        int gridYscale = (int)(marioY/gridSize);
 
         //Checks if mario's position is between two grids
         boolean XinBetween = false;
         boolean YinBetween = false;
-        if(marioX % 16 != 0){
+        if(marioX % gridSize != 0){
             XinBetween = true;
         }
-        if(marioY % 16 != 0){
+        if(marioY % gridSize != 0){
             YinBetween = true;
         }
 
@@ -453,11 +394,15 @@ public class Game extends Canvas implements Runnable, KeyListener {
                 marioHorizontalSpeed = 0;
                 marioX = Math.round(marioTempX);
             }
-            //marioX = Math.round(marioTempX);
         }
         else{
             if(status != MarioStatus.JUMPING)
-            status = MarioStatus.FALLING;
+                status = MarioStatus.FALLING;
+        }
+
+        if(marioY >= frameHeight + marioHeight){
+            status = MarioStatus.DEAD;
+            exit(0);
         }
 
         /*
@@ -475,80 +420,76 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
     public boolean safeToMove(int gridX, int gridY, boolean XinBetween, boolean YinBetween){
 
-        boolean check = true;
+        boolean safeToMove = true;
 
         //If mario is out of frame, it returns true no matter what
         if(marioX < 0 || marioX > levelWidth - marioWidth || marioY < 0 || marioY > levelHeight - marioHeight){
             return true;
         }
 
+        if(tiles.get(gridY).get(gridX).type != Tile.TileType.EMPTY){
+            safeToMove = false;
+        }
+
         if(YinBetween){
-            if(marioHorizontalSpeed > 0 && reachableOrNot[gridY + 1][(int)((marioX + marioWidth) / 16)] == '#'){
-                check = false;
+            if(marioHorizontalSpeed > 0 && tiles.get(gridY + 1).get((int)((marioX + marioWidth) / gridSize)).type != Tile.TileType.EMPTY){
+                safeToMove = false;
                 collisionLocation = Warning_Collide.RIGHT;
             }
-            if(marioHorizontalSpeed < 0 && reachableOrNot[gridY + 1][(int)(marioX / 16)] == '#'){
-                check = false;
+            if(marioHorizontalSpeed < 0 && tiles.get(gridY + 1).get((int)(marioX / gridSize)).type != Tile.TileType.EMPTY){
+                safeToMove = false;
                 collisionLocation = Warning_Collide.LEFT;
             }
 
-
             if(marioVerticalSpeed > 0){
-                if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX] == '#'){
-                    check = false;
+                if(tiles.get((int)((marioY + marioHeight)/gridSize)).get(gridX).type != Tile.TileType.EMPTY){
+                    safeToMove = false;
                     collisionLocation = Warning_Collide.DOWN;
 
                 }
             }
-            if(marioVerticalSpeed < 0 && reachableOrNot[(int)(marioY / 16)][gridX] == '#'){
-                //System.out.println("here");
-                check = false;
+            if(marioVerticalSpeed < 0 && tiles.get((int)(marioY / gridSize)).get(gridX).type != Tile.TileType.EMPTY){
+                safeToMove = false;
                 collisionLocation = Warning_Collide.UP;
 
             }
         }
 
         if(XinBetween){
-            if(marioHorizontalSpeed > 0 && reachableOrNot[gridY][(int)((marioX + marioWidth) / 16)] == '#'){
-                check = false;
+            if(marioHorizontalSpeed > 0 && tiles.get(gridY).get((int)((marioX + marioWidth) / gridSize)).type != Tile.TileType.EMPTY){
+                safeToMove = false;
                 collisionLocation = Warning_Collide.RIGHT;
 
             }
-            if(marioHorizontalSpeed < 0 && reachableOrNot[gridY][(int)(marioX / 16)] == '#'){
-                check = false;
+            if(marioHorizontalSpeed < 0 && tiles.get(gridY).get((int)(marioX / gridSize)).type != Tile.TileType.EMPTY){
+                safeToMove = false;
                 collisionLocation = Warning_Collide.LEFT;
 
             }
             if(marioVerticalSpeed > 0){
-                if(reachableOrNot[(int)((marioY + marioHeight)/16)][gridX + 1] == '#'){
-                    check = false;
+                if(tiles.get((int)((marioY + marioHeight)/gridSize)).get(gridX + 1).type != Tile.TileType.EMPTY){
+                    safeToMove = false;
                     collisionLocation = Warning_Collide.DOWN;
 
                 }
             }
-            if(marioVerticalSpeed < 0 && reachableOrNot[(int)(marioY / 16)][gridX + 1] == '#'){
-                check = false;
+            if(marioVerticalSpeed < 0 && tiles.get((int)(marioY / gridSize)).get(gridX + 1).type != Tile.TileType.EMPTY){
+                safeToMove = false;
                 collisionLocation = Warning_Collide.UP;
 
             }
         }
-
-        if(!YinBetween){
-            if(reachableOrNot[gridY][gridX] == '#'){
-                return false;
-
+        //tiles.get(gridY).get(gridX).type != Tile.TileType.EMPTY
+        if(!YinBetween || !XinBetween){
+            if(tiles.get(gridY).get(gridX).type != Tile.TileType.EMPTY){
+                safeToMove = false;
             }
         }
-        if(!XinBetween){
-            if(reachableOrNot[gridY][gridX] == '#'){
-                return false;
-            }
-        }
-        if(check){
+        if(safeToMove){
             collisionLocation = Warning_Collide.NULL;
         }
 
-        return check;
+        return safeToMove;
     }
 
     @Override
@@ -604,6 +545,7 @@ public class Game extends Canvas implements Runnable, KeyListener {
 
 }
 
+
 //Dealing with levels
 /*
 1. "empty" and "solid" blocks.
@@ -615,5 +557,3 @@ a. Work on retrieving stuff from json (parsing).
 b. Actually use the retrieved data to build the level
 c. Test.
  */
-
-
